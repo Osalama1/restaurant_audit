@@ -452,6 +452,8 @@
                 });
 
                 const result = await response.json();
+                console.log("API Raw Response:", result);
+
 
                 if (result.message && result.message.success) {
                     checklistTemplate = result.message.template;
@@ -636,7 +638,8 @@
                         answers.push({
                             question_id: question.id,
                             answer_value: answerValue,
-                            answer_comment: answerComment
+                            answer_comment: answerComment,
+                            category: category.id
                         });
                     });
                 });

@@ -89,39 +89,36 @@ def get_checklist_template(restaurant_id):
     try:
         # Get the checklist template for the restaurant
         template = frappe.db.get_value("Checklist Template", 
-                                     {"applies_to_restaurant": restaurant_id}, 
-                                     ["name", "template_name", "description"])
+                                       {"applies_to_restaurant": restaurant_id}, 
+                                       ["name", "template_name", "description"])
         
         if not template:
             return {
                 "success": False,
                 "message": "No checklist template found for this restaurant"
             }
-        
+
         template_name = template[0] if isinstance(template, tuple) else template
         template_doc = frappe.get_doc("Checklist Template", template_name)
-        
+
         # Get categories for this template, linked to the restaurant
         categories = frappe.get_list("Checklist Category", 
-                                   filters={
-                                       "template": template_name,
-                                       "restaurant": restaurant_id
-                                   },
-                                   fields=["name", "category_name"],
-                                   order_by="name asc") # Order by name for consistency
-        
+                                     filters={
+                                         "template": template_name,
+                                         "restaurant": restaurant_id
+                                     },
+                                     fields=["name", "category_name"],
+                                     order_by="name asc")
+
         # Structure the template data
         categories_data = []
         for category in categories:
-            # Get questions for this category
-            questions = frappe.get_list("Audit Question",
-                                      filters={"category": category.name},
-                                      fields=["name", "question_text", "answer_type", "options", 
-                                             "allow_image_upload", "is_mandatory"],
-                                      order_by="name asc") # Order by name for consistency
-            
+            # Load the parent Checklist Category doc
+            category_doc = frappe.get_doc("Checklist Category", category.name)
+
+            # Access child table field (usually named 'questions')
             questions_data = []
-            for question in questions:
+            for question in category_doc.questions:
                 question_data = {
                     "id": question.name,
                     "text": question.question_text,
@@ -131,14 +128,14 @@ def get_checklist_template(restaurant_id):
                     "is_mandatory": bool(question.is_mandatory)
                 }
                 questions_data.append(question_data)
-            
+
             category_data = {
                 "id": category.name,
                 "name": category.category_name,
                 "questions": questions_data
             }
             categories_data.append(category_data)
-        
+
         return {
             "success": True,
             "template": {
@@ -148,6 +145,7 @@ def get_checklist_template(restaurant_id):
                 "categories": categories_data
             }
         }
+
     except Exception as e:
         frappe.log_error(f"Get checklist template error: {str(e)}")
         return {
@@ -230,6 +228,7 @@ def submit_audit(restaurant_id, answers, overall_comment=""):
             answer_row.question = answer_data.get("question_id")
             answer_row.answer_value = answer_data.get("answer_value")
             answer_row.answer_comment = answer_data.get("answer_comment", "")
+            answer_row.category = answer_data.get("category") 
             
             # Handle image attachment if provided
             if answer_data.get("image_data"):

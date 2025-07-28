@@ -50,6 +50,7 @@
    "label": "Question Comment"
   }
  ],
+ 
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
@@ -58,7 +59,20 @@
  "module": "Restaurant Audit",
  "name": "Audit Question",
  "owner": "Administrator",
- "permissions": [],
+ "permissions": [
+    {
+        "role": "Auditor",
+      "read": 1,
+      "write": 1,
+      "create": 1,
+      "delete": 1,
+      "email": 1,
+      "export": 1,
+      "print": 1,
+      "report": 1,
+      "share": 1
+    }
+ ],
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []

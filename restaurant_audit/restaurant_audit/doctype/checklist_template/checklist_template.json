@@ -7,9 +7,7 @@
  "field_order": [
   "template_name",
   "description",
-  "applies_to_restaurant",
-  "categories_section",
-  "categories"
+  "applies_to_restaurant"
  ],
  "fields": [
   {
@@ -28,17 +26,6 @@
    "fieldtype": "Link",
    "label": "Applies to Restaurant",
    "options": "Restaurant"
-  },
-  {
-   "fieldname": "categories_section",
-   "fieldtype": "Section Break",
-   "label": "Categories"
-  },
-  {
-   "fieldname": "categories",
-   "fieldtype": "Table",
-   "label": "Categories",
-   "options": "Checklist Category"
   }
  ],
  "index_web_pages_for_search": 1,

@@ -6,13 +6,33 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "category_name"
+  "category_name",
+  "questions_section",
+  "questions",
+  "overall_category_comment"
  ],
  "fields": [
   {
    "fieldname": "category_name",
    "fieldtype": "Data",
-   "label": "category name"
+   "label": "Category Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "questions_section",
+   "fieldtype": "Section Break",
+   "label": "Questions"
+  },
+  {
+   "fieldname": "questions",
+   "fieldtype": "Table",
+   "label": "Questions",
+   "options": "Audit Question"
+  },
+  {
+   "fieldname": "overall_category_comment",
+   "fieldtype": "Small Text",
+   "label": "Overall Category Comment"
   }
  ],
  "index_web_pages_for_search": 1,

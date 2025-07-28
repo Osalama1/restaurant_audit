@@ -5,13 +5,56 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "submission_name"
+  "restaurant",
+  "auditor",
+  "audit_date",
+  "audit_time",
+  "overall_comment",
+  "answers_section",
+  "answers"
  ],
  "fields": [
   {
-   "fieldname": "submission_name",
-   "fieldtype": "Data",
-   "label": "submission name"
+   "fieldname": "restaurant",
+   "fieldtype": "Link",
+   "label": "Restaurant",
+   "options": "Restaurant",
+   "reqd": 1
+  },
+  {
+   "fieldname": "auditor",
+   "fieldtype": "Link",
+   "label": "Auditor",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "audit_date",
+   "fieldtype": "Date",
+   "label": "Audit Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "audit_time",
+   "fieldtype": "Time",
+   "label": "Audit Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "overall_comment",
+   "fieldtype": "Long Text",
+   "label": "Overall Comment"
+  },
+  {
+   "fieldname": "answers_section",
+   "fieldtype": "Section Break",
+   "label": "Answers"
+  },
+  {
+   "fieldname": "answers",
+   "fieldtype": "Table",
+   "label": "Answers",
+   "options": "Audit Answer"
   }
  ],
  "index_web_pages_for_search": 1,

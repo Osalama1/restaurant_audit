@@ -5,13 +5,40 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "template_name"
+  "template_name",
+  "description",
+  "applies_to_restaurant",
+  "categories_section",
+  "categories"
  ],
  "fields": [
   {
    "fieldname": "template_name",
    "fieldtype": "Data",
-   "label": "template name"
+   "label": "Template Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Small Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "applies_to_restaurant",
+   "fieldtype": "Link",
+   "label": "Applies to Restaurant",
+   "options": "Restaurant"
+  },
+  {
+   "fieldname": "categories_section",
+   "fieldtype": "Section Break",
+   "label": "Categories"
+  },
+  {
+   "fieldname": "categories",
+   "fieldtype": "Table",
+   "label": "Categories",
+   "options": "Checklist Category"
   }
  ],
  "index_web_pages_for_search": 1,

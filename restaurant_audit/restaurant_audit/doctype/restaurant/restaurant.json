@@ -5,13 +5,63 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "restaurant_name"
+  "restaurant_name",
+  "address",
+  "location_section",
+  "latitude",
+  "longitude",
+  "location_radius",
+  "employees_section",
+  "assigned_employees"
  ],
  "fields": [
   {
    "fieldname": "restaurant_name",
    "fieldtype": "Data",
-   "label": "restaurant name"
+   "label": "Restaurant Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Small Text",
+   "label": "Address"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "location_section",
+   "fieldtype": "Section Break",
+   "label": "Location Settings"
+  },
+  {
+   "fieldname": "latitude",
+   "fieldtype": "Float",
+   "label": "Latitude",
+   "precision": "8"
+  },
+  {
+   "fieldname": "longitude",
+   "fieldtype": "Float",
+   "label": "Longitude",
+   "precision": "8"
+  },
+  {
+   "default": "100",
+   "fieldname": "location_radius",
+   "fieldtype": "Float",
+   "label": "Location Radius (meters)",
+   "precision": "2"
+  },
+  {
+   "collapsible": 1,
+   "fieldname": "employees_section",
+   "fieldtype": "Section Break",
+   "label": "Assigned Employees"
+  },
+  {
+   "fieldname": "assigned_employees",
+   "fieldtype": "Table",
+   "label": "Assigned Employees",
+   "options": "Restaurant Employee"
   }
  ],
  "index_web_pages_for_search": 1,

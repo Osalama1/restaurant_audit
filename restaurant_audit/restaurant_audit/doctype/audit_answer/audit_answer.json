@@ -6,13 +6,41 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "answer_value"
+  "question",
+  "category",
+  "answer_value",
+  "answer_comment",
+  "image_attachment"
  ],
  "fields": [
   {
+   "fieldname": "question",
+   "fieldtype": "Link",
+   "label": "Question",
+   "options": "Audit Question",
+   "reqd": 1
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Link",
+   "label": "Category",
+   "options": "Checklist Category",
+   "reqd": 1
+  },
+  {
    "fieldname": "answer_value",
    "fieldtype": "Small Text",
-   "label": "answer"
+   "label": "Answer Value"
+  },
+  {
+   "fieldname": "answer_comment",
+   "fieldtype": "Small Text",
+   "label": "Answer Comment"
+  },
+  {
+   "fieldname": "image_attachment",
+   "fieldtype": "Attach",
+   "label": "Image Attachment"
   }
  ],
  "index_web_pages_for_search": 1,

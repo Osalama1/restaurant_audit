@@ -6,13 +6,48 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "question_text"
+  "question_text",
+  "answer_type",
+  "options",
+  "allow_image_upload",
+  "is_mandatory",
+  "question_comment"
  ],
  "fields": [
   {
    "fieldname": "question_text",
    "fieldtype": "Text",
-   "label": "Question"
+   "label": "Question Text",
+   "reqd": 1
+  },
+  {
+   "fieldname": "answer_type",
+   "fieldtype": "Select",
+   "label": "Answer Type",
+   "options": "Yes/No\nTrue/False\nRating\nText\nImage",
+   "reqd": 1
+  },
+  {
+   "fieldname": "options",
+   "fieldtype": "Small Text",
+   "label": "Options (comma-separated)"
+  },
+  {
+   "default": "0",
+   "fieldname": "allow_image_upload",
+   "fieldtype": "Check",
+   "label": "Allow Image Upload"
+  },
+  {
+   "default": "0",
+   "fieldname": "is_mandatory",
+   "fieldtype": "Check",
+   "label": "Is Mandatory"
+  },
+  {
+   "fieldname": "question_comment",
+   "fieldtype": "Small Text",
+   "label": "Question Comment"
   }
  ],
  "index_web_pages_for_search": 1,

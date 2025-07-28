@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Restaurant - Audit System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            color: #333;
+            font-size: 20px;
+        }
+
+        .logout-btn {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            background: #c82333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .page-title {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .page-title h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .page-title p {
+            color: #666;
+        }
+
+        .restaurants-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .restaurant-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .restaurant-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+            border-color: #667eea;
+        }
+
+        .restaurant-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .restaurant-address {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .restaurant-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #888;
+        }
+
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .restaurants-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .header h1 {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Restaurant Audit System</h1>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <div class="page-title">
+            <h2>Select Restaurant</h2>
+            <p>Choose a restaurant to begin the audit process</p>
+        </div>
+
+        <div id="loading" class="loading">
+            Loading restaurants...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="restaurants-container" class="restaurants-grid" style="display: none;"></div>
+
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <h3>No Restaurants Assigned</h3>
+            <p>You don't have any restaurants assigned to your account. Please contact your administrator.</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRestaurants();
+        });
+
+        async function loadRestaurants() {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const container = document.getElementById('restaurants-container');
+            const emptyState = document.getElementById('empty-state');
+
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_restaurants', {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const result = await response.json();
+
+                if (result.message && result.message.success) {
+                    const restaurants = result.message.restaurants;
+                    
+                    loading.style.display = 'none';
+                    
+                    if (restaurants.length === 0) {
+                        emptyState.style.display = 'block';
+                    } else {
+                        container.style.display = 'grid';
+                        renderRestaurants(restaurants);
+                    }
+                } else {
+                    throw new Error(result.message ? result.message.message : 'Failed to load restaurants');
+                }
+            } catch (err) {
+                console.error('Error loading restaurants:', err);
+                loading.style.display = 'none';
+                error.textContent = err.message || 'Failed to load restaurants. Please try again.';
+                error.style.display = 'block';
+            }
+        }
+
+        function renderRestaurants(restaurants) {
+            const container = document.getElementById('restaurants-container');
+            container.innerHTML = '';
+
+            restaurants.forEach(restaurant => {
+                const card = document.createElement('div');
+                card.className = 'restaurant-card';
+                card.onclick = () => selectRestaurant(restaurant);
+
+                card.innerHTML = `
+                    <div class="restaurant-name">${restaurant.restaurant_name}</div>
+                    <div class="restaurant-address">${restaurant.address || 'Address not specified'}</div>
+                    <div class="restaurant-info">
+                        <div class="location-status">
+                            <div class="status-dot"></div>
+                            <span>Location configured</span>
+                        </div>
+                        <div>
+                            ${restaurant.latitude && restaurant.longitude ? 
+                                `${restaurant.location_radius}m radius` : 
+                                'No location set'
+                            }
+                        </div>
+                    </div>
+                `;
+
+                container.appendChild(card);
+            });
+        }
+
+        function selectRestaurant(restaurant) {
+            // Store selected restaurant in sessionStorage
+            sessionStorage.setItem('selectedRestaurant', JSON.stringify(restaurant));
+            
+            // Redirect to audit form
+            window.location.href = `/audit-form?restaurant=${restaurant.name}`;
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                // Clear any stored data
+                sessionStorage.clear();
+                localStorage.clear();
+                
+                // Redirect to login page
+                window.location.href = '/audit-login';
+            }
+        }
+    </script>
+</body>
+</html>
+

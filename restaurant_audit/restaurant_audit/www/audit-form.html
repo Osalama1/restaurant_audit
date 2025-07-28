@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Audit Form</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .back-btn {
+            background: #6c757d;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background: #5a6268;
+        }
+
+        .restaurant-info h1 {
+            color: #333;
+            font-size: 18px;
+        }
+
+        .restaurant-info p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .submit-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .submit-btn:hover {
+            background: #218838;
+        }
+
+        .submit-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .location-check {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .location-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .status-icon {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 12px;
+        }
+
+        .status-icon.success {
+            background: #28a745;
+        }
+
+        .status-icon.error {
+            background: #dc3545;
+        }
+
+        .status-icon.loading {
+            background: #ffc107;
+        }
+
+        .category {
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .category-header {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .category-content {
+            padding: 20px;
+        }
+
+        .question {
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .question:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .question-text {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+
+        .question-required {
+            color: #dc3545;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .answer-options {
+            margin-bottom: 10px;
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .radio-option input[type="radio"] {
+            margin: 0;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e1e5e9;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .text-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .comment-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-top: 8px;
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .image-upload {
+            margin-top: 10px;
+        }
+
+        .image-upload input[type="file"] {
+            margin-bottom: 10px;
+        }
+
+        .image-preview {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .overall-comment {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .overall-comment h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+            
+            .header {
+                padding: 12px 15px;
+            }
+            
+            .header-left {
+                gap: 10px;
+            }
+            
+            .restaurant-info h1 {
+                font-size: 16px;
+            }
+            
+            .radio-group {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">← Back</button>
+            <div class="restaurant-info">
+                <h1 id="restaurant-name">Loading...</h1>
+                <p id="restaurant-address"></p>
+            </div>
+        </div>
+        <button class="submit-btn" id="submit-btn" onclick="submitAudit()" disabled>Submit Audit</button>
+    </div>
+
+    <div class="container">
+        <div class="location-check" id="location-check">
+            <div class="location-status">
+                <div class="status-icon loading" id="location-icon">⏳</div>
+                <span id="location-text">Checking your location...</span>
+            </div>
+            <p id="location-details" style="font-size: 14px; color: #666; margin-top: 5px;"></p>
+        </div>
+
+        <div id="loading" class="loading">
+            Loading audit checklist...
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="audit-form" style="display: none;">
+            <div id="categories-container"></div>
+
+            <div class="overall-comment">
+                <h3>Overall Comments</h3>
+                <textarea 
+                    id="overall-comment" 
+                    class="text-input" 
+                    placeholder="Add any overall comments about this audit..."
+                    rows="4"
+                ></textarea>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentRestaurant = null;
+        let checklistTemplate = null;
+        let auditAnswers = [];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAuditForm();
+        });
+
+        async function initializeAuditForm() {
+            // Get restaurant ID from URL parameters
+            const urlParams = new URLSearchParams(window.location.search);
+            const restaurantId = urlParams.get('restaurant');
+
+            if (!restaurantId) {
+                showError('No restaurant selected');
+                return;
+            }
+
+            // Get restaurant info from sessionStorage or fetch it
+            const storedRestaurant = sessionStorage.getItem('selectedRestaurant');
+            if (storedRestaurant) {
+                currentRestaurant = JSON.parse(storedRestaurant);
+                updateRestaurantInfo();
+            }
+
+            // Check location
+            await checkUserLocation(restaurantId);
+
+            // Load checklist template
+            await loadChecklistTemplate(restaurantId);
+        }
+
+        function updateRestaurantInfo() {
+            if (currentRestaurant) {
+                document.getElementById('restaurant-name').textContent = currentRestaurant.restaurant_name;
+                document.getElementById('restaurant-address').textContent = currentRestaurant.address || '';
+            }
+        }
+
+        async function checkUserLocation(restaurantId) {
+            const locationIcon = document.getElementById('location-icon');
+            const locationText = document.getElementById('location-text');
+            const locationDetails = document.getElementById('location-details');
+
+            try {
+                // Get user's current position
+                const position = await getCurrentPosition();
+                const { latitude, longitude } = position.coords;
+
+                locationIcon.textContent = '📍';
+                locationText.textContent = 'Validating location...';
+
+                // Validate location with server
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.validate_location', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        restaurant_id: restaurantId,
+                        user_latitude: latitude,
+                        user_longitude: longitude
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.message && result.message.success) {
+                    const validation = result.message;
+                    
+                    if (validation.is_within_range) {
+                        locationIcon.className = 'status-icon success';
+                        locationIcon.textContent = '✓';
+                        locationText.textContent = 'Location verified';
+                        locationDetails.textContent = `You are ${validation.distance}m from the restaurant (within ${validation.allowed_radius}m range)`;
+                        
+                        // Enable the form
+                        enableAuditForm();
+                    } else {
+                        locationIcon.className = 'status-icon error';
+                        locationIcon.textContent = '✗';
+                        locationText.textContent = 'Location verification failed';
+                        locationDetails.textContent = validation.message;
+                        
+                        showError('You must be at the restaurant location to perform an audit.');
+                    }
+                } else {
+                    throw new Error(result.message ? result.message.message : 'Location validation failed');
+                }
+            } catch (error) {
+                console.error('Location error:', error);
+                locationIcon.className = 'status-icon error';
+                locationIcon.textContent = '✗';
+                locationText.textContent = 'Location check failed';
+                locationDetails.textContent = error.message || 'Unable to verify location';
+                
+                showError('Location verification failed. Please ensure location services are enabled.');
+            }
+        }
+
+        function getCurrentPosition() {
+            return new Promise((resolve, reject) => {
+                if (!navigator.geolocation) {
+                    reject(new Error('Geolocation is not supported by this browser'));
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 60000
+                });
+            });
+        }
+
+        async function loadChecklistTemplate(restaurantId) {
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_checklist_template', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        restaurant_id: restaurantId
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.message && result.message.success) {
+                    checklistTemplate = result.message.template;
+                    renderAuditForm();
+                } else {
+                    throw new Error(result.message ? result.message.message : 'Failed to load checklist template');
+                }
+            } catch (error) {
+                console.error('Error loading checklist:', error);
+                showError(error.message || 'Failed to load audit checklist');
+            }
+        }
+
+        function renderAuditForm() {
+            const loading = document.getElementById('loading');
+            const auditForm = document.getElementById('audit-form');
+            const categoriesContainer = document.getElementById('categories-container');
+
+            loading.style.display = 'none';
+            auditForm.style.display = 'block';
+
+            categoriesContainer.innerHTML = '';
+
+            checklistTemplate.categories.forEach(category => {
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+
+                const categoryHeader = document.createElement('div');
+                categoryHeader.className = 'category-header';
+                categoryHeader.textContent = category.name;
+
+                const categoryContent = document.createElement('div');
+                categoryContent.className = 'category-content';
+
+                category.questions.forEach(question => {
+                    const questionDiv = document.createElement('div');
+                    questionDiv.className = 'question';
+
+                    const questionText = document.createElement('div');
+                    questionText.className = 'question-text';
+                    questionText.innerHTML = question.text + 
+                        (question.is_mandatory ? '<span class="question-required">*</span>' : '');
+
+                    const answerOptions = document.createElement('div');
+                    answerOptions.className = 'answer-options';
+
+                    // Render answer input based on question type
+                    if (question.answer_type === 'Yes/No') {
+                        answerOptions.innerHTML = `
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" name="q_${question.id}" value="Yes" id="q_${question.id}_yes">
+                                    <label for="q_${question.id}_yes">Yes</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" name="q_${question.id}" value="No" id="q_${question.id}_no">
+                                    <label for="q_${question.id}_no">No</label>
+                                </div>
+                            </div>
+                        `;
+                    } else if (question.answer_type === 'True/False') {
+                        answerOptions.innerHTML = `
+                            <div class="radio-group">
+                                <div class="radio-option">
+                                    <input type="radio" name="q_${question.id}" value="True" id="q_${question.id}_true">
+                                    <label for="q_${question.id}_true">True</label>
+                                </div>
+                                <div class="radio-option">
+                                    <input type="radio" name="q_${question.id}" value="False" id="q_${question.id}_false">
+                                    <label for="q_${question.id}_false">False</label>
+                                </div>
+                            </div>
+                        `;
+                    } else if (question.answer_type === 'Rating') {
+                        const options = question.options.length > 0 ? question.options : ['1', '2', '3', '4', '5'];
+                        const radioGroup = document.createElement('div');
+                        radioGroup.className = 'radio-group';
+                        
+                        options.forEach(option => {
+                            const optionDiv = document.createElement('div');
+                            optionDiv.className = 'radio-option';
+                            optionDiv.innerHTML = `
+                                <input type="radio" name="q_${question.id}" value="${option.trim()}" id="q_${question.id}_${option.trim()}">
+                                <label for="q_${question.id}_${option.trim()}">${option.trim()}</label>
+                            `;
+                            radioGroup.appendChild(optionDiv);
+                        });
+                        
+                        answerOptions.appendChild(radioGroup);
+                    } else if (question.answer_type === 'Text') {
+                        answerOptions.innerHTML = `
+                            <textarea class="text-input" name="q_${question.id}" placeholder="Enter your answer..."></textarea>
+                        `;
+                    }
+
+                    // Add comment field
+                    const commentInput = document.createElement('textarea');
+                    commentInput.className = 'comment-input';
+                    commentInput.placeholder = 'Add comments for this question...';
+                    commentInput.name = `comment_${question.id}`;
+
+                    // Add image upload if allowed
+                    let imageUpload = null;
+                    if (question.allow_image_upload) {
+                        imageUpload = document.createElement('div');
+                        imageUpload.className = 'image-upload';
+                        imageUpload.innerHTML = `
+                            <input type="file" accept="image/*" name="image_${question.id}" onchange="previewImage(this, '${question.id}')">
+                            <div id="preview_${question.id}"></div>
+                        `;
+                    }
+
+                    questionDiv.appendChild(questionText);
+                    questionDiv.appendChild(answerOptions);
+                    questionDiv.appendChild(commentInput);
+                    if (imageUpload) {
+                        questionDiv.appendChild(imageUpload);
+                    }
+
+                    categoryContent.appendChild(questionDiv);
+                });
+
+                categoryDiv.appendChild(categoryHeader);
+                categoryDiv.appendChild(categoryContent);
+                categoriesContainer.appendChild(categoryDiv);
+            });
+        }
+
+        function previewImage(input, questionId) {
+            const preview = document.getElementById(`preview_${questionId}`);
+            preview.innerHTML = '';
+
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'image-preview';
+                    preview.appendChild(img);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function enableAuditForm() {
+            document.getElementById('submit-btn').disabled = false;
+        }
+
+        async function submitAudit() {
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.textContent;
+            
+            try {
+                submitBtn.textContent = 'Submitting...';
+                submitBtn.disabled = true;
+
+                // Collect all answers
+                const answers = [];
+                
+                checklistTemplate.categories.forEach(category => {
+                    category.questions.forEach(question => {
+                        let answerValue = '';
+                        
+                        // Get answer based on question type
+                        if (['Yes/No', 'True/False', 'Rating'].includes(question.answer_type)) {
+                            const selectedRadio = document.querySelector(`input[name="q_${question.id}"]:checked`);
+                            answerValue = selectedRadio ? selectedRadio.value : '';
+                        } else if (question.answer_type === 'Text') {
+                            const textInput = document.querySelector(`textarea[name="q_${question.id}"]`);
+                            answerValue = textInput ? textInput.value : '';
+                        }
+
+                        // Get comment
+                        const commentInput = document.querySelector(`textarea[name="comment_${question.id}"]`);
+                        const answerComment = commentInput ? commentInput.value : '';
+
+                        // Check if mandatory question is answered
+                        if (question.is_mandatory && !answerValue) {
+                            throw new Error(`Please answer the required question: "${question.text}"`);
+                        }
+
+                        answers.push({
+                            question_id: question.id,
+                            answer_value: answerValue,
+                            answer_comment: answerComment
+                        });
+                    });
+                });
+
+                // Get overall comment
+                const overallComment = document.getElementById('overall-comment').value;
+
+                // Submit to server
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.submit_audit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        restaurant_id: currentRestaurant.name,
+                        answers: JSON.stringify(answers),
+                        overall_comment: overallComment
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.message && result.message.success) {
+                    alert('Audit submitted successfully!');
+                    window.location.href = '/audit-restaurants';
+                } else {
+                    throw new Error(result.message ? result.message.message : 'Failed to submit audit');
+                }
+            } catch (error) {
+                console.error('Submit error:', error);
+                alert(error.message || 'Failed to submit audit. Please try again.');
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/audit-restaurants';
+        }
+
+        function showError(message) {
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            
+            loading.style.display = 'none';
+            error.textContent = message;
+            error.style.display = 'block';
+        }
+    </script>
+</body>
+</html>
+

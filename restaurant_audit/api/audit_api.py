@@ -101,11 +101,14 @@ def get_checklist_template(restaurant_id):
         template_name = template[0] if isinstance(template, tuple) else template
         template_doc = frappe.get_doc("Checklist Template", template_name)
         
-        # Get categories for this template
+        # Get categories for this template, linked to the restaurant
         categories = frappe.get_list("Checklist Category", 
-                                   filters={"template": template_name},
+                                   filters={
+                                       "template": template_name,
+                                       "restaurant": restaurant_id
+                                   },
                                    fields=["name", "category_name"],
-                                   order_by="sort_order asc")
+                                   order_by="name asc") # Order by name for consistency
         
         # Structure the template data
         categories_data = []
@@ -115,7 +118,7 @@ def get_checklist_template(restaurant_id):
                                       filters={"category": category.name},
                                       fields=["name", "question_text", "answer_type", "options", 
                                              "allow_image_upload", "is_mandatory"],
-                                      order_by="sort_order asc")
+                                      order_by="name asc") # Order by name for consistency
             
             questions_data = []
             for question in questions:
@@ -124,8 +127,8 @@ def get_checklist_template(restaurant_id):
                     "text": question.question_text,
                     "answer_type": question.answer_type,
                     "options": question.options.split(",") if question.options else [],
-                    "allow_image_upload": question.allow_image_upload,
-                    "is_mandatory": question.is_mandatory
+                    "allow_image_upload": bool(question.allow_image_upload),
+                    "is_mandatory": bool(question.is_mandatory)
                 }
                 questions_data.append(question_data)
             

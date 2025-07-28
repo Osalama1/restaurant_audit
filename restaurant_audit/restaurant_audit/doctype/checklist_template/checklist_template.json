@@ -3,8 +3,7 @@
  "allow_rename": 1,
  "creation": "2025-07-28 12:51:23.238804",
  "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
+ "engine": "InnoDB" "field_order": [
   "template_name",
   "description",
   "applies_to_restaurant"
@@ -27,19 +26,7 @@
    "label": "Applies to Restaurant",
    "options": "Restaurant"
   }
- ],
- "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-07-28 12:51:49.366279",
- "modified_by": "Administrator",
- "module": "Restaurant Audit",
- "name": "Checklist Template",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
+ ],   "email": 1,
    "export": 1,
    "print": 1,
    "read": 1,

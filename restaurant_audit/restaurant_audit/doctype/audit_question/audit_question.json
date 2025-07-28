@@ -3,9 +3,7 @@
  "allow_rename": 1,
  "creation": "2025-07-28 12:55:33.587484",
  "doctype": "DocType",
- "editable_grid": 1,
- "engine": "InnoDB",
- "field_order": [
+ "edita "field_order": [
   "question_text",
   "answer_type",
   "options",
@@ -50,11 +48,7 @@
    "label": "Question Comment"
   }
  ],
- "index_web_pages_for_search": 1,
- "istable": 1,
- "links": [],
- "modified": "2025-07-28 12:56:34.848484",
- "modified_by": "Administrator",
+ "istable": 1, "Administrator",
  "module": "Restaurant Audit",
  "name": "Audit Question",
  "owner": "Administrator",

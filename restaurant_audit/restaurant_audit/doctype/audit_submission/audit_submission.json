@@ -1,0 +1,41 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-28 12:52:19.795804",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "submission_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "submission_name",
+   "fieldtype": "Data",
+   "label": "submission name"
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-07-28 12:52:52.909506",
+ "modified_by": "Administrator",
+ "module": "Restaurant Audit",
+ "name": "Audit Submission",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

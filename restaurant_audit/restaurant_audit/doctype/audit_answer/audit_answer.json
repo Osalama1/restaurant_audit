@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "question",
+  "question_text",
   "category",
   "answer_value",
   "answer_comment",
@@ -16,13 +17,15 @@
   {
    "fieldname": "question",
    "fieldtype": "Link",
-   "label": "Question",
-   "options": "Audit Question",
-   "reqd": 1
+   "hidden": 1,
+   "in_list_view": 1,
+   "label": "Question ID",
+   "options": "Audit Question"
   },
   {
    "fieldname": "category",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Category",
    "options": "Checklist Category",
    "reqd": 1
@@ -41,12 +44,18 @@
    "fieldname": "image_attachment",
    "fieldtype": "Attach",
    "label": "Image Attachment"
+  },
+  {
+   "fieldname": "question_text",
+   "fieldtype": "Small Text",
+   "label": "Question ",
+   "reqd": 1
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-28 12:57:49.701397",
+ "modified": "2025-08-01 13:53:23.745065",
  "modified_by": "Administrator",
  "module": "Restaurant Audit",
  "name": "Audit Answer",

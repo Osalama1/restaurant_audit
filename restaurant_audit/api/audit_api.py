@@ -3,44 +3,46 @@ from frappe import _
 from frappe.utils import now_datetime
 import json
 import math
+import base64
+
 
 @frappe.whitelist(allow_guest=True)
 def authenticate_user(email, password):
     """Authenticate user for restaurant audit system"""
     try:
-        # Check if user exists
         if not frappe.db.exists("User", email):
             return {
                 "success": False,
                 "message": "User not found"
             }
-        
-        # Check password
-        from frappe.auth import check_password
-        if check_password(email, password):
-            # Check if user has appropriate role (Employee or System Manager)
-            user_doc = frappe.get_doc("User", email)
-            user_roles = [role.role for role in user_doc.roles]
-            
-            if any(role in ["Employee", "System Manager", "Auditor"] for role in user_roles):
-                # Login the user
-                frappe.local.login_manager.login_as(email)
-                
-                return {
-                    "success": True,
-                    "user": email,
-                    "message": "Authentication successful"
-                }
-            else:
-                return {
-                    "success": False,
-                    "message": "User does not have required permissions"
-                }
-        else:
+
+        # Validate credentials and create session
+        from frappe.auth import LoginManager
+        login_manager = LoginManager()
+        login_manager.authenticate(email, password)
+        login_manager.post_login()
+
+        # Check roles
+        user_doc = frappe.get_doc("User", email)
+        user_roles = [role.role for role in user_doc.roles]
+
+        if not any(role in ["Employee", "System Manager", "Auditor"] for role in user_roles):
             return {
                 "success": False,
-                "message": "Invalid credentials"
+                "message": "User does not have required permissions"
             }
+
+        return {
+            "success": True,
+            "user": email,
+            "message": "Authentication successful"
+        }
+
+    except frappe.AuthenticationError as e:
+        return {
+            "success": False,
+            "message": "Invalid credentials"
+        }
     except Exception as e:
         frappe.log_error(f"Authentication error: {str(e)}")
         return {
@@ -50,20 +52,14 @@ def authenticate_user(email, password):
 
 @frappe.whitelist()
 def get_restaurants():
-    """Get list of restaurants assigned to current user"""
     try:
         current_user = frappe.session.user
-        
-        # Get employee record for current user
+
         employee = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
-        
+
         if not employee:
-            return {
-                "success": False,
-                "message": "No employee record found for current user"
-            }
-        
-        # Get restaurants assigned to this employee
+            return {"success": False, "message": "Employee not found"}
+
         restaurants = frappe.db.sql("""
             SELECT r.name, r.restaurant_name, r.address, 
                    r.latitude, r.longitude, r.location_radius
@@ -71,83 +67,80 @@ def get_restaurants():
             JOIN `tabRestaurant Employee` re ON re.parent = r.name
             WHERE re.employee = %s
         """, (employee,), as_dict=True)
-        
+
+
         return {
             "success": True,
             "restaurants": restaurants
         }
+
     except Exception as e:
-        frappe.log_error(f"Get restaurants error: {str(e)}")
+        frappe.log_error(f"Error in get_restaurants: {str(e)}")
         return {
             "success": False,
             "message": str(e)
         }
 
+
 @frappe.whitelist()
 def get_checklist_template(restaurant_id):
-    """Get checklist template for a specific restaurant"""
     try:
-        # Get the checklist template for the restaurant
-        template = frappe.db.get_value("Checklist Template", 
-                                       {"applies_to_restaurant": restaurant_id}, 
-                                       ["name", "template_name", "description"])
-        
-        if not template:
+        templates = frappe.get_all("Checklist Template",
+            filters={"applies_to_restaurant": restaurant_id},
+            fields=["name", "template_name", "description"]
+        )
+
+        if not templates:
             return {
-                "success": False,
-                "message": "No checklist template found for this restaurant"
+                "success": True,
+                "templates": []
             }
 
-        template_name = template[0] if isinstance(template, tuple) else template
-        template_doc = frappe.get_doc("Checklist Template", template_name)
+        all_templates = []
 
-        # Get categories for this template, linked to the restaurant
-        categories = frappe.get_list("Checklist Category", 
-                                     filters={
-                                         "template": template_name,
-                                         "restaurant": restaurant_id
-                                     },
-                                     fields=["name", "category_name"],
-                                     order_by="name asc")
+        for template in templates:
+            categories = frappe.get_list("Checklist Category",
+                filters={
+                    "template": template.name,
+                    "restaurant": restaurant_id
+                },
+                fields=["name", "category_name"],
+                order_by="name asc"
+            )
 
-        # Structure the template data
-        categories_data = []
-        for category in categories:
-            # Load the parent Checklist Category doc
-            category_doc = frappe.get_doc("Checklist Category", category.name)
+            categories_data = []
+            for category in categories:
+                category_doc = frappe.get_doc("Checklist Category", category.name)
+                questions_data = []
+                for question in category_doc.questions:
+                    questions_data.append({
+                        "id": question.name,
+                        "text": question.question_text,
+                        "answer_type": question.answer_type,
+                        "options": question.options.split(",") if question.options else [],
+                        "allow_image_upload": bool(question.allow_image_upload),
+                        "is_mandatory": bool(question.is_mandatory)
+                    })
+                categories_data.append({
+                    "id": category.name,
+                    "name": category.category_name,
+                    "questions": questions_data
+                })
 
-            # Access child table field (usually named 'questions')
-            questions_data = []
-            for question in category_doc.questions:
-                question_data = {
-                    "id": question.name,
-                    "text": question.question_text,
-                    "answer_type": question.answer_type,
-                    "options": question.options.split(",") if question.options else [],
-                    "allow_image_upload": bool(question.allow_image_upload),
-                    "is_mandatory": bool(question.is_mandatory)
-                }
-                questions_data.append(question_data)
-
-            category_data = {
-                "id": category.name,
-                "name": category.category_name,
-                "questions": questions_data
-            }
-            categories_data.append(category_data)
+            all_templates.append({
+                "id": template.name,
+                "name": template.template_name,
+                "description": template.description,
+                "categories": categories_data
+            })
 
         return {
             "success": True,
-            "template": {
-                "id": template_doc.name,
-                "name": template_doc.template_name,
-                "description": template_doc.description,
-                "categories": categories_data
-            }
+            "templates": all_templates
         }
 
     except Exception as e:
-        frappe.log_error(f"Get checklist template error: {str(e)}")
+        frappe.log_error(f"Checklist Load Error: {str(e)}")
         return {
             "success": False,
             "message": str(e)
@@ -209,11 +202,11 @@ def submit_audit(restaurant_id, answers, overall_comment=""):
     """Submit completed audit results"""
     try:
         current_user = frappe.session.user
-        
+
         # Parse answers if it's a string
         if isinstance(answers, str):
             answers = json.loads(answers)
-        
+
         # Create new Audit Submission
         audit_submission = frappe.new_doc("Audit Submission")
         audit_submission.restaurant = restaurant_id
@@ -221,30 +214,59 @@ def submit_audit(restaurant_id, answers, overall_comment=""):
         audit_submission.audit_date = now_datetime().date()
         audit_submission.audit_time = now_datetime().time()
         audit_submission.overall_comment = overall_comment
-        
+
         # Add answers to the submission
         for answer_data in answers:
             answer_row = audit_submission.append("answers", {})
-            answer_row.question = answer_data.get("question_id")
+            question_id = answer_data.get("question_id")
+            answer_row.question = question_id
+
+            # Load question text from the Question child table
+            question_text = frappe.db.get_value("Audit Question", question_id, "question_text")
+            answer_row.question_text = question_text or ""
             answer_row.answer_value = answer_data.get("answer_value")
             answer_row.answer_comment = answer_data.get("answer_comment", "")
-            answer_row.category = answer_data.get("category") 
-            
+            answer_row.category = answer_data.get("category")
+
             # Handle image attachment if provided
             if answer_data.get("image_data"):
-                # TODO: Process and save image attachment
-                # This would involve saving the base64 image data as a file
-                pass
-        
+                try:
+                    import base64
+
+                    # Decode base64 image
+                    image_base64 = answer_data["image_data"]
+                    image_content = base64.b64decode(image_base64.split(",")[-1])  # remove data:image/png;base64, etc
+
+                    # Generate unique file name
+                    filename = f"{frappe.generate_hash(length=10)}.jpg"
+
+                    # Save file using frappe's file API
+                    _file = frappe.get_doc({
+                        "doctype": "File",
+                        "file_name": filename,
+                        "content": image_content,
+                        "attached_to_doctype": "Audit Submission",
+                        "attached_to_name": audit_submission.name,
+                        "is_private": 0
+                    })
+                    _file.save(ignore_permissions=True)
+
+                    # Store file URL in the answer row
+                    answer_row.image_attachment = _file.file_url
+
+                except Exception as img_err:
+                    frappe.log_error(f"Error saving image: {str(img_err)}")
+
         # Save the audit submission
         audit_submission.insert()
         frappe.db.commit()
-        
+
         return {
             "success": True,
             "submission_id": audit_submission.name,
             "message": "Audit submitted successfully"
         }
+
     except Exception as e:
         frappe.db.rollback()
         frappe.log_error(f"Submit audit error: {str(e)}")
@@ -253,39 +275,23 @@ def submit_audit(restaurant_id, answers, overall_comment=""):
             "message": str(e)
         }
 
-@frappe.whitelist()
+# In get_audit_history()
 def get_audit_history(restaurant_id=None):
-    """Get audit history for restaurants"""
-    try:
-        current_user = frappe.session.user
-        
-        # Get employee record for current user
-        employee = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
-        
-        filters = {"auditor": current_user}
-        if restaurant_id:
-            filters["restaurant"] = restaurant_id
-        
-        # Get audit submissions
-        submissions = frappe.get_list("Audit Submission",
-                                    filters=filters,
-                                    fields=["name", "restaurant", "audit_date", "audit_time", "overall_comment"],
-                                    order_by="audit_date desc, audit_time desc")
-        
-        # Get restaurant names
-        for submission in submissions:
-            restaurant_name = frappe.db.get_value("Restaurant", submission.restaurant, "restaurant_name")
-            submission["restaurant_name"] = restaurant_name
-        
-        return {
-            "success": True,
-            "submissions": submissions
-        }
-    except Exception as e:
-        frappe.log_error(f"Get audit history error: {str(e)}")
-        return {
-            "success": False,
-            "message": str(e)
-        }
-
-
+    # ...
+    submissions = frappe.get_list("Audit Submission",
+        filters=filters,
+        fields=[
+            "name", 
+            "restaurant", 
+            "audit_date", 
+            "audit_time", 
+            "overall_comment",
+            "restaurant_name" # Use this instead of the loop
+        ],
+        order_by="audit_date desc, audit_time desc"
+    )
+    # The loop to get restaurant_name is no longer needed.
+    return {
+        "success": True,
+        "submissions": submissions
+    }

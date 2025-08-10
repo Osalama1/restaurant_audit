@@ -17,12 +17,14 @@
   {
    "fieldname": "question_text",
    "fieldtype": "Text",
+   "in_list_view": 1,
    "label": "Question Text",
    "reqd": 1
   },
   {
    "fieldname": "answer_type",
    "fieldtype": "Select",
+   "in_list_view": 1,
    "label": "Answer Type",
    "options": "Yes/No\nTrue/False\nRating\nText\nImage",
    "reqd": 1
@@ -50,31 +52,16 @@
    "label": "Question Comment"
   }
  ],
- 
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-28 12:56:34.848484",
+ "modified": "2025-08-01 12:41:11.447054",
  "modified_by": "Administrator",
  "module": "Restaurant Audit",
  "name": "Audit Question",
  "owner": "Administrator",
- "permissions": [
-    {
-        "role": "Auditor",
-      "read": 1,
-      "write": 1,
-      "create": 1,
-      "delete": 1,
-      "email": 1,
-      "export": 1,
-      "print": 1,
-      "report": 1,
-      "share": 1
-    }
- ],
+ "permissions": [],
  "sort_field": "modified",
  "sort_order": "DESC",
  "states": []
 }
-

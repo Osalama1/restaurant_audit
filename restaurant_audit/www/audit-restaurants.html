@@ -208,14 +208,19 @@
             const emptyState = document.getElementById('empty-state');
 
             try {
+           
                 const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_restaurants', {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+        'Expect': '' // Add this line
+    },
+    credentials: 'include'
+});
 
                 const result = await response.json();
+        console.log("API response:", result);
+
 
                 if (result.message && result.message.success) {
                     const restaurants = result.message.restaurants;

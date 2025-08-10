@@ -1,10 +1,12 @@
 {
  "actions": [],
  "allow_rename": 1,
+ "autoname": "naming_series:naming_series",
  "creation": "2025-07-28 12:52:19.795804",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
+  "naming_series",
   "restaurant",
   "auditor",
   "audit_date",
@@ -17,6 +19,7 @@
   {
    "fieldname": "restaurant",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Restaurant",
    "options": "Restaurant",
    "reqd": 1
@@ -24,6 +27,7 @@
   {
    "fieldname": "auditor",
    "fieldtype": "Link",
+   "in_list_view": 1,
    "label": "Auditor",
    "options": "User",
    "reqd": 1
@@ -31,12 +35,14 @@
   {
    "fieldname": "audit_date",
    "fieldtype": "Date",
+   "in_list_view": 1,
    "label": "Audit Date",
    "reqd": 1
   },
   {
    "fieldname": "audit_time",
    "fieldtype": "Time",
+   "in_list_view": 1,
    "label": "Audit Time",
    "reqd": 1
   },
@@ -55,14 +61,22 @@
    "fieldtype": "Table",
    "label": "Answers",
    "options": "Audit Answer"
+  },
+  {
+   "default": "{restaurant}.-.MM.-.YYYY.-.####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "name",
+   "options": "{restaurant}.-.MM.-.YYYY.-.####"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-28 12:52:52.909506",
+ "modified": "2025-08-01 12:36:30.268674",
  "modified_by": "Administrator",
  "module": "Restaurant Audit",
  "name": "Audit Submission",
+ "naming_rule": "By \"Naming Series\" field",
  "owner": "Administrator",
  "permissions": [
   {
@@ -78,7 +92,9 @@
    "write": 1
   }
  ],
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "auditor"
 }

@@ -152,66 +152,61 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const loginForm = document.getElementById('login-form');
             const loginBtn = document.getElementById('login-btn');
             const btnText = document.querySelector('.btn-text');
             const errorMessage = document.getElementById('error-message');
             const successMessage = document.getElementById('success-message');
-            
-            loginForm.addEventListener('submit', async function(e) {
+        
+            loginForm.addEventListener('submit', async function (e) {
                 e.preventDefault();
-                
-                const email = document.getElementById('email').value;
+        
+                const email = document.getElementById('email').value.trim();
                 const password = document.getElementById('password').value;
-                
+        
                 // Show loading state
                 btnText.textContent = 'Logging in...';
                 loginBtn.disabled = true;
                 errorMessage.style.display = 'none';
                 successMessage.style.display = 'none';
-                
+        
                 try {
-                    const response = await fetch('/api/method/restaurant_audit.api.audit_api.authenticate_user', {
+                    const response = await fetch('/api/method/login', {
                         method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json',
+                            'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: JSON.stringify({
-                            email: email,
-                            password: password
-                        })
+                        credentials: 'include',
+                        body: `usr=${encodeURIComponent(email)}&pwd=${encodeURIComponent(password)}`
                     });
-                    
+        
                     const result = await response.json();
-                    
-                    if (result.message && result.message.success) {
-                        // Show success message
+                    console.log("Login result:", result);
+        
+                    if (result.message === 'Logged In') {
                         successMessage.textContent = 'Login successful! Redirecting...';
                         successMessage.style.display = 'block';
-                        
-                        // Redirect to restaurant selection page
+        
                         setTimeout(() => {
                             window.location.href = '/audit-restaurants';
                         }, 1000);
                     } else {
-                        // Show error message
-                        const errorMsg = result.message ? result.message.message : 'Login failed';
-                        errorMessage.textContent = errorMsg;
+                        errorMessage.textContent = 'Login failed. Please check your credentials.';
                         errorMessage.style.display = 'block';
                     }
                 } catch (error) {
                     console.error('Login error:', error);
-                    errorMessage.textContent = 'An error occurred. Please try again.';
+                    errorMessage.textContent = 'An unexpected error occurred. Please try again.';
                     errorMessage.style.display = 'block';
                 } finally {
-                    // Reset button state
                     btnText.textContent = 'Login';
                     loginBtn.disabled = false;
                 }
             });
         });
-    </script>
+        </script>
+        
 </body>
 </html>
 

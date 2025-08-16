@@ -4,88 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Audit | Simplex</title>
-    <style>
-        :root {
-            --primary-color: #6a5acd; --secondary-color: #f0f2f5; --text-color: #333;
-            --success-color: #28a745; --error-color: #dc3545; --white-color: #fff;
-            --border-color: #e0e0e0; --star-color: #fadb14; --shadow: 0 4px 12px rgba(0,0,0,0.08);
-        }
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background-color: var(--secondary-color); color: var(--text-color); }
-
-        .header { background-color: var(--white-color); box-shadow: 0 2px 4px rgba(0,0,0,0.05); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
-        .header-left { display: flex; align-items: center; gap: 1rem; }
-        .back-btn { background: #e9ecef; color: #495057; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-        .submit-btn { background: var(--primary-color); color: var(--white-color); border:none; padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; transition: all 0.2s ease; }
-        .submit-btn:disabled { background-color: #ced4da; cursor: not-allowed; }
-        .restaurant-info h1 { font-size: 1.1rem; font-weight: 600; margin: 0; }
-
-        .container { max-width: 900px; margin: 1.5rem auto; padding: 0 1.5rem; }
-        .card { background: var(--white-color); border-radius: 12px; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: var(--shadow); }
-        .location-status { display: flex; align-items: center; gap: 0.8rem; font-weight: 500; }
-        .status-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: var(--white-color); font-size: 14px; }
-        .status-icon.success { background: var(--success-color); } .status-icon.error { background: var(--error-color); } .status-icon.loading { background: #ffc107; }
-
-        /* Dashboard */
-        .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; text-align: center; }
-        .progress-card h3 { margin-bottom: 1rem; color: #6c757d; font-weight: 500; font-size: 1rem; }
-        .progress-circle-container { position: relative; width: 120px; height: 120px; margin: 0 auto; }
-        .progress-circle { transform: rotate(-90deg); }
-        .progress-circle-bg { stroke: #e9ecef; stroke-width: 10; fill: none; }
-        .progress-circle-fg { stroke: var(--primary-color); stroke-width: 10; fill: none; stroke-linecap: round; transition: all 0.5s ease; }
-        .progress-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 1.8rem; font-weight: 700; }
-
-        /* New Main Layout */
-        .main-layout {
-            display: grid;
-            grid-template-columns: 2fr 1fr;
-            gap: 1.5rem;
-            align-items: flex-start;
-        }
-        .main-layout h2 { margin-bottom: 1rem; font-weight: 600; }
-
-        /* Category Grid */
-        .category-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 1.5rem; }
-        .category-tag { background: var(--white-color); border-radius: 12px; padding: 1.5rem 1rem; box-shadow: var(--shadow); cursor: pointer; transition: all 0.2s ease; text-align: center; border: 2px solid transparent; }
-        .category-tag:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
-        .category-tag.completed { border-color: var(--success-color); background-color: #f0fff4; }
-        .category-tag .icon { font-size: 2.5rem; margin-bottom: 0.5rem; }
-        .category-tag h4 { font-weight: 600; font-size: 1rem; }
-        .category-tag .status { font-size: 0.8rem; color: var(--error-color); font-weight: 500; }
-        .category-tag.completed .status { color: var(--success-color); }
-        .overall-comment .text-input { height: 100%; min-height: 200px; }
-
-        /* Chat Modal */
-        .chat-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); display: none; align-items: center; justify-content: center; z-index: 2000; backdrop-filter: blur(5px); }
-        .chat-container { width: 90%; max-width: 500px; height: 85%; max-height: 700px; display: flex; flex-direction: column; background: var(--white-color); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transform: scale(0.95); opacity: 0; transition: all 0.3s ease; }
-        .chat-modal.active .chat-container { transform: scale(1); opacity: 1; }
-        .chat-header { padding: 1rem; background: var(--primary-color); color: var(--white-color); border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; align-items: center; }
-        .close-chat { background: none; border: none; color: var(--white-color); font-size: 1.5rem; cursor: pointer; }
-        .chat-messages { flex-grow: 1; padding: 1rem; overflow-y: auto; display: flex; flex-direction: column; gap: 0.8rem; }
-        .message { max-width: 80%; padding: 0.6rem 1rem; border-radius: 18px; line-height: 1.4; }
-        .bot-message { background: #f1f0f0; color: #333; align-self: flex-start; border-bottom-left-radius: 4px; }
-        .user-message { background: var(--primary-color); color: var(--white-color); align-self: flex-end; border-bottom-right-radius: 4px; }
-        .typing-indicator { align-self: flex-start; padding: 0.6rem 1rem; }
-        .typing-indicator span { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #ccc; margin: 0 2px; animation: bounce 1s infinite; }
-        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
-        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1.0); } }
-        .chat-input { padding: 1rem; border-top: 1px solid #ddd; background: #f8f9fa; }
-        .answer-options { display: flex; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
-        .answer-btn { background: var(--white-color); color: var(--primary-color); border: 1px solid var(--primary-color); padding: 0.6rem 1rem; border-radius: 18px; cursor: pointer; font-weight: 500; }
-        .answer-btn.star-btn { font-size: 1.2rem; }
-        .loading, .error { text-align: center; padding: 2rem; font-weight: 500; }
-        .error { background-color: #fff0f0; color: var(--error-color); border-radius: 8px; }
-
-        @media (max-width: 768px) {
-            .dashboard { grid-template-columns: 1fr; }
-            .main-layout { grid-template-columns: 1fr; }
-            .container, .header { padding: 0 1rem; margin-top: 1rem; }
-            .header { padding: 0.8rem 1rem; }
-            .category-grid { grid-template-columns: 1fr 1fr; gap: 1rem; }
-            .category-tag { padding: 1rem; }
-        }
-    </style>
+    <link rel="stylesheet" href="/assets/restaurant_audit/css/audit-form.css">
 </head>
 <body>
     <div class="header">
@@ -128,15 +47,13 @@
             </div>
             
             <div class="main-layout">
-                <div class="audit-sections">
+                <div class="audit-sections card">
                     <h2>Audit Sections</h2>
                     <div class="category-grid" id="category-grid"></div>
                 </div>
-                <div class="overall-comment">
+                <div class="overall-comment card">
                      <h2>Overall Comments</h2>
-                    <div class="card" style="padding: 0; margin-bottom: 0;">
-                        <textarea id="overall-comment" class="text-input" placeholder="Add any overall comments..." rows="4" style="height: 100%; border: none; min-height: 200px;"></textarea>
-                    </div>
+                     <textarea id="overall-comment" class="text-input" placeholder="Add any overall comments..." rows="4"></textarea>
                 </div>
             </div>
         </div>
@@ -156,22 +73,18 @@
     </div>
 
     <script>
-        // --- GLOBAL STATE ---
+        // --- All of your JavaScript code remains here ---
         let currentRestaurant = null;
-        let auditData = {
-            categories: [],
-            answers: {}
-        };
+        let auditData = { categories: [], answers: {} };
         let totalQuestions = 0;
-
-        // --- CHAT MODAL STATE ---
         const chatModal = document.getElementById('chat-modal');
         const chatMessages = document.getElementById('chat-messages');
         const answerOptions = document.getElementById('answer-options');
         let currentCategory = null;
         let questionQueue = [];
+        let followUpQueue = [];
+        let currentQuestion = null;
 
-        // --- INITIALIZATION ---
         document.addEventListener('DOMContentLoaded', initializeAuditForm);
 
         async function initializeAuditForm() {
@@ -179,281 +92,123 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const restaurantId = urlParams.get('restaurant');
                 if (!restaurantId) throw new Error('No restaurant selected.');
-
                 const storedRestaurant = sessionStorage.getItem('selectedRestaurant');
                 if (storedRestaurant) {
                     currentRestaurant = JSON.parse(storedRestaurant);
                     document.getElementById('restaurant-name').textContent = currentRestaurant.restaurant_name;
                 }
-                
                 await checkUserLocation(restaurantId);
                 await loadChecklistTemplate(restaurantId);
-
             } catch (error) {
                 showError(error.message);
             }
         }
 
-        // --- DATA FETCHING & STATE MANAGEMENT ---
         async function loadChecklistTemplate(restaurantId) {
             const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_checklist_template', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ restaurant_id: restaurantId })
             });
-
             if (!response.ok) throw new Error(`Server error: ${response.status}`);
             const result = await response.json();
             if (!result.message?.success) throw new Error(result.message?.message || 'Failed to load checklist.');
-            
             const icons = ["🧼", "🍳", "😊", "🔥", "📋", "📦", " hygiene", "temperature"];
-            
-            // **FIX**: Process ALL templates and their categories, not just the first one.
-            auditData.categories = result.message.templates.flatMap((template, templateIndex) => 
-                template.categories.map((cat, catIndex) => ({
-                    id: cat.id, // Use the ID from the backend
+            auditData.categories = result.message.templates.flatMap((template, tIndex) => 
+                template.categories.map((cat, cIndex) => ({
+                    id: cat.id,
                     name: cat.name,
-                    icon: icons[(templateIndex + catIndex) % icons.length],
+                    icon: icons[(tIndex + cIndex) % icons.length],
                     questions: cat.questions.map(q => ({
-                        id: q.id,
-                        text: q.text,
-                        type: q.answer_type,
-                        is_mandatory: q.is_mandatory
+                        id: q.id, text: q.text, type: q.answer_type,
+                        is_mandatory: q.is_mandatory, allow_image_upload: q.allow_image_upload
                     })),
                     completed: false
                 }))
             );
-
             totalQuestions = auditData.categories.reduce((acc, cat) => acc + cat.questions.length, 0);
-
             document.getElementById('loading').style.display = 'none';
             document.getElementById('audit-interface').style.display = 'block';
             renderCategoryGrid();
             updateDashboard();
         }
-        
-        // --- (All other JavaScript functions remain the same as the previous dynamic version) ---
-        // (Copying the rest of the JS for a complete, working file)
 
-        function renderCategoryGrid() {
-            const grid = document.getElementById('category-grid');
-            grid.innerHTML = '';
-            auditData.categories.forEach(cat => {
-                const tag = document.createElement('div');
-                tag.className = `category-tag ${cat.completed ? 'completed' : ''}`;
-                tag.dataset.categoryId = cat.id;
-                tag.innerHTML = `
-                    <div class="icon">${cat.icon}</div>
-                    <h4>${cat.name}</h4>
-                    <div class="status">${cat.completed ? 'Complete' : 'Pending'}</div>`;
-                grid.appendChild(tag);
-            });
-        }
+        function renderCategoryGrid() { const grid = document.getElementById('category-grid'); grid.innerHTML = ''; auditData.categories.forEach(cat => { const tag = document.createElement('div'); tag.className = `category-tag ${cat.completed ? 'completed' : ''}`; tag.dataset.categoryId = cat.id; tag.innerHTML = `<div class="icon">${cat.icon}</div><h4>${cat.name}</h4><div class="status">${cat.completed ? 'Complete' : 'Pending'}</div>`; grid.appendChild(tag); }); }
+        function updateDashboard() { const answeredCount = Object.keys(auditData.answers).length; const completion = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0; document.getElementById('completion-text').textContent = `${completion}%`; document.getElementById('completion-circle').style.strokeDashoffset = 100 - completion; let totalScore = 0; let maxScore = 0; Object.values(auditData.answers).forEach(ans => { maxScore += 5; totalScore += ans.score; }); const scorePercentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0; const scoreCircle = document.getElementById('score-circle'); document.getElementById('score-text').textContent = scorePercentage; scoreCircle.style.strokeDashoffset = 100 - scorePercentage; scoreCircle.style.stroke = scorePercentage < 50 ? 'var(--error-color)' : scorePercentage < 80 ? 'var(--star-color)' : 'var(--success-color)'; document.getElementById('submit-btn').disabled = completion < 100; }
 
-        function updateDashboard() {
-            const answeredCount = Object.keys(auditData.answers).length;
-            const completion = totalQuestions > 0 ? Math.round((answeredCount / totalQuestions) * 100) : 0;
-            document.getElementById('completion-text').textContent = `${completion}%`;
-            document.getElementById('completion-circle').style.strokeDashoffset = 100 - completion;
+        function openChat(categoryId) { currentCategory = auditData.categories.find(c => c.id === categoryId); if (!currentCategory) return; questionQueue = [...currentCategory.questions]; document.getElementById('chat-title').textContent = currentCategory.name + " Audit"; chatMessages.innerHTML = ''; chatModal.style.display = 'flex'; setTimeout(() => chatModal.classList.add('active'), 10); processNextInQueue(); }
+        function closeChat() { const isCategoryComplete = currentCategory.questions.every(q => auditData.answers[q.id]); if(isCategoryComplete) currentCategory.completed = true; chatModal.classList.remove('active'); setTimeout(() => chatModal.style.display = 'none', 300); updateDashboard(); renderCategoryGrid(); }
 
-            let totalScore = 0; let maxScore = 0;
-            Object.values(auditData.answers).forEach(ans => {
-                maxScore += 5;
-                totalScore += ans.score;
-            });
-            
-            const scorePercentage = maxScore > 0 ? Math.round((totalScore / maxScore) * 100) : 0;
-            const scoreCircle = document.getElementById('score-circle');
-            document.getElementById('score-text').textContent = scorePercentage;
-            scoreCircle.style.strokeDashoffset = 100 - scorePercentage;
-            scoreCircle.style.stroke = scorePercentage < 50 ? 'var(--error-color)' : scorePercentage < 80 ? 'var(--star-color)' : 'var(--success-color)';
-            
-            document.getElementById('submit-btn').disabled = completion < 100;
-        }
-
-        function openChat(categoryId) {
-            currentCategory = auditData.categories.find(c => c.id === categoryId);
-            if (!currentCategory) return;
-            questionQueue = [...currentCategory.questions];
-            document.getElementById('chat-title').textContent = currentCategory.name + " Audit";
-            chatMessages.innerHTML = '';
-            chatModal.style.display = 'flex';
-            setTimeout(() => chatModal.classList.add('active'), 10);
-            askNextQuestion();
-        }
-
-        function closeChat() {
-            const isCategoryComplete = currentCategory.questions.every(q => auditData.answers[q.id]);
-            if(isCategoryComplete) currentCategory.completed = true;
-
-            chatModal.classList.remove('active');
-            setTimeout(() => chatModal.style.display = 'none', 300);
-            updateDashboard();
-            renderCategoryGrid();
-        }
-
-        function askNextQuestion() {
-            if (questionQueue.length === 0) {
+        function processNextInQueue() {
+            if (followUpQueue.length > 0) {
+                const followUp = followUpQueue.shift();
+                askFollowUpQuestion(followUp);
+            } else if (questionQueue.length > 0) {
+                const question = questionQueue.shift();
+                if (auditData.answers[question.id]) { processNextInQueue(); return; }
+                currentQuestion = question;
+                askMainQuestion(question);
+            } else {
                 addMessage("Section complete! Great job.", "bot");
                 setTimeout(closeChat, 1500);
-                return;
             }
-            const question = questionQueue[0];
-            if(auditData.answers[question.id]) {
-                questionQueue.shift();
-                askNextQuestion();
-                return;
-            }
-
-            const indicator = showTypingIndicator();
-            setTimeout(() => {
-                indicator.remove();
-                addMessage(question.text, "bot");
-                renderAnswerOptions(question);
-            }, 1000);
         }
 
+        function askMainQuestion(question) { const indicator = showTypingIndicator(); setTimeout(() => { indicator.remove(); addMessage(question.text, "bot"); renderAnswerOptions(question); }, 1000); }
         function renderAnswerOptions(question) {
             answerOptions.innerHTML = '';
             let options = [];
-            if (question.type === 'Yes/No') {
-                options = [{ text: 'Yes', score: 5 }, { text: 'No', score: 1 }];
-            } else if (question.type === 'Rating') {
-                options = [
-                    { text: '⭐', score: 1 }, { text: '⭐⭐', score: 2 }, { text: '⭐⭐⭐', score: 3 },
-                    { text: '⭐⭐⭐⭐', score: 4 }, { text: '⭐⭐⭐⭐⭐', score: 5 }
-                ];
-            } else if (question.type === 'Text') {
-                 const textInput = document.createElement('textarea');
-                 textInput.placeholder = "Type your answer and press Enter...";
-                 textInput.rows = 3;
-                 textInput.className = "text-input";
-                 textInput.onkeydown = (e) => { 
-                    if(e.key === 'Enter' && !e.shiftKey) { 
-                        e.preventDefault();
-                        handleAnswer(question, { text: textInput.value, score: 0 }); // Score 0 for text answers
-                    }
-                };
-                 answerOptions.appendChild(textInput);
-                 textInput.focus();
-                 return;
-            }
-            options.forEach(opt => {
-                const btn = document.createElement('button');
-                btn.className = `answer-btn ${question.type === 'Rating' ? 'star-btn' : ''}`;
-                btn.innerHTML = opt.text;
-                btn.onclick = () => handleAnswer(question, opt);
-                answerOptions.appendChild(btn);
-            });
+            if (question.type === 'Yes/No') { options = [{ text: 'Yes', score: 5 }, { text: 'No', score: 1 }]; }
+            else if (question.type === 'Rating') { options = [...Array(5)].map((_, i) => ({ text: '⭐'.repeat(i + 1), score: i + 1 })); }
+            else if (question.type === 'Text') { const textInput = document.createElement('textarea'); textInput.placeholder = "Type your answer and press Enter..."; textInput.className = "chat-textarea"; textInput.onkeydown = e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleAnswer(question, { text: e.target.value, score: 0 }); } }; answerOptions.appendChild(textInput); textInput.focus(); return; }
+            options.forEach(opt => { const btn = document.createElement('button'); btn.className = `answer-btn ${question.type === 'Rating' ? 'star-btn' : ''}`; btn.innerHTML = opt.text; btn.onclick = () => handleAnswer(question, opt); answerOptions.appendChild(btn); });
         }
+        function handleAnswer(question, answer) { addMessage(answer.text, 'user'); auditData.answers[question.id] = { score: answer.score, value: answer.text, comment: "", image_data: "" }; answerOptions.innerHTML = ''; if (question.allow_image_upload) followUpQueue.push({ type: 'image', forQuestionId: question.id }); followUpQueue.push({ type: 'comment', forQuestionId: question.id }); processNextInQueue(); }
         
-        function handleAnswer(question, answer) {
-            addMessage(answer.text, 'user');
-            auditData.answers[question.id] = {
-                score: answer.score,
-                value: answer.text,
-                comment: "",
-                image_data: ""
-            };
-            questionQueue.shift();
+        function askFollowUpQuestion(followUp) {
+            addMessage(followUp.type === 'image' ? "Would you like to add a photo?" : "Any comments for this question?", "bot");
             answerOptions.innerHTML = '';
-            askNextQuestion();
-        }
-
-        function addMessage(text, sender) {
-            const messageDiv = document.createElement('div');
-            messageDiv.className = `message ${sender}-message`;
-            messageDiv.innerHTML = text;
-            chatMessages.appendChild(messageDiv);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        }
-
-        function showTypingIndicator() {
-            const indicator = document.createElement('div');
-            indicator.className = 'typing-indicator';
-            indicator.innerHTML = '<span></span><span></span><span></span>';
-            chatMessages.appendChild(indicator);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-            return indicator;
-        }
-
-        async function submitAudit() {
-            const submitBtn = document.getElementById('submit-btn');
-            submitBtn.textContent = 'Submitting...';
-            submitBtn.disabled = true;
-            try {
-                const formattedAnswers = Object.entries(auditData.answers).map(([qid, ans]) => ({
-                    question_id: qid,
-                    answer_value: ans.value,
-                    answer_comment: ans.comment,
-                    image_data: ans.image_data,
-                    // Find the original category ID for the question
-                    category: auditData.categories.find(cat => cat.questions.some(q => q.id === qid))?.id
-                }));
-
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.submit_audit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        restaurant_id: currentRestaurant.name,
-                        answers: JSON.stringify(formattedAnswers),
-                        overall_comment: document.getElementById('overall-comment').value
-                    })
-                });
-                if (!response.ok) throw new Error(`Submit failed with status: ${response.status}`);
-                const result = await response.json();
-                if (!result.message?.success) throw new Error(result.message?.message || 'Failed to submit audit.');
-                alert('Audit submitted successfully!');
-                window.location.href = '/audit-restaurants';
-            } catch (error) {
-                alert(`Error: ${error.message}`);
-                submitBtn.textContent = 'Submit Audit';
-                submitBtn.disabled = false;
+            
+            const container = document.createElement('div');
+            container.className = 'follow-up-container';
+            
+            if (followUp.type === 'image') {
+                const fileInput = document.createElement('input');
+                fileInput.type = 'file'; fileInput.accept = 'image/*';
+                fileInput.className = 'chat-file-input';
+                fileInput.onchange = e => handleImageFollowUp(followUp, e.target.files[0]);
+                container.appendChild(fileInput);
+            } else {
+                const textInput = document.createElement('textarea');
+                textInput.placeholder = "Type comment and press Enter...";
+                textInput.className = "chat-textarea";
+                textInput.onkeydown = e => { if(e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleCommentFollowUp(followUp, e.target.value); }};
+                container.appendChild(textInput);
+                textInput.focus();
             }
+            const skipBtn = document.createElement('button');
+            skipBtn.className = 'answer-btn skip-btn';
+            skipBtn.textContent = "Skip";
+            skipBtn.onclick = () => { answerOptions.innerHTML = ''; processNextInQueue(); };
+            container.appendChild(skipBtn);
+            answerOptions.appendChild(container);
         }
+
+        async function handleImageFollowUp(followUp, file) { if (!file) { processNextInQueue(); return; } addMessage("Image selected.", 'user'); auditData.answers[followUp.forQuestionId].image_data = await toBase64(file); answerOptions.innerHTML = ''; processNextInQueue(); }
+        function handleCommentFollowUp(followUp, comment) { if (!comment) { processNextInQueue(); return; } addMessage(comment, 'user'); auditData.answers[followUp.forQuestionId].comment = comment; answerOptions.innerHTML = ''; processNextInQueue(); }
         
+        function addMessage(text, sender) { const messageDiv = document.createElement('div'); messageDiv.className = `message ${sender}-message`; messageDiv.innerHTML = text; chatMessages.appendChild(messageDiv); chatMessages.scrollTop = chatMessages.scrollHeight; }
+        function showTypingIndicator() { const indicator = document.createElement('div'); indicator.className = 'typing-indicator'; indicator.innerHTML = '<span></span><span></span><span></span>'; chatMessages.appendChild(indicator); chatMessages.scrollTop = chatMessages.scrollHeight; return indicator; }
+        
+        async function submitAudit() { const submitBtn = document.getElementById('submit-btn'); submitBtn.textContent = 'Submitting...'; submitBtn.disabled = true; try { const formattedAnswers = Object.entries(auditData.answers).map(([qid, ans]) => ({ question_id: qid, answer_value: ans.value, answer_comment: ans.comment, image_data: ans.image_data, category: auditData.categories.find(cat => cat.questions.some(q => q.id === qid))?.id })); const response = await fetch('/api/method/restaurant_audit.api.audit_api.submit_audit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ restaurant_id: currentRestaurant.name, answers: JSON.stringify(formattedAnswers), overall_comment: document.getElementById('overall-comment').value }) }); if (!response.ok) throw new Error(`Submit failed with status: ${response.status}`); const result = await response.json(); if (!result.message?.success) throw new Error(result.message?.message || 'Failed to submit audit.'); alert('Audit submitted successfully!'); window.location.href = '/audit-restaurants'; } catch (error) { alert(`Error: ${error.message}`); submitBtn.textContent = 'Submit Audit'; submitBtn.disabled = false; } }
         function goBack() { window.location.href = '/audit-restaurants'; }
-        function showError(message) {
-            document.getElementById('loading').style.display = 'none';
-            const errorDiv = document.getElementById('error');
-            errorDiv.textContent = message;
-            errorDiv.style.display = 'block';
-        }
-
-        async function checkUserLocation(restaurantId) {
-            const locationIcon = document.getElementById('location-icon');
-            const locationText = document.getElementById('location-text');
-            try {
-                const position = await getCurrentPosition();
-                const { latitude, longitude } = position.coords;
-                locationIcon.textContent = '📍';
-                locationText.textContent = 'Validating location...';
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.validate_location', {
-                    method: 'POST', headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ restaurant_id: restaurantId, user_latitude: latitude, user_longitude: longitude })
-                });
-                if (!response.ok) throw new Error(`Server error: ${response.status}`);
-                const result = await response.json();
-                if (result?.message?.success) {
-                    const validation = result.message;
-                    if (validation.is_within_range) {
-                        locationIcon.className = 'status-icon success'; locationIcon.textContent = '✓';
-                        locationText.textContent = 'Location Verified';
-                    } else { throw new Error(validation.message || 'You are not at the restaurant location.'); }
-                } else { throw new Error(result?.message?.message || 'Location validation failed.'); }
-            } catch (error) {
-                console.error("Location check failed:", error);
-                locationIcon.className = 'status-icon error'; locationIcon.textContent = '✗';
-                locationText.textContent = 'Location Check Failed';
-            }
-        }
-        function getCurrentPosition() {
-            return new Promise((resolve, reject) => {
-                if (!navigator.geolocation) return reject(new Error('Geolocation is not supported.'));
-                navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 });
-            });
-        }
-
+        function showError(message) { document.getElementById('loading').style.display = 'none'; const errorDiv = document.getElementById('error'); errorDiv.textContent = message; errorDiv.style.display = 'block'; }
+        
+        async function checkUserLocation(restaurantId) { const locationIcon = document.getElementById('location-icon'); const locationText = document.getElementById('location-text'); try { const position = await getCurrentPosition(); const { latitude, longitude } = position.coords; locationIcon.textContent = '📍'; locationText.textContent = 'Validating location...'; const response = await fetch('/api/method/restaurant_audit.api.audit_api.validate_location', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ restaurant_id: restaurantId, user_latitude: latitude, user_longitude: longitude }) }); if (!response.ok) throw new Error(`Server error: ${response.status}`); const result = await response.json(); if (result?.message?.success) { const validation = result.message; if (validation.is_within_range) { locationIcon.className = 'status-icon success'; locationIcon.textContent = '✓'; locationText.textContent = 'Location Verified'; } else { throw new Error(validation.message || 'You are not at the restaurant location.'); } } else { throw new Error(result?.message?.message || 'Location validation failed.'); } } catch (error) { console.error("Location check failed:", error); locationIcon.className = 'status-icon error'; locationIcon.textContent = '✗'; locationText.textContent = 'Location Check Failed'; } }
+        function getCurrentPosition() { return new Promise((resolve, reject) => { if (!navigator.geolocation) return reject(new Error('Geolocation is not supported.')); navigator.geolocation.getCurrentPosition(resolve, reject, { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }); }); }
+        
+        function toBase64(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.readAsDataURL(file); reader.onload = () => resolve(reader.result); reader.onerror = error => reject(error); }); }
+        
         document.addEventListener('DOMContentLoaded', () => {
             initializeAuditForm();
             document.getElementById('category-grid').addEventListener('click', e => {

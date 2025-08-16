@@ -10,7 +10,7 @@
   "question_text",
   "category",
   "answer_value",
-  "answer_comment",
+  "selected_options",
   "image_attachment"
  ],
  "fields": [
@@ -36,11 +36,6 @@
    "label": "Answer Value"
   },
   {
-   "fieldname": "answer_comment",
-   "fieldtype": "Small Text",
-   "label": "Answer Comment"
-  },
-  {
    "fieldname": "image_attachment",
    "fieldtype": "Attach",
    "label": "Image Attachment"
@@ -50,12 +45,17 @@
    "fieldtype": "Small Text",
    "label": "Question ",
    "reqd": 1
+  },
+  {
+   "fieldname": "selected_options",
+   "fieldtype": "Text",
+   "label": "Selected Options"
   }
  ],
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-01 13:53:23.745065",
+ "modified": "2025-08-16 16:41:48.869795",
  "modified_by": "Administrator",
  "module": "Restaurant Audit",
  "name": "Audit Answer",

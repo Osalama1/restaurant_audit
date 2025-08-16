@@ -91,21 +91,13 @@ def get_checklist_template(restaurant_id):
         )
 
         if not templates:
-            return {
-                "success": True,
-                "templates": []
-            }
+            return {"success": True, "templates": []}
 
         all_templates = []
-
         for template in templates:
             categories = frappe.get_list("Checklist Category",
-                filters={
-                    "template": template.name,
-                    "restaurant": restaurant_id
-                },
-                fields=["name", "category_name"],
-                order_by="name asc"
+                filters={"template": template.name, "restaurant": restaurant_id},
+                fields=["name", "category_name"], order_by="name asc"
             )
 
             categories_data = []
@@ -119,32 +111,24 @@ def get_checklist_template(restaurant_id):
                         "answer_type": question.answer_type,
                         "options": question.options.split(",") if question.options else [],
                         "allow_image_upload": bool(question.allow_image_upload),
-                        "is_mandatory": bool(question.is_mandatory)
+                        "is_mandatory": bool(question.is_mandatory),
+                        "comment": question.question_comment # **IMPROVEMENT**: Added question_comment
                     })
                 categories_data.append({
                     "id": category.name,
                     "name": category.category_name,
                     "questions": questions_data
                 })
-
             all_templates.append({
-                "id": template.name,
-                "name": template.template_name,
-                "description": template.description,
-                "categories": categories_data
+                "id": template.name, "name": template.template_name,
+                "description": template.description, "categories": categories_data
             })
 
-        return {
-            "success": True,
-            "templates": all_templates
-        }
+        return {"success": True, "templates": all_templates}
 
     except Exception as e:
         frappe.log_error(f"Checklist Load Error: {str(e)}")
-        return {
-            "success": False,
-            "message": str(e)
-        }
+        return {"success": False, "message": str(e)}
 
 @frappe.whitelist()
 def validate_location(restaurant_id, user_latitude, user_longitude):
@@ -198,82 +182,68 @@ def validate_location(restaurant_id, user_latitude, user_longitude):
         }
 
 @frappe.whitelist()
+@frappe.whitelist()
 def submit_audit(restaurant_id, answers, overall_comment=""):
-    """Submit completed audit results"""
     try:
         current_user = frappe.session.user
+        answers = json.loads(answers) if isinstance(answers, str) else answers
 
-        # Parse answers if it's a string
-        if isinstance(answers, str):
-            answers = json.loads(answers)
-
-        # Create new Audit Submission
         audit_submission = frappe.new_doc("Audit Submission")
         audit_submission.restaurant = restaurant_id
         audit_submission.auditor = current_user
         audit_submission.audit_date = now_datetime().date()
         audit_submission.audit_time = now_datetime().time()
         audit_submission.overall_comment = overall_comment
+        
+        # This needs to be done before attaching files
+        audit_submission.insert(ignore_permissions=True)
 
-        # Add answers to the submission
         for answer_data in answers:
             answer_row = audit_submission.append("answers", {})
             question_id = answer_data.get("question_id")
+            
             answer_row.question = question_id
-
-            # Load question text from the Question child table
-            question_text = frappe.db.get_value("Audit Question", question_id, "question_text")
-            answer_row.question_text = question_text or ""
+            answer_row.question_text = frappe.db.get_value("Audit Question", question_id, "question_text") or ""
             answer_row.answer_value = answer_data.get("answer_value")
             answer_row.answer_comment = answer_data.get("answer_comment", "")
             answer_row.category = answer_data.get("category")
+            
+            # **IMPROVEMENT**: Save multi-select options
+            selected_options = answer_data.get("selected_options", [])
+            answer_row.selected_options = json.dumps(selected_options) if selected_options else ""
 
-            # Handle image attachment if provided
+            # **FIX**: Correctly handle image attachment
             if answer_data.get("image_data"):
                 try:
-                    import base64
-
-                    # Decode base64 image
                     image_base64 = answer_data["image_data"]
-                    image_content = base64.b64decode(image_base64.split(",")[-1])  # remove data:image/png;base64, etc
-
-                    # Generate unique file name
-                    filename = f"{frappe.generate_hash(length=10)}.jpg"
-
-                    # Save file using frappe's file API
+                    image_content = base64.b64decode(image_base64.split(",")[1])
+                    filename = f"{frappe.generate_hash(length=10)}.png"
+                    
                     _file = frappe.get_doc({
                         "doctype": "File",
                         "file_name": filename,
                         "content": image_content,
                         "attached_to_doctype": "Audit Submission",
                         "attached_to_name": audit_submission.name,
+                        "attached_to_field": "answers", # Link to the child table
                         "is_private": 0
                     })
                     _file.save(ignore_permissions=True)
-
-                    # Store file URL in the answer row
+                    
                     answer_row.image_attachment = _file.file_url
-
                 except Exception as img_err:
                     frappe.log_error(f"Error saving image: {str(img_err)}")
 
-        # Save the audit submission
-        audit_submission.insert()
+        audit_submission.save(ignore_permissions=True)
         frappe.db.commit()
 
-        return {
-            "success": True,
-            "submission_id": audit_submission.name,
-            "message": "Audit submitted successfully"
-        }
+        return {"success": True, "submission_id": audit_submission.name, "message": "Audit submitted successfully"}
 
     except Exception as e:
         frappe.db.rollback()
         frappe.log_error(f"Submit audit error: {str(e)}")
-        return {
-            "success": False,
-            "message": str(e)
-        }
+        return {"success": False, "message": str(e)}
+
 
 # In get_audit_history()
 def get_audit_history(restaurant_id=None):

@@ -1025,6 +1025,9 @@
     </div>
 
     <script>
+
+     console.log("🚀 audit-form.js script loaded");
+
         // Global State Management
         let currentRestaurant = null;
         let auditData = {
@@ -1049,6 +1052,8 @@
 
         async function initializeAuditForm() {
             try {
+                    console.log("⚡ initializeAuditForm triggered");
+
                 const urlParams = new URLSearchParams(window.location.search);
                 const restaurantId = urlParams.get('restaurant');
                 
@@ -1215,59 +1220,86 @@
                 showNotification('Location verification failed. You may not be able to submit the audit.', 'warning');
             }
         }
+function getCurrentPosition() {
+    return new Promise((resolve, reject) => {
+        if (!navigator.geolocation) {
+            return reject(new Error("Geolocation is not supported by this browser"));
+        }
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+}
 
         async function loadChecklistTemplate(restaurantId) {
-            try {
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_checklist_template', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ restaurant_id: restaurantId })
-                });
+    try {
+        console.log("📥 Fetching checklist for restaurant:", restaurantId);
 
-                if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_checklist_template', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ restaurant_id: restaurantId })
+        });
 
-                const result = await response.json();
-                if (!result.message?.success) {
-                    throw new Error(result.message?.message || 'Failed to load checklist');
-                }
+        console.log("🔎 Response object:", response);
 
-                // Process template data
-                const icons = ["🧼", "🍳", "😊", "🔥", "📋", "📦", "🏪", "🧽", "👥", "📱"];
-                auditData.categories = result.message.templates.flatMap((template, tIndex) =>
-                    template.categories.map((cat, cIndex) => ({
-                        id: cat.id,
-                        name: cat.name,
-                        icon: icons[(tIndex + cIndex) % icons.length],
-                        questions: cat.questions.map(q => ({
-                            id: q.id,
-                            text: q.text,
-                            type: q.answer_type,
-                            options: q.options || [],
-                            is_mandatory: q.is_mandatory,
-                            allow_image_upload: q.allow_image_upload,
-                            comment: q.comment
-                        })),
-                        completed: false,
-                        progress: 0
-                    }))
-                );
-
-                totalQuestions = auditData.categories.reduce((acc, cat) => acc + cat.questions.length, 0);
-
-                // Update UI
-                document.getElementById('loading').style.display = 'none';
-                document.getElementById('audit-interface').style.display = 'block';
-                
-                renderCategoryGrid();
-                updateDashboard();
-                updateTimeline();
-                updateQuickStats();
-
-            } catch (error) {
-                console.error('Error loading checklist:', error);
-                showError(error.message);
-            }
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
         }
+
+        // Read raw text first
+        const text = await response.text();
+        console.log("📄 Raw response text:", text);
+
+        // Try parsing JSON
+        let result;
+        try {
+            result = JSON.parse(text);
+        } catch (err) {
+            throw new Error("Response was not valid JSON");
+        }
+console.log("🐞 Full API result:", result);
+console.log("🐞 result.message:", result.message);
+
+        if (!result.message?.success) {
+            throw new Error(result.message?.message || 'Failed to load checklist');
+        }
+
+        // Process template data
+        const icons = ["🧼", "🍳", "😊", "🔥", "📋", "📦", "🏪", "🧽", "👥", "📱"];
+        auditData.categories = result.message.templates.flatMap((template, tIndex) =>
+            template.categories.map((cat, cIndex) => ({
+                id: cat.id,
+                name: cat.name,
+                icon: icons[(tIndex + cIndex) % icons.length],
+                questions: cat.questions.map(q => ({
+                    id: q.id,
+                    text: q.text,
+                    type: q.answer_type,
+                    options: q.options || [],
+                    is_mandatory: q.is_mandatory,
+                    allow_image_upload: q.allow_image_upload,
+                    comment: q.comment
+                })),
+                completed: false,
+                progress: 0
+            }))
+        );
+
+        totalQuestions = auditData.categories.reduce((acc, cat) => acc + cat.questions.length, 0);
+
+        // Update UI
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('audit-interface').style.display = 'block';
+
+        renderCategoryGrid();
+        updateDashboard();
+        updateTimeline();
+        updateQuickStats();
+
+    } catch (error) {
+        console.error('❌ Error loading checklist:', error);
+        showError(error.message);
+    }
+}
 
         function renderCategoryGrid() {
             const grid = document.getElementById('category-grid');
@@ -1806,3 +1838,30 @@
                 info: 'var(--primary-color)'
             }
         }
+
+        function showError(message) {
+    console.error("❌ Error:", message);
+
+    const errorDiv = document.getElementById('error');
+    if (errorDiv) {
+        errorDiv.style.display = 'block';
+        errorDiv.textContent = message;
+    }
+
+    const loadingDiv = document.getElementById('loading');
+    if (loadingDiv) {
+        loadingDiv.style.display = 'none';
+    }
+}
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
+    });
+}
+
+ </script>
+        </body>
+</html>

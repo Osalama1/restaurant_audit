@@ -594,6 +594,22 @@
         .restaurant-card {
             animation: fadeIn 0.6s ease-out;
         }
+        .restaurant-employee {
+    font-size: 0.85rem;
+    color: var(--neutral-600);
+    margin: 0.5rem 0 1rem 0;
+    line-height: 1.4;
+    padding: 0.5rem 0.75rem;
+    background: var(--neutral-50);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 6px;
+}
+
+.restaurant-employee strong {
+    color: var(--neutral-800);
+    font-weight: 600;
+}
+
 
         .restaurant-card:nth-child(1) { animation-delay: 0.1s; }
         .restaurant-card:nth-child(2) { animation-delay: 0.2s; }
@@ -852,7 +868,16 @@
                 </div>
                 
                 <div class="restaurant-address">${restaurant.address || 'Address not specified'}</div>
-                
+                <div class="restaurant-employee">
+    <strong>Auditor:</strong> ${restaurant.employee_name || 'Unassigned'} 
+    (${restaurant.designation || '—'})
+    <br>
+    <strong>Frequency:</strong> ${restaurant.audit_frequency || 'N/A'}
+    <br>
+    <strong>Next Audit:</strong> ${restaurant.next_audit_date || 'Not scheduled'}
+    <br>
+    <strong>Status:</strong> ${restaurant.audit_status || 'Pending'}
+</div>
                 <div class="restaurant-stats">
                     <div class="stat-item">
                         <div class="stat-item-value">${restaurant.total_audits || 0}</div>

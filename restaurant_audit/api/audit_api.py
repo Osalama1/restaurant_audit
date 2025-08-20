@@ -5,7 +5,7 @@ import json
 import math
 import base64
 from datetime import datetime, timedelta
-
+from frappe.utils import getdate, add_to_date, add_days
 
 @frappe.whitelist(allow_guest=True)
 def authenticate_user(email, password):
@@ -68,68 +68,202 @@ def authenticate_user(email, password):
 
 @frappe.whitelist()
 def get_restaurants():
-    """Enhanced restaurant retrieval with additional metadata"""
+    """Enhanced restaurant retrieval with role check, filtering, and dynamic audit fields"""
     try:
         current_user = frappe.session.user
+        today = getdate()
+        roles = frappe.get_roles(current_user)
 
-        # Check if user is System Manager (can access all restaurants)
-        if "System Manager" in frappe.get_roles():
-            restaurants = frappe.db.sql("""
-                SELECT r.name, r.restaurant_name, r.address, 
-                       r.latitude, r.longitude, r.location_radius,
-                       COUNT(DISTINCT ae.employee) as assigned_employees,
-                       COUNT(DISTINCT as1.name) as total_audits,
-                       MAX(as1.audit_date) as last_audit_date
-                FROM `tabRestaurant` r
-                LEFT JOIN `tabRestaurant Employee` ae ON ae.parent = r.name
-                LEFT JOIN `tabAudit Submission` as1 ON as1.restaurant = r.name
-                GROUP BY r.name
-                ORDER BY r.restaurant_name
-            """, as_dict=True)
+        # System Manager -> see all
+        if "System Manager" in roles:
+            restaurants = frappe.get_all("Restaurant",
+                fields=["name", "restaurant_name", "address", "latitude", "longitude", "location_radius"])
+        
         else:
-            # Get employee-specific restaurants
-            employee = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
+            # Only auditors allowed
+            if "Auditor" not in roles:
+                return {"success": False, "message": "Access denied. Auditor role required."}
 
+            employee = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
             if not employee:
                 return {"success": False, "message": "Employee record not found"}
 
-            restaurants = frappe.db.sql("""
-                SELECT r.name, r.restaurant_name, r.address, 
-                       r.latitude, r.longitude, r.location_radius,
-                       COUNT(DISTINCT ae.employee) as assigned_employees,
-                       COUNT(DISTINCT as1.name) as total_audits,
-                       MAX(as1.audit_date) as last_audit_date,
-                       COUNT(DISTINCT CASE WHEN as1.auditor = %s THEN as1.name END) as my_audits
-                FROM `tabRestaurant` r
-                JOIN `tabRestaurant Employee` re ON re.parent = r.name
-                LEFT JOIN `tabRestaurant Employee` ae ON ae.parent = r.name
-                LEFT JOIN `tabAudit Submission` as1 ON as1.restaurant = r.name
-                WHERE re.employee = %s
-                GROUP BY r.name
-                ORDER BY r.restaurant_name
-            """, (current_user, employee), as_dict=True)
+            # Get only restaurants where this employee is assigned
+            assignments = frappe.get_all("Restaurant Employee",
+                filters={
+                    "employee": employee,
+                    "is_active": 1
+                 
+                },
+                fields=["parent", "employee", "audit_frequency", "last_audit_date"]
+            )
 
-        # Add computed fields
-        for restaurant in restaurants:
-            restaurant['last_audit_days'] = None
-            if restaurant.get('last_audit_date'):
-                days_ago = (getdate() - restaurant['last_audit_date']).days
-                restaurant['last_audit_days'] = days_ago
-            
-            restaurant['status'] = 'active'  # You can implement status logic
-            restaurant['audit_frequency'] = get_audit_frequency(restaurant['name'])
+            restaurants = []
+            for a in assignments:
+                r = frappe.db.get_value("Restaurant",
+                    {"name": a.parent},
+                    ["name", "restaurant_name", "address", "latitude", "longitude", "location_radius"],
+                    as_dict=True
+                )
+                if r:
+                    # Calculate next audit date dynamically
+                    next_audit = calculate_next_audit_date(
+                        a.last_audit_date or today,
+                        a.audit_frequency or "Weekly"
+                    )
 
-        return {
-            "success": True,
-            "restaurants": restaurants
-        }
+                    # Merge assignment data into restaurant
+                    r.update({
+                        "audit_frequency": a.audit_frequency,
+                        "last_audit_date": a.last_audit_date,
+                        "next_audit_date": next_audit
+                    })
+
+                    # Determine audit status
+                    r["audit_status"] = determine_audit_status(r, today)
+
+                    restaurants.append(r)
+
+        # Enhance with statistics and computed fields
+        for idx, restaurant in enumerate(restaurants):
+            restaurants[idx] = enhance_restaurant_data(restaurant, current_user)
+
+        return {"success": True, "restaurants": restaurants}
 
     except Exception as e:
         frappe.log_error(f"Error in get_restaurants: {str(e)}")
-        return {
-            "success": False,
-            "message": str(e)
+        return {"success": False, "message": str(e)}
+
+
+def enhance_restaurant_data(restaurant, current_user):
+    """Enhance restaurant data with audit status and statistics"""
+    try:
+        today = getdate()
+        restaurant_id = restaurant['name']
+        
+        # Get audit statistics
+        audit_stats = frappe.db.sql("""
+            SELECT 
+                COUNT(DISTINCT s.name) as total_audits,
+                COUNT(DISTINCT CASE WHEN s.auditor = %s THEN s.name END) as my_audits,
+                MAX(s.audit_date) as last_audit_date,
+                AVG(s.average_score) as avg_score
+            FROM `tabAudit Submission` s
+            WHERE s.restaurant = %s
+        """, (current_user, restaurant_id), as_dict=True)[0]
+        
+        # Calculate days since last audit
+        restaurant['last_audit_days'] = None
+        if audit_stats.get('last_audit_date'):
+            days_ago = (today - audit_stats['last_audit_date']).days
+            restaurant['last_audit_days'] = days_ago
+        
+        # Set audit statistics
+        restaurant['total_audits'] = audit_stats.get('total_audits', 0)
+        restaurant['my_audits'] = audit_stats.get('my_audits', 0)
+        restaurant['avg_score'] = round(audit_stats.get('avg_score', 0), 1) if audit_stats.get('avg_score') else 0
+        
+        # Determine audit status
+        restaurant['audit_status'] = determine_audit_status(restaurant, today)
+        
+        # Check for pending progress
+        has_progress = frappe.db.exists("Audit Progress", {
+            "restaurant": restaurant_id,
+            "auditor": current_user,
+            "is_completed": 0
+        })
+        restaurant['has_progress'] = bool(has_progress)
+        
+        # Calculate next audit date if not set
+        if not restaurant.get('next_audit_date') and restaurant.get('audit_frequency'):
+            restaurant['next_audit_date'] = calculate_next_audit_date(
+                restaurant.get('last_audit_date') or today,
+                restaurant.get('audit_frequency', 'Weekly')
+            )
+        
+        return restaurant
+        
+    except Exception as e:
+        frappe.log_error(f"Error enhancing restaurant data: {str(e)}")
+        return restaurant
+
+
+def determine_audit_status(restaurant, today):
+    """Determine the current audit status of a restaurant"""
+    try:
+        next_audit_date = restaurant.get('next_audit_date')
+        last_audit_date = restaurant.get('last_audit_date')
+        
+        # Check for in-progress audit
+        if restaurant.get('has_progress'):
+            return 'In Progress'
+        
+        # If no next audit date set, default to pending
+        if not next_audit_date:
+            return 'Pending'
+        
+        # Convert to date if string
+        if isinstance(next_audit_date, str):
+            next_audit_date = getdate(next_audit_date)
+        
+        # Check if overdue
+        if next_audit_date < today:
+            return 'Overdue'
+        
+        # Check if due today or within 3 days
+        days_until_audit = (next_audit_date - today).days
+        if days_until_audit <= 3:
+            return 'Due Soon'
+        
+        # Check if completed recently (within frequency period)
+        if last_audit_date:
+            if isinstance(last_audit_date, str):
+                last_audit_date = getdate(last_audit_date)
+            
+            days_since_last = (today - last_audit_date).days
+            frequency = restaurant.get('audit_frequency', 'Weekly')
+            
+            frequency_days = {
+                'Weekly': 7,
+                'Bi-Weekly': 14,
+                'Monthly': 30,
+                'Quarterly': 90
+            }.get(frequency, 7)
+            
+            if days_since_last < frequency_days:
+                return 'Completed'
+        
+        return 'Pending'
+        
+    except Exception as e:
+        frappe.log_error(f"Error determining audit status: {str(e)}")
+        return 'Pending'
+
+
+def calculate_next_audit_date(last_date, frequency):
+    """Calculate the next audit date based on frequency"""
+    try:
+        if isinstance(last_date, str):
+            last_date = getdate(last_date)
+        
+        frequency_mapping = {
+            'Weekly': {'days': 7},
+            'Bi-Weekly': {'days': 14},
+            'Monthly': {'months': 1},
+            'Quarterly': {'months': 3}
         }
+        
+        if frequency in frequency_mapping:
+            return add_to_date(last_date, **frequency_mapping[frequency])
+        
+        # Default to weekly
+        return add_days(last_date, 7)
+        
+    except Exception as e:
+        frappe.log_error(f"Error calculating next audit date: {str(e)}")
+        return add_days(getdate(), 7)
+
+
 
 
 def get_audit_frequency(restaurant_id):
@@ -138,10 +272,8 @@ def get_audit_frequency(restaurant_id):
     # For now, return a default
     return "weekly"
 
-
 @frappe.whitelist()
 def get_checklist_template(restaurant_id):
-    """Enhanced checklist template with better categorization"""
     try:
         templates = frappe.get_all("Checklist Template",
             filters={"applies_to_restaurant": restaurant_id},
@@ -149,7 +281,7 @@ def get_checklist_template(restaurant_id):
         )
 
         if not templates:
-            return {"success": True, "templates": []}
+            return {"message": {"success": True, "templates": []}}
 
         all_templates = []
         for template in templates:
@@ -173,7 +305,7 @@ def get_checklist_template(restaurant_id):
                         "allow_image_upload": bool(question.allow_image_upload),
                         "is_mandatory": bool(question.is_mandatory),
                         "comment": question.question_comment or "",
-                        "weight": getattr(question, 'weight', 1)  # For weighted scoring
+                        "weight": getattr(question, 'weight', 1)
                     })
                 
                 categories_data.append({
@@ -194,10 +326,10 @@ def get_checklist_template(restaurant_id):
 
         return {"success": True, "templates": all_templates}
 
+
     except Exception as e:
         frappe.log_error(f"Checklist Load Error: {str(e)}")
-        return {"success": False, "message": str(e)}
-
+        return {"message": {"success": False, "message": str(e)}}
 
 @frappe.whitelist()
 def validate_location(restaurant_id, user_latitude, user_longitude):

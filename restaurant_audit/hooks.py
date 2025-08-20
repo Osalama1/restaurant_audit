@@ -30,8 +30,8 @@ app_license = "mit"
 
 # include js, css files in header of web template
 # web_include_css = "/assets/restaurant_audit/css/restaurant_audit.css"
-web_include_css = "/assets/restaurant_audit/css/dashboard.css"
-web_include_js = "/assets/restaurant_audit/js/dashboard.js"
+#web_include_css = "/assets/restaurant_audit/css/dashboard.css"
+#web_include_js = "/assets/restaurant_audit/js/dashboard.js"
 # include custom scss in every website theme (without file extension ".scss")
 # website_theme_scss = "restaurant_audit/public/scss/website"
 

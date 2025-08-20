@@ -1,100 +1,203 @@
 {
- "actions": [],
- "allow_rename": 1,
- "autoname": "naming_series:naming_series",
- "creation": "2025-07-28 12:52:19.795804",
- "doctype": "DocType",
- "engine": "InnoDB",
- "field_order": [
-  "naming_series",
-  "restaurant",
-  "auditor",
-  "audit_date",
-  "audit_time",
-  "overall_comment",
-  "answers_section",
-  "answers"
- ],
- "fields": [
-  {
-   "fieldname": "restaurant",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Restaurant",
-   "options": "Restaurant",
-   "reqd": 1
-  },
-  {
-   "fieldname": "auditor",
-   "fieldtype": "Link",
-   "in_list_view": 1,
-   "label": "Auditor",
-   "options": "User",
-   "reqd": 1
-  },
-  {
-   "fieldname": "audit_date",
-   "fieldtype": "Date",
-   "in_list_view": 1,
-   "label": "Audit Date",
-   "reqd": 1
-  },
-  {
-   "fieldname": "audit_time",
-   "fieldtype": "Time",
-   "in_list_view": 1,
-   "label": "Audit Time",
-   "reqd": 1
-  },
-  {
-   "fieldname": "overall_comment",
-   "fieldtype": "Long Text",
-   "label": "Overall Comment"
-  },
-  {
-   "fieldname": "answers_section",
-   "fieldtype": "Section Break",
-   "label": "Answers"
-  },
-  {
-   "fieldname": "answers",
-   "fieldtype": "Table",
-   "label": "Answers",
-   "options": "Audit Answer"
-  },
-  {
-   "default": "{restaurant}.-.MM.-.YYYY.-.####",
-   "fieldname": "naming_series",
-   "fieldtype": "Select",
-   "label": "name",
-   "options": "{restaurant}.-.MM.-.YYYY.-.####"
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "naming_series:naming_series",
+    "creation": "2025-07-28 12:52:19.795804",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+      "naming_series",
+      "restaurant",
+      "auditor",
+      "employee",
+      "column_break_5",
+      "audit_date",
+      "audit_time",
+      "submission_time",
+      "section_break_9",
+      "average_score",
+      "total_score",
+      "max_possible_score",
+      "column_break_13",
+      "total_questions",
+      "questions_with_images",
+      "questions_with_comments",
+      "section_break_17",
+      "overall_comment",
+      "answers_section",
+      "answers",
+      "section_break_21",
+      "audit_summary",
+      "recommendations"
+    ],
+    "fields": [
+      {
+        "fieldname": "restaurant",
+        "fieldtype": "Link",
+        "in_list_view": 1,
+        "label": "Restaurant",
+        "options": "Restaurant",
+        "reqd": 1
+      },
+      {
+        "fieldname": "auditor",
+        "fieldtype": "Link",
+        "in_list_view": 1,
+        "label": "Auditor",
+        "options": "User",
+        "reqd": 1
+      },
+      {
+        "fieldname": "employee",
+        "fieldtype": "Link",
+        "label": "Employee",
+        "options": "Employee"
+      },
+      {
+        "fieldname": "column_break_5",
+        "fieldtype": "Column Break"
+      },
+      {
+        "fieldname": "audit_date",
+        "fieldtype": "Date",
+        "in_list_view": 1,
+        "label": "Audit Date",
+        "reqd": 1
+      },
+      {
+        "fieldname": "audit_time",
+        "fieldtype": "Time",
+        "in_list_view": 1,
+        "label": "Audit Time",
+        "reqd": 1
+      },
+      {
+        "fieldname": "submission_time",
+        "fieldtype": "Datetime",
+        "label": "Submission Time"
+      },
+      {
+        "fieldname": "section_break_9",
+        "fieldtype": "Section Break",
+        "label": "Scoring"
+      },
+      {
+        "fieldname": "average_score",
+        "fieldtype": "Float",
+        "in_list_view": 1,
+        "label": "Average Score",
+        "precision": "2"
+      },
+      {
+        "fieldname": "total_score",
+        "fieldtype": "Int",
+        "label": "Total Score"
+      },
+      {
+        "fieldname": "max_possible_score",
+        "fieldtype": "Int",
+        "label": "Max Possible Score"
+      },
+      {
+        "fieldname": "column_break_13",
+        "fieldtype": "Column Break"
+      },
+      {
+        "fieldname": "total_questions",
+        "fieldtype": "Int",
+        "label": "Total Questions"
+      },
+      {
+        "fieldname": "questions_with_images",
+        "fieldtype": "Int",
+        "label": "Questions with Images"
+      },
+      {
+        "fieldname": "questions_with_comments",
+        "fieldtype": "Int",
+        "label": "Questions with Comments"
+      },
+      {
+        "fieldname": "section_break_17",
+        "fieldtype": "Section Break",
+        "label": "Comments"
+      },
+      {
+        "fieldname": "overall_comment",
+        "fieldtype": "Long Text",
+        "label": "Overall Comment"
+      },
+      {
+        "fieldname": "answers_section",
+        "fieldtype": "Section Break",
+        "label": "Answers"
+      },
+      {
+        "fieldname": "answers",
+        "fieldtype": "Table",
+        "label": "Answers",
+        "options": "Audit Answer"
+      },
+      {
+        "fieldname": "section_break_21",
+        "fieldtype": "Section Break",
+        "label": "Summary & Recommendations"
+      },
+      {
+        "fieldname": "audit_summary",
+        "fieldtype": "Long Text",
+        "label": "Audit Summary"
+      },
+      {
+        "fieldname": "recommendations",
+        "fieldtype": "Long Text",
+        "label": "Recommendations"
+      },
+      {
+        "default": "AUDIT-.{restaurant}.-.MM.-.YYYY.-.####",
+        "fieldname": "naming_series",
+        "fieldtype": "Select",
+        "label": "Series",
+        "options": "AUDIT-.{restaurant}.-.MM.-.YYYY.-.####"
+      }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2025-08-20 15:10:00.000000",
+    "modified_by": "Administrator",
+    "module": "Restaurant Audit",
+    "name": "Audit Submission",
+    "naming_rule": "By \"Naming Series\" field",
+    "owner": "Administrator",
+    "permissions": [
+      {
+        "create": 1,
+        "delete": 1,
+        "email": 1,
+        "export": 1,
+        "print": 1,
+        "read": 1,
+        "report": 1,
+        "role": "System Manager",
+        "share": 1,
+        "write": 1
+      },
+      {
+        "create": 1,
+        "read": 1,
+        "role": "Employee",
+        "write": 1
+      },
+      {
+        "create": 1,
+        "read": 1,
+        "role": "Auditor",
+        "write": 1
+      }
+    ],
+    "show_title_field_in_link": 1,
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "title_field": "auditor"
   }
- ],
- "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-08-01 12:36:30.268674",
- "modified_by": "Administrator",
- "module": "Restaurant Audit",
- "name": "Audit Submission",
- "naming_rule": "By \"Naming Series\" field",
- "owner": "Administrator",
- "permissions": [
-  {
-   "create": 1,
-   "delete": 1,
-   "email": 1,
-   "export": 1,
-   "print": 1,
-   "read": 1,
-   "report": 1,
-   "role": "System Manager",
-   "share": 1,
-   "write": 1
-  }
- ],
- "show_title_field_in_link": 1,
- "sort_field": "modified",
- "sort_order": "DESC",
- "states": [],
- "title_field": "auditor"
-}

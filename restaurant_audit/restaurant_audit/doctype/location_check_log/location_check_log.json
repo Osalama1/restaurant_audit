@@ -1,0 +1,159 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "format:LOC-{restaurant}-{YYYY}-{MM}-{DD}-{#####}",
+    "creation": "2025-08-20 15:05:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+      "restaurant",
+      "user",
+      "check_time",
+      "column_break_4",
+      "user_latitude",
+      "user_longitude",
+      "calculated_distance",
+      "section_break_8",
+      "is_within_range",
+      "restaurant_latitude",
+      "restaurant_longitude",
+      "allowed_radius",
+      "column_break_13",
+      "device_info",
+      "ip_address",
+      "notes"
+    ],
+    "fields": [
+      {
+        "fieldname": "restaurant",
+        "fieldtype": "Link",
+        "in_list_view": 1,
+        "label": "Restaurant",
+        "options": "Restaurant",
+        "reqd": 1
+      },
+      {
+        "fieldname": "user",
+        "fieldtype": "Link",
+        "in_list_view": 1,
+        "label": "User",
+        "options": "User",
+        "reqd": 1
+      },
+      {
+        "fieldname": "check_time",
+        "fieldtype": "Datetime",
+        "in_list_view": 1,
+        "label": "Check Time",
+        "reqd": 1
+      },
+      {
+        "fieldname": "column_break_4",
+        "fieldtype": "Column Break"
+      },
+      {
+        "fieldname": "user_latitude",
+        "fieldtype": "Float",
+        "label": "User Latitude",
+        "precision": "8",
+        "reqd": 1
+      },
+      {
+        "fieldname": "user_longitude",
+        "fieldtype": "Float",
+        "label": "User Longitude",
+        "precision": "8",
+        "reqd": 1
+      },
+      {
+        "fieldname": "calculated_distance",
+        "fieldtype": "Float",
+        "in_list_view": 1,
+        "label": "Distance (meters)",
+        "precision": "2"
+      },
+      {
+        "fieldname": "section_break_8",
+        "fieldtype": "Section Break",
+        "label": "Validation Results"
+      },
+      {
+        "default": "0",
+        "fieldname": "is_within_range",
+        "fieldtype": "Check",
+        "in_list_view": 1,
+        "label": "Is Within Range"
+      },
+      {
+        "fieldname": "restaurant_latitude",
+        "fieldtype": "Float",
+        "label": "Restaurant Latitude",
+        "precision": "8"
+      },
+      {
+        "fieldname": "restaurant_longitude",
+        "fieldtype": "Float",
+        "label": "Restaurant Longitude",
+        "precision": "8"
+      },
+      {
+        "fieldname": "allowed_radius",
+        "fieldtype": "Float",
+        "label": "Allowed Radius (meters)",
+        "precision": "2"
+      },
+      {
+        "fieldname": "column_break_13",
+        "fieldtype": "Column Break"
+      },
+      {
+        "fieldname": "device_info",
+        "fieldtype": "Data",
+        "label": "Device Info"
+      },
+      {
+        "fieldname": "ip_address",
+        "fieldtype": "Data",
+        "label": "IP Address"
+      },
+      {
+        "fieldname": "notes",
+        "fieldtype": "Text",
+        "label": "Notes"
+      }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2025-08-20 15:05:00.000000",
+    "modified_by": "Administrator",
+    "module": "Restaurant Audit",
+    "name": "Location Check Log",
+    "naming_rule": "By \"Naming Series\" field",
+    "owner": "Administrator",
+    "permissions": [
+      {
+        "create": 1,
+        "delete": 1,
+        "email": 1,
+        "export": 1,
+        "print": 1,
+        "read": 1,
+        "report": 1,
+        "role": "System Manager",
+        "share": 1,
+        "write": 1
+      },
+      {
+        "read": 1,
+        "role": "Employee"
+      },
+      {
+        "read": 1,
+        "role": "Auditor"
+      }
+    ],
+    "show_title_field_in_link": 1,
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": []
+  }

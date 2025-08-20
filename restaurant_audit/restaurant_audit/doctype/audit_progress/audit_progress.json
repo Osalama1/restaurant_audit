@@ -1,0 +1,179 @@
+{
+    "actions": [],
+    "allow_rename": 1,
+    "autoname": "format:PROG-{restaurant}-{auditor}-{#####}",
+    "creation": "2025-08-20 15:00:00.000000",
+    "doctype": "DocType",
+    "engine": "InnoDB",
+    "field_order": [
+      "restaurant",
+      "auditor",
+      "employee",
+      "column_break_4",
+      "start_time",
+      "last_updated",
+      "is_completed",
+      "section_break_8",
+      "total_questions",
+      "answered_questions",
+      "completion_percentage",
+      "column_break_12",
+      "overall_comment",
+      "section_break_14",
+      "answers_json",
+      "category_progress",
+      "section_break_17",
+      "completed_time",
+      "audit_submission"
+    ],
+    "fields": [
+      {
+        "fieldname": "restaurant",
+        "fieldtype": "Link",
+        "in_list_view": 1,
+        "label": "Restaurant",
+        "options": "Restaurant",
+        "reqd": 1
+      },
+      {
+        "fieldname": "auditor",
+        "fieldtype": "Link",
+        "in_list_view": 1,
+        "label": "Auditor",
+        "options": "User",
+        "reqd": 1
+      },
+      {
+        "fieldname": "employee",
+        "fieldtype": "Link",
+        "label": "Employee",
+        "options": "Employee"
+      },
+      {
+        "fieldname": "column_break_4",
+        "fieldtype": "Column Break"
+      },
+      {
+        "fieldname": "start_time",
+        "fieldtype": "Datetime",
+        "label": "Start Time",
+        "reqd": 1
+      },
+      {
+        "fieldname": "last_updated",
+        "fieldtype": "Datetime",
+        "in_list_view": 1,
+        "label": "Last Updated",
+        "reqd": 1
+      },
+      {
+        "default": "0",
+        "fieldname": "is_completed",
+        "fieldtype": "Check",
+        "in_list_view": 1,
+        "label": "Is Completed"
+      },
+      {
+        "fieldname": "section_break_8",
+        "fieldtype": "Section Break",
+        "label": "Progress Details"
+      },
+      {
+        "fieldname": "total_questions",
+        "fieldtype": "Int",
+        "label": "Total Questions"
+      },
+      {
+        "fieldname": "answered_questions",
+        "fieldtype": "Int",
+        "label": "Answered Questions"
+      },
+      {
+        "fieldname": "completion_percentage",
+        "fieldtype": "Percent",
+        "label": "Completion Percentage",
+        "precision": "2"
+      },
+      {
+        "fieldname": "column_break_12",
+        "fieldtype": "Column Break"
+      },
+      {
+        "fieldname": "overall_comment",
+        "fieldtype": "Text",
+        "label": "Overall Comment"
+      },
+      {
+        "fieldname": "section_break_14",
+        "fieldtype": "Section Break",
+        "label": "Data Storage"
+      },
+      {
+        "fieldname": "answers_json",
+        "fieldtype": "Long Text",
+        "label": "Answers JSON"
+      },
+      {
+        "fieldname": "category_progress",
+        "fieldtype": "Long Text",
+        "label": "Category Progress"
+      },
+      {
+        "fieldname": "section_break_17",
+        "fieldtype": "Section Break",
+        "label": "Completion Details"
+      },
+      {
+        "fieldname": "completed_time",
+        "fieldtype": "Datetime",
+        "label": "Completed Time"
+      },
+      {
+        "fieldname": "audit_submission",
+        "fieldtype": "Link",
+        "label": "Audit Submission",
+        "options": "Audit Submission"
+      }
+    ],
+    "index_web_pages_for_search": 1,
+    "links": [],
+    "modified": "2025-08-20 15:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Restaurant Audit",
+    "name": "Audit Progress",
+    "naming_rule": "By \"Naming Series\" field",
+    "owner": "Administrator",
+    "permissions": [
+      {
+        "create": 1,
+        "delete": 1,
+        "email": 1,
+        "export": 1,
+        "print": 1,
+        "read": 1,
+        "report": 1,
+        "role": "System Manager",
+        "share": 1,
+        "write": 1
+      },
+      {
+        "create": 1,
+        "delete": 1,
+        "read": 1,
+        "role": "Employee",
+        "write": 1
+      },
+      {
+        "create": 1,
+        "delete": 1,
+        "read": 1,
+        "role": "Auditor",
+        "write": 1
+      }
+    ],
+    "show_title_field_in_link": 1,
+    "sort_field": "modified",
+    "sort_order": "DESC",
+    "states": [],
+    "title_field": "restaurant"
+  }

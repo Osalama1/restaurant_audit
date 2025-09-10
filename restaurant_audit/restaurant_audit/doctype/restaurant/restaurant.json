@@ -7,6 +7,7 @@
  "engine": "InnoDB",
  "field_order": [
   "restaurant_name",
+  "restaurant_manager",
   "address",
   "location_section",
   "latitude",
@@ -65,11 +66,17 @@
    "fieldtype": "Table",
    "label": "Assigned Employees",
    "options": "Restaurant Employee"
+  },
+  {
+   "fieldname": "restaurant_manager",
+   "fieldtype": "Link",
+   "label": "Restaurant Manager",
+   "options": "Employee"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-08-01 11:13:47.542940",
+ "modified": "2025-09-10 21:52:14.423753",
  "modified_by": "Administrator",
  "module": "Restaurant Audit",
  "name": "Restaurant",

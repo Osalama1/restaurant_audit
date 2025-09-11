@@ -1,0 +1,113 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-09-11 04:11:16.177540",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_snte",
+  "amended_from"
+ ],
+ "fields": [
+    {
+        "fieldname": "restaurant",
+        "fieldtype": "Link",
+        "in_list_view": 1,
+        "label": "Restaurant",
+        "options": "Restaurant",
+        "reqd": 1
+       },
+       {
+        "fetch_from": "restaurant.restaurant_name",
+        "fieldname": "restaurant_name",
+        "fieldtype": "Data",
+        "in_list_view": 1,
+        "label": "Restaurant Name",
+        "read_only": 1
+       },
+       {
+        "fieldname": "auditor",
+        "fieldtype": "Link",
+        "in_list_view": 1,
+        "label": "Auditor",
+        "options": "User",
+        "reqd": 1
+       },
+       {
+        "fieldname": "visit_date",
+        "fieldtype": "Date",
+        "in_list_view": 1,
+        "label": "Visit Date",
+        "reqd": 1
+       },
+       {
+        "fieldname": "week_start_date",
+        "fieldtype": "Date",
+        "label": "Week Start Date",
+        "read_only": 1
+       },
+       {
+        "fieldname": "week_end_date",
+        "fieldtype": "Date",
+        "label": "Week End Date",
+        "read_only": 1
+       },
+       {
+        "default": "Pending",
+        "fieldname": "status",
+        "fieldtype": "Select",
+        "in_list_view": 1,
+        "label": "Status",
+        "options": "Pending\nCompleted\nOverdue",
+        "reqd": 1
+       },
+       {
+        "default": 0,
+        "fieldname": "notified",
+        "fieldtype": "Check",
+        "label": "Notified"
+       },
+       {
+        "default": 0,
+        "fieldname": "overdue_notified",
+        "fieldtype": "Check",
+        "label": "Overdue Notified"
+       },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Scheduled Audit Visit",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-09-11 04:11:16.177540",
+ "modified_by": "Administrator",
+ "module": "Restaurant Audit",
+ "name": "Scheduled Audit Visit",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

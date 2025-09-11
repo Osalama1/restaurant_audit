@@ -23,7 +23,16 @@ app_license = "mit"
 
 # Includes in <head>
 # ------------------
-
+website_route_rules = [
+    {"from_route": "/audit-login", "to_route": "audit-login"},
+    {"from_route": "/audit-restaurants", "to_route": "audit-restaurants"},
+    {"from_route": "/audit-form", "to_route": "audit-form"}
+]
+scheduler_events = {
+    "weekly": [
+        "restaurant_audit.tasks.check_weekly_audits"
+    ]
+}
 # include js, css files in header of desk.html
 # app_include_css = "/assets/restaurant_audit/css/restaurant_audit.css"
 #app_include_js = "/assets/restaurant_audit/js/dashboard.js"

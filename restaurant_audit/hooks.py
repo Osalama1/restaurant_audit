@@ -215,7 +215,16 @@ scheduler_events = {
 
 # User Data Protection
 # --------------------
+# Update your hooks.py scheduler_events section
 
+scheduler_events = {
+    "daily": [
+        "restaurant_audit.tasks.daily_audit_status_update"  # Runs at 12:00 AM daily
+    ],
+    "weekly": [
+        "restaurant_audit.tasks.check_weekly_audits"
+    ]
+}
 # user_data_fields = [
 # 	{
 # 		"doctype": "{doctype_1}",

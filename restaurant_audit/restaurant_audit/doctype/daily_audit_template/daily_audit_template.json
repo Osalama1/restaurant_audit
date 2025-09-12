@@ -2,7 +2,7 @@
  "actions": [],
  "allow_rename": 1,
  "autoname": "naming_series:",
- "creation": "2025-01-21 12:00:00.000000",
+ "creation": "2025-01-21 12:00:00",
  "doctype": "DocType",
  "editable_grid": 1,
  "engine": "InnoDB",
@@ -16,6 +16,7 @@
   "is_active",
   "auto_schedule",
   "applies_to_all_restaurants",
+  "question_template",
   "section_break_9",
   "open_time",
   "close_time",
@@ -72,26 +73,25 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": 1,
+   "default": "1",
    "fieldname": "is_active",
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Is Active"
   },
   {
-   "default": 1,
+   "default": "1",
    "fieldname": "auto_schedule",
    "fieldtype": "Check",
    "label": "Auto Schedule Based on Time"
   },
   {
-   "default": 0,
+   "default": "0",
    "fieldname": "applies_to_all_restaurants",
    "fieldtype": "Check",
    "label": "Applies to All Restaurants"
   },
   {
-   "collapsible": 0,
    "fieldname": "section_break_9",
    "fieldtype": "Section Break",
    "label": "Time Settings"
@@ -124,7 +124,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "default": "Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday",
+   "default": "Daily",
    "fieldname": "days_of_week",
    "fieldtype": "Select",
    "label": "Days of Week",
@@ -143,14 +143,14 @@
    "label": "Template Details"
   },
   {
-   "default": 10,
+   "default": "10",
    "fieldname": "questions_count",
    "fieldtype": "Int",
    "label": "Number of Questions",
    "non_negative": 1
   },
   {
-   "default": 15,
+   "default": "15",
    "fieldname": "estimated_duration",
    "fieldtype": "Int",
    "label": "Estimated Duration (minutes)",
@@ -187,11 +187,17 @@
    "fieldtype": "Datetime",
    "label": "Last Used Date",
    "read_only": 1
+  },
+  {
+   "fieldname": "question_template",
+   "fieldtype": "Link",
+   "label": "question template",
+   "options": "Checklist Category"
   }
  ],
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-01-21 12:00:00.000000",
+ "modified": "2025-09-12 18:03:30.360531",
  "modified_by": "Administrator",
  "module": "Restaurant Audit",
  "name": "Daily Audit Template",

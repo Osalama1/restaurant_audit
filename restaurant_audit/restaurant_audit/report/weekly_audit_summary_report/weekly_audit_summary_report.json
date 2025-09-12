@@ -1,0 +1,28 @@
+{
+ "add_total_row": 0,
+ "columns": [],
+ "creation": "2025-09-12 19:10:12.783051",
+ "disabled": 0,
+ "docstatus": 0,
+ "doctype": "Report",
+ "filters": [],
+ "idx": 0,
+ "is_standard": "Yes",
+ "letter_head": "OTS Consulting",
+ "letterhead": null,
+ "modified": "2025-09-12 19:10:12.783051",
+ "modified_by": "Administrator",
+ "module": "Restaurant Audit",
+ "name": "Weekly Audit Summary Report",
+ "owner": "Administrator",
+ "prepared_report": 0,
+ "ref_doctype": "Scheduled Audit Visit",
+ "report_name": "Weekly Audit Summary Report",
+ "report_type": "Script Report",
+ "roles": [
+  {
+   "role": "System Manager"
+  }
+ ],
+ "timeout": 0
+}

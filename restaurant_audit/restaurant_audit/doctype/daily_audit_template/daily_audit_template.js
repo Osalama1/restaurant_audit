@@ -3,6 +3,14 @@
 
 frappe.ui.form.on('Daily Audit Template', {
     refresh: function(frm) {
+        // Set filter for question_template field to only show is_daily_audit = 1
+        frm.set_query('question_template', function() {
+            return {
+                filters: {
+                    'is_daily_audit': 1
+                }
+            };
+        });
         // Add custom buttons and functionality
         if (!frm.doc.__islocal) {
             frm.add_custom_button(__('Check Status'), function() {

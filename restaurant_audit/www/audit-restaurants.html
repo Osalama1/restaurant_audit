@@ -1267,6 +1267,31 @@
 
             <!-- Regular Assigned Restaurant Tab -->
             <div id="regular-assigned-content" class="tab-content active">
+
+                   <!-- Controls -->
+                   <div class="controls fade-in">
+                    <div class="search-box">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <input type="text" class="search-input" id="search-input" placeholder="Search restaurants...">
+                    </div>
+                    
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    Loading restaurants...
+                </div>
+
+                <!-- Error State -->
+                <div id="error" class="error" style="display: none;"></div>
+
+                <!-- Restaurants Grid -->
+                <div id="restaurants-container" class="restaurants-grid" style="display: none;"></div>
+
                 <!-- Scheduled Audit Section -->
                 <div class="scheduled-audit-section">
                     <h3>
@@ -1308,34 +1333,7 @@
                     </div>
                 </div>
 
-                <!-- Controls -->
-                <div class="controls fade-in">
-                    <div class="search-box">
-                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="11" cy="11" r="8"/>
-                            <path d="M21 21l-4.35-4.35"/>
-                        </svg>
-                        <input type="text" class="search-input" id="search-input" placeholder="Search restaurants...">
-                    </div>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" onclick="filterRestaurants('all')">All</button>
-                        <button class="filter-btn" onclick="filterRestaurants('active')">Active</button>
-                        <button class="filter-btn" onclick="filterRestaurants('pending')">Pending</button>
-                    </div>
-                </div>
-
-                <!-- Loading State -->
-                <div id="loading" class="loading">
-                    <div class="spinner"></div>
-                    Loading restaurants...
-                </div>
-
-                <!-- Error State -->
-                <div id="error" class="error" style="display: none;"></div>
-
-                <!-- Restaurants Grid -->
-                <div id="restaurants-container" class="restaurants-grid" style="display: none;"></div>
-
+             
                 <!-- Empty State -->
                 <div id="empty-state" class="empty-state" style="display: none;">
                     <div class="empty-state-icon">🏪</div>
@@ -1904,31 +1902,323 @@
             updateTemplateStatus();
             await loadDailyTemplatesFromBackend();
         }
+// Replace these functions in audit-restaurants.html
 
-        async function loadScheduledAudits() {
-            try {
-                console.log('Loading scheduled audits...');
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_scheduled_audits', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
-                });
+async function loadScheduledAudits() {
+    try {
+        console.log('Loading scheduled audits for current and next week only...');
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_weekly_scheduled_audits', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
 
-                console.log('Scheduled audits response status:', response.status);
-                const result = await response.json();
-                console.log('Scheduled audits API Response:', result);
-                
-                if (result.message?.success) {
-                    console.log('Scheduled audits loaded:', result.message.scheduled_audits.length);
-                    renderScheduledAudits(result.message.scheduled_audits);
-                } else {
-                    console.error('Failed to load scheduled audits:', result.message);
-                }
-            } catch (error) {
-                console.error('Error loading scheduled audits:', error);
+        console.log('Weekly scheduled audits response status:', response.status);
+        const result = await response.json();
+        console.log('Weekly scheduled audits API Response:', result);
+        
+        if (result.message?.success) {
+            console.log('Weekly scheduled audits loaded');
+            renderWeeklyScheduledAudits(result.message.current_week, result.message.next_week);
+            
+            // Process last week status updates
+            await processLastWeekUpdates();
+        } else {
+            console.error('Failed to load weekly scheduled audits:', result.message);
+        }
+    } catch (error) {
+        console.error('Error loading weekly scheduled audits:', error);
+    }
+}
+
+async function loadMyScheduledVisits() {
+    try {
+        console.log('Loading my scheduled visits for current and next week only...');
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_my_weekly_visits', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        console.log('My weekly visits response status:', response.status);
+        const result = await response.json();
+        console.log('My weekly visits API Response:', result);
+        
+        if (result.message?.success) {
+            console.log('My weekly visits loaded');
+            renderMyWeeklyVisits(result.message.current_week, result.message.next_week);
+            
+            // Update weekly summary display
+            updateWeeklySummary(result.message);
+        } else {
+            console.error('Failed to load my weekly visits:', result.message);
+        }
+    } catch (error) {
+        console.error('Error loading my weekly visits:', error);
+    }
+}
+
+function renderWeeklyScheduledAudits(currentWeek, nextWeek) {
+    const grid = document.getElementById('scheduled-visits-grid');
+    grid.innerHTML = '';
+
+    // Add current week header
+    if (currentWeek.scheduled_audits.length > 0) {
+        const currentWeekHeader = document.createElement('div');
+        currentWeekHeader.className = 'week-header';
+        currentWeekHeader.innerHTML = `
+            <h4>Current Week (${formatDate(currentWeek.start)} - ${formatDate(currentWeek.end)})</h4>
+        `;
+        grid.appendChild(currentWeekHeader);
+
+        currentWeek.scheduled_audits.forEach(audit => {
+            grid.appendChild(createScheduledAuditCard(audit, 'current'));
+        });
+    }
+
+    // Add next week header
+    if (nextWeek.scheduled_audits.length > 0) {
+        const nextWeekHeader = document.createElement('div');
+        nextWeekHeader.className = 'week-header';
+        nextWeekHeader.innerHTML = `
+            <h4>Next Week (${formatDate(nextWeek.start)} - ${formatDate(nextWeek.end)})</h4>
+        `;
+        grid.appendChild(nextWeekHeader);
+
+        nextWeek.scheduled_audits.forEach(audit => {
+            grid.appendChild(createScheduledAuditCard(audit, 'next'));
+        });
+    }
+
+    if (currentWeek.scheduled_audits.length === 0 && nextWeek.scheduled_audits.length === 0) {
+        grid.innerHTML = '<p style="text-align: center; color: var(--neutral-500); grid-column: 1 / -1;">No scheduled audits for current and next week.</p>';
+    }
+}
+
+function createScheduledAuditCard(audit, weekType) {
+    const card = document.createElement('div');
+    card.className = `scheduled-visit-card ${weekType}-week`;
+    
+    // Add visual indicator for week type
+    const weekIndicator = weekType === 'current' ? '📅' : '⏳';
+    
+    card.innerHTML = `
+        <div class="week-indicator">${weekIndicator} ${weekType.toUpperCase()}</div>
+        <div class="visit-restaurant-name">${audit.restaurant_name}</div>
+        <div class="visit-date">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                <line x1="16" y1="2" x2="16" y2="6"/>
+                <line x1="8" y1="2" x2="8" y2="6"/>
+                <line x1="3" y1="10" x2="21" y2="10"/>
+            </svg>
+            ${formatDate(audit.visit_date)}
+        </div>
+        <div class="visit-status ${audit.status.toLowerCase()}">${audit.status}</div>
+        ${weekType === 'current' ? `<div class="urgency-indicator">⚠️ This Week</div>` : ''}
+    `;
+    return card;
+}
+
+function renderMyWeeklyVisits(currentWeek, nextWeek) {
+    const tbody = document.getElementById('my-visits-tbody');
+    tbody.innerHTML = '';
+
+    // Combine current and next week visits
+    const allVisits = [
+        ...currentWeek.visits.map(v => ({...v, week_type: 'Current'})),
+        ...nextWeek.visits.map(v => ({...v, week_type: 'Next'}))
+    ];
+
+    if (allVisits.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: var(--neutral-500);">No scheduled visits for current and next week.</td></tr>';
+        return;
+    }
+
+    allVisits.forEach(visit => {
+        const row = document.createElement('tr');
+        const weekBadge = visit.week_type === 'Current' ? 
+            '<span class="week-badge current">📅 This Week</span>' : 
+            '<span class="week-badge next">⏳ Next Week</span>';
+        
+        row.innerHTML = `
+            <td>${visit.restaurant_name}</td>
+            <td>${formatDate(visit.visit_date)}</td>
+            <td><span class="visit-status ${visit.status.toLowerCase()}">${visit.status}</span></td>
+            <td>${weekBadge}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function processLastWeekUpdates() {
+    try {
+        console.log('Processing last week status updates...');
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.process_last_week_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        const result = await response.json();
+        if (result.message?.success) {
+            console.log('Last week processed:', result.message);
+            
+            // Show notification if there were updates
+            if (result.message.updates_made > 0) {
+                showNotification(`Last week processed: ${result.message.updates_made} audits updated to Overdue`, 'info');
             }
         }
+    } catch (error) {
+        console.error('Error processing last week updates:', error);
+    }
+}
 
+function updateWeeklySummary(weeklyData) {
+    // Update the weekly summary section
+    const currentWeekSummary = document.getElementById('current-week-summary');
+    const nextWeekSummary = document.getElementById('next-week-summary');
+    
+    if (currentWeekSummary) {
+        const currentTotal = weeklyData.current_week.visits.length;
+        const currentCompleted = weeklyData.current_week.visits.filter(v => v.status === 'Completed').length;
+        const currentPending = currentTotal - currentCompleted;
+        
+        currentWeekSummary.innerHTML = `
+            <h4>This Week Summary</h4>
+            <div class="summary-stats">
+                <span class="stat">📊 Total: ${currentTotal}</span>
+                <span class="stat">✅ Completed: ${currentCompleted}</span>
+                <span class="stat">⏳ Pending: ${currentPending}</span>
+            </div>
+        `;
+    }
+    
+    if (nextWeekSummary) {
+        const nextTotal = weeklyData.next_week.visits.length;
+        
+        nextWeekSummary.innerHTML = `
+            <h4>Next Week Summary</h4>
+            <div class="summary-stats">
+                <span class="stat">📅 Scheduled: ${nextTotal}</span>
+                <span class="stat ${nextTotal === 0 ? 'warning' : ''}">
+                    ${nextTotal === 0 ? '⚠️ No audits scheduled!' : '✅ Ready to go'}
+                </span>
+            </div>
+        `;
+    }
+}
+
+// Add CSS for weekly display
+const weeklyStyles = `
+<style>
+.week-header {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    margin: 1rem 0 0.5rem 0;
+    text-align: center;
+}
+
+.week-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.scheduled-visit-card.current-week {
+    border-left: 4px solid var(--warning-color);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.scheduled-visit-card.next-week {
+    border-left: 4px solid var(--primary-color);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.week-indicator {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.urgency-indicator {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--warning-color);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.week-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.week-badge.current {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.week-badge.next {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.summary-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.summary-stats .stat {
+    padding: 0.25rem 0.5rem;
+    background: var(--neutral-100);
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.summary-stats .stat.warning {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+#my-scheduled-visits-table th:last-child,
+#my-scheduled-visits-table td:last-child {
+    text-align: center;
+}
+</style>
+`;
+
+// Add the styles to the page
+if (!document.getElementById('weekly-styles')) {
+    const styleElement = document.createElement('style');
+    styleElement.id = 'weekly-styles';
+    styleElement.textContent = weeklyStyles.replace('<style>', '').replace('</style>', '');
+    document.head.appendChild(styleElement);
+}
+
+// Update the visits table header to include week column
+document.addEventListener('DOMContentLoaded', function() {
+    const visitsTableHeader = document.querySelector('#my-scheduled-visits-table thead tr');
+    if (visitsTableHeader && !visitsTableHeader.querySelector('.week-column')) {
+        const weekHeader = document.createElement('th');
+        weekHeader.className = 'week-column';
+        weekHeader.textContent = 'Week';
+        visitsTableHeader.appendChild(weekHeader);
+    }
+});
         function renderScheduledAudits(audits) {
             const grid = document.getElementById('scheduled-visits-grid');
             grid.innerHTML = '';
@@ -2086,43 +2376,104 @@
                 day: 'numeric'
             });
         }
+// Replace the startDailyAudit function in your audit-restaurants.html
 
-        async function startDailyAudit(templateName) {
-            try {
-                // For daily audit, we might not need a specific restaurant
-                // or we can let the user select one
-                const restaurant = null; // Will be handled by backend based on template settings
-                
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.start_daily_audit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        template_name: templateName,
-                        restaurant: restaurant
-                    }),
-                    credentials: 'include'
-                });
-
-                const result = await response.json();
-                if (result.message?.success) {
-                    // Store audit data in sessionStorage for the audit form
-                    sessionStorage.setItem('dailyAuditData', JSON.stringify({
-                        template: result.message.template,
-                        questions_data: result.message.questions_data,
-                        progress_id: result.message.progress_id,
-                        is_daily_audit: true
-                    }));
-                    
-                    // Redirect to audit form
-                    window.location.href = `/audit-form?daily_audit=1&progress_id=${result.message.progress_id}`;
-                } else {
-                    alert(result.message?.message || 'Failed to start daily audit');
-                }
-            } catch (error) {
-                console.error('Error starting daily audit:', error);
-                alert('Error starting daily audit. Please try again.');
-            }
+// Updated start daily audit with restrictions
+async function startDailyAudit(templateName) {
+    try {
+        // First check if daily audit can be started
+        const canStartResponse = await fetch('/api/method/restaurant_audit.api.audit_api.can_start_daily_audit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                template_name: templateName
+            }),
+            credentials: 'include'
+        });
+        
+        const canStartResult = await canStartResponse.json();
+        if (!canStartResult.message?.success) {
+            alert(canStartResult.message?.message || 'Cannot start daily audit');
+            return;
         }
+        
+        console.log("🚀 Starting daily audit for template:", templateName);
+        
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.start_daily_audit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                template_name: templateName
+            }),
+            credentials: 'include'
+        });
+
+        const result = await response.json();
+        console.log("📊 Daily audit API response:", result);
+        
+        if (result.message?.success) {
+            // Store audit data in sessionStorage for the audit form
+            sessionStorage.setItem('dailyAuditData', JSON.stringify({
+                template: result.message.template,
+                questions_data: result.message.questions_data,
+                progress_id: result.message.progress_id,
+                restaurant: result.message.restaurant,
+                is_daily_audit: true
+            }));
+            
+            console.log("💾 Stored daily audit data:", {
+                restaurant: result.message.restaurant,
+                progress_id: result.message.progress_id,
+                questions_count: result.message.questions_data?.length || 0
+            });
+            
+            // Redirect to audit form
+            window.location.href = `/audit-form?daily_audit=1&progress_id=${result.message.progress_id}`;
+        } else {
+            alert(result.message?.message || 'Failed to start daily audit');
+        }
+    } catch (error) {
+        console.error('Error starting daily audit:', error);
+        alert('Error starting daily audit. Please try again.');
+    }
+}
+
+// New functions to load data with status updates
+async function loadScheduledAuditsWithStatusUpdate() {
+    try {
+        // First trigger status update
+        await fetch('/api/method/restaurant_audit.api.audit_api.process_last_week_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        
+        // Then load the updated data
+        await loadScheduledAudits();
+    } catch (error) {
+        console.error('Error loading scheduled audits with status update:', error);
+        // Fallback to regular loading
+        await loadScheduledAudits();
+    }
+}
+
+async function loadMyScheduledVisitsWithStatusUpdate() {
+    try {
+        // First trigger status update  
+        await fetch('/api/method/restaurant_audit.api.audit_api.process_last_week_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+        
+        // Then load the updated data
+        await loadMyScheduledVisits();
+    } catch (error) {
+        console.error('Error loading my visits with status update:', error);
+        // Fallback to regular loading
+        await loadMyScheduledVisits();
+    }
+}
 
         function updateTemplateStatus() {
             const isOpen = isTemplateOpen();
@@ -2150,84 +2501,137 @@
         }
 
         // Additional functions for scheduling and template management
-        async function scheduleAudit() {
-            const restaurantId = document.getElementById('restaurant-select').value;
-            const visitDate = document.getElementById('visit-date').value;
-            if (!restaurantId || !visitDate) {
-                alert('Please select both restaurant and visit date.');
-                return;
-            }
+// Updated schedule audit with validation
+async function scheduleAudit() {
+    const restaurantId = document.getElementById('restaurant-select').value;
+    const visitDate = document.getElementById('visit-date').value;
+    
+    if (!restaurantId || !visitDate) {
+        alert('Please select both restaurant and visit date.');
+        return;
+    }
+    
+    // Client-side date validation
+    const today = new Date();
+    const selectedDate = new Date(visitDate);
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 21);
+    
+    if (selectedDate < today.setHours(0,0,0,0)) {
+        alert('Cannot schedule audit for past dates.');
+        return;
+    }
+    
+    if (selectedDate > maxDate) {
+        alert('Cannot schedule audit more than 3 weeks in advance.');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.schedule_audit_visit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                restaurant: restaurantId,
+                visit_date: visitDate
+            }),
+            credentials: 'include'
+        });
+
+        const result = await response.json();
+        if (result.message?.success) {
+            alert('Audit visit scheduled successfully!');
+            document.getElementById('restaurant-select').value = '';
+            document.getElementById('visit-date').value = '';
             
-            try {
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.schedule_audit_visit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        restaurant: restaurantId,
-                        visit_date: visitDate
-                    }),
-                    credentials: 'include'
-                });
-
-                const result = await response.json();
-                if (result.message?.success) {
-                    alert('Audit visit scheduled successfully!');
-                    document.getElementById('restaurant-select').value = '';
-                    document.getElementById('visit-date').value = '';
-                    
-                    // Reload data
-                    await loadScheduledAudits();
-                    await loadMyScheduledVisits();
-                } else {
-                    alert(result.message?.message || 'Failed to schedule audit visit');
-                }
-            } catch (error) {
-                console.error('Error scheduling audit:', error);
-                alert('Error scheduling audit. Please try again.');
-            }
+            // Reload data
+            await loadScheduledAuditsWithStatusUpdate();
+            await loadMyScheduledVisitsWithStatusUpdate();
+        } else {
+            alert(result.message?.message || 'Failed to schedule audit visit');
         }
+    } catch (error) {
+        console.error('Error scheduling audit:', error);
+        alert('Error scheduling audit. Please try again.');
+    }
+}
+async function confirmScheduleVisit() {
+    const visitDate = document.getElementById('modal-visit-date').value;
+    if (!visitDate) {
+        alert('Please select a visit date.');
+        return;
+    }
+    
+    // Client-side validation
+    const today = new Date();
+    const selectedDate = new Date(visitDate);
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 21);
+    
+    if (selectedDate < today.setHours(0,0,0,0)) {
+        alert('Cannot schedule audit for past dates.');
+        return;
+    }
+    
+    if (selectedDate > maxDate) {
+        alert('Cannot schedule audit more than 3 weeks in advance.');
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.schedule_audit_visit', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                restaurant: selectedRestaurantForScheduling,
+                visit_date: visitDate
+            }),
+            credentials: 'include'
+        });
 
-        async function confirmScheduleVisit() {
-            const visitDate = document.getElementById('modal-visit-date').value;
-            if (!visitDate) {
-                alert('Please select a visit date.');
-                return;
-            }
+        const result = await response.json();
+        if (result.message?.success) {
+            alert('Audit visit scheduled successfully!');
+            closeScheduleModal();
             
-            try {
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.schedule_audit_visit', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        restaurant: selectedRestaurantForScheduling,
-                        visit_date: visitDate
-                    }),
-                    credentials: 'include'
-                });
-
-                const result = await response.json();
-                if (result.message?.success) {
-                    alert('Audit visit scheduled successfully!');
-                    closeScheduleModal();
-                    
-                    // Reload data
-                    await loadScheduledAudits();
-                    await loadMyScheduledVisits();
-                } else {
-                    alert(result.message?.message || 'Failed to schedule audit visit');
-                }
-            } catch (error) {
-                console.error('Error scheduling audit:', error);
-                alert('Error scheduling audit. Please try again.');
-            }
+            // Reload data
+            await loadScheduledAuditsWithStatusUpdate();
+            await loadMyScheduledVisitsWithStatusUpdate();
+        } else {
+            alert(result.message?.message || 'Failed to schedule audit visit');
         }
-
+    } catch (error) {
+        console.error('Error scheduling audit:', error);
+        alert('Error scheduling audit. Please try again.');
+    }
+}
 
         // Initialize date inputs and load restaurant options
         document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date().toISOString().split('T')[0];
-            document.getElementById('visit-date').min = today;
-            document.getElementById('modal-visit-date').min = today;
+            const today = new Date()
+            const todayStr = today.toISOString().split('T')[0];
+    
+    // Calculate 3 weeks from today
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 21);
+    const maxDateStr = maxDate.toISOString().split('T')[0];
+    
+    // Set date restrictions
+    const visitDateInput = document.getElementById('visit-date');
+    const modalVisitDateInput = document.getElementById('modal-visit-date');
+    
+    if (visitDateInput) {
+        visitDateInput.min = todayStr;
+        visitDateInput.max = maxDateStr;
+    }
+    
+    if (modalVisitDateInput) {
+        modalVisitDateInput.min = todayStr;
+        modalVisitDateInput.max = maxDateStr;
+    }
+
+
+            
             
             // Load restaurant options after restaurants are loaded
             setTimeout(() => {

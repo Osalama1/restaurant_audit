@@ -1049,46 +1049,159 @@
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', initializeAuditForm);
+// Replace the initializeAuditForm function in your audit-form.js
 
-        async function initializeAuditForm() {
-            try {
-                    console.log("⚡ initializeAuditForm triggered");
+async function initializeAuditForm() {
+    try {
+        console.log("⚡ initializeAuditForm triggered");
 
-                const urlParams = new URLSearchParams(window.location.search);
-                const restaurantId = urlParams.get('restaurant');
+        const urlParams = new URLSearchParams(window.location.search);
+        document.getElementById('close-chat').addEventListener('click', closeChat);
+
+        // Check if this is a daily audit
+        const isDailyAudit = urlParams.get('daily_audit') === '1';
+        const progressId = urlParams.get('progress_id');
+        
+        let restaurantId = null;
+        
+        if (isDailyAudit && progressId) {
+            // For daily audit, get restaurant from progress record
+            console.log("📅 Daily audit detected, progress ID:", progressId);
+            
+            // Get daily audit data from sessionStorage
+            const dailyAuditData = sessionStorage.getItem('dailyAuditData');
+            if (dailyAuditData) {
+                const parsedData = JSON.parse(dailyAuditData);
+                restaurantId = parsedData.restaurant;
                 
-                if (!restaurantId) {
-                    throw new Error('No restaurant selected.');
+                // Set current restaurant for display
+                if (parsedData.restaurant) {
+                    // Get restaurant details
+                    const restaurantResponse = await fetch('/api/method/frappe.client.get', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            doctype: 'Restaurant',
+                            name: parsedData.restaurant
+                        })
+                    });
+                    
+                    if (restaurantResponse.ok) {
+                        const restaurantResult = await restaurantResponse.json();
+                        if (restaurantResult.message) {
+                            currentRestaurant = restaurantResult.message;
+                            updateRestaurantInfo();
+                        }
+                    }
                 }
-
-                // Load stored restaurant data
-                const storedRestaurant = sessionStorage.getItem('selectedRestaurant');
-                if (storedRestaurant) {
-                    currentRestaurant = JSON.parse(storedRestaurant);
-                    updateRestaurantInfo();
-                }
-
-                // Start the audit timer
-                startAuditTimer();
-
-                // Load any saved progress
-                await loadSavedProgress(restaurantId);
-
-                // Check user location
-                await checkUserLocation(restaurantId);
-
-                // Load checklist template
-                await loadChecklistTemplate(restaurantId);
-
-                // Setup auto-save
-                setupAutoSave();
-
-            } catch (error) {
-                console.error('Initialization error:', error);
-                showError(error.message);
+                
+                console.log("📋 Daily audit restaurant:", restaurantId);
+            } else {
+                throw new Error('Daily audit data not found. Please start the audit from the dashboard.');
+            }
+        } else {
+            // Regular audit - get restaurant from URL parameter
+            restaurantId = urlParams.get('restaurant');
+            if (!restaurantId) {
+                throw new Error('No restaurant selected.');
+            }
+            
+            // Load stored restaurant data for regular audit
+            const storedRestaurant = sessionStorage.getItem('selectedRestaurant');
+            if (storedRestaurant) {
+                currentRestaurant = JSON.parse(storedRestaurant);
+                updateRestaurantInfo();
             }
         }
 
+        if (!restaurantId) {
+            throw new Error('No restaurant available for audit.');
+        }
+
+        // Start the audit timer
+        startAuditTimer();
+
+        // Load any saved progress (only for regular audits)
+        if (!isDailyAudit) {
+            await loadSavedProgress(restaurantId);
+        }
+
+        // Check user location
+        await checkUserLocation(restaurantId);
+
+        // Load checklist template
+        if (isDailyAudit) {
+            await loadDailyAuditQuestions(progressId);
+        } else {
+            await loadChecklistTemplate(restaurantId);
+        }
+
+        // Setup auto-save
+        setupAutoSave();
+
+    } catch (error) {
+        console.error('Initialization error:', error);
+        showError(error.message);
+    }
+}
+
+// New function to load daily audit questions
+async function loadDailyAuditQuestions(progressId) {
+    try {
+        console.log("📥 Loading daily audit questions for progress:", progressId);
+
+        // Get daily audit data from sessionStorage
+        const dailyAuditData = sessionStorage.getItem('dailyAuditData');
+        if (!dailyAuditData) {
+            throw new Error('Daily audit data not found');
+        }
+
+        const parsedData = JSON.parse(dailyAuditData);
+        
+        // Process template data similar to regular audit
+        const icons = ["🧼", "🍳", "😊", "🔥", "📋", "📦", "🏪", "🧽", "👥", "📱"];
+        auditData.categories = [];
+        
+        if (parsedData.questions_data && parsedData.questions_data.length > 0) {
+            parsedData.questions_data.forEach((categoryData, index) => {
+                auditData.categories.push({
+                    id: categoryData.category.name,
+                    name: categoryData.category.category_name,
+                    icon: icons[index % icons.length],
+                    questions: categoryData.questions.map(q => ({
+                        id: q.name,
+                        text: q.question_text,
+                        type: q.answer_type,
+                        options: q.options || [],
+                        is_mandatory: q.is_mandatory,
+                        allow_image_upload: q.allow_image_upload,
+                        comment: q.question_comment
+                    })),
+                    completed: false,
+                    progress: 0
+                });
+            });
+        }
+
+        totalQuestions = auditData.categories.reduce((acc, cat) => acc + cat.questions.length, 0);
+
+        console.log("📊 Daily audit categories loaded:", auditData.categories.length);
+        console.log("📊 Total questions:", totalQuestions);
+
+        // Update UI
+        document.getElementById('loading').style.display = 'none';
+        document.getElementById('audit-interface').style.display = 'block';
+
+        renderCategoryGrid();
+        updateDashboard();
+        updateTimeline();
+        updateQuickStats();
+
+    } catch (error) {
+        console.error('❌ Error loading daily audit questions:', error);
+        showError(error.message);
+    }
+}
         function updateRestaurantInfo() {
             if (currentRestaurant) {
                 document.getElementById('restaurant-name').textContent = currentRestaurant.restaurant_name;
@@ -1586,6 +1699,18 @@ console.log("🐞 result.message:", result.message);
                     { text: '❌ False', score: 1, value: 'False' }
                 ];
             }
+            else if (question.type === 'Text') {
+                // ADD THIS BLOCK FOR TEXT QUESTIONS
+                container.innerHTML = `
+                    <div class="follow-up-container">
+                        <textarea id="text-answer-input" class="follow-up-textarea" placeholder="Type your answer here..."></textarea>
+                        <div class="follow-up-actions">
+                            <button class="answer-btn" onclick="handleTextAnswer(currentQuestion)">Submit Answer</button>
+                        </div>
+                    </div>
+                `;
+                return; // Exit the function since we've set the HTML
+            }
 
             options.forEach(option => {
                 const btn = document.createElement('button');
@@ -1605,6 +1730,39 @@ console.log("🐞 result.message:", result.message);
             }
         }
 
+       
+        // ADD THIS NEW FUNCTION
+        function handleTextAnswer(question) {
+            const input = document.getElementById('text-answer-input');
+            const textValue = input.value.trim();
+
+            if (!textValue) {
+                alert('Please enter an answer before submitting.');
+                return;
+            }
+
+            // Store the answer (no score for text questions)
+            auditData.answers[question.id] = {
+                score: null, 
+                value: textValue,
+                text: textValue,
+                comment: "",
+                image_data: "",
+                selected_options: []
+            };
+
+            addMessage(textValue, 'user');
+
+            // Add follow-up questions if configured
+            if (question.allow_image_upload) {
+                followUpQueue.push({ type: 'image', forQuestionId: question.id });
+            }
+            followUpQueue.push({ type: 'comment', forQuestionId: question.id });
+
+            // Clear options and continue
+            document.getElementById('answer-options').innerHTML = '';
+            setTimeout(processNextInQueue, 500);
+        }
         function handleAnswer(question, answer) {
             // Store answer
             auditData.answers[question.id] = {
@@ -1861,6 +2019,13 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
+
+function goBack() {
+            window.history.back();
+        }
+
+       
 
  </script>
         </body>

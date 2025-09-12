@@ -1,0 +1,21 @@
+{
+    "creation": "2025-01-21 18:00:00.000000",
+    "docstatus": 0,
+    "doctype": "Dashboard Chart",
+    "idx": 0,
+    "modified": "2025-01-21 18:00:00.000000",
+    "modified_by": "Administrator",
+    "module": "Restaurant Audit",
+    "name": "Audit Completion Trend",
+    "owner": "Administrator",
+    "chart_name": "Audit Completion Trend",
+    "chart_type": "Line",
+    "document_type": "Audit Submission",
+    "is_public": 1,
+    "filters_json": "[]",
+    "timeseries": 1,
+    "time_interval": "Daily",
+    "based_on": "audit_date",
+    "value_based_on": "name",
+    "aggregate_function_based_on": "Count"
+   }

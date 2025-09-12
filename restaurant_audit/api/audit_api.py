@@ -179,11 +179,22 @@ def get_scheduled_visits_by_week(week_start=None):
             "visits": []
         }
 
+# Replace get_restaurants method in audit_api.py with this enhanced version
+
 @frappe.whitelist()
 def get_restaurants():
-    """Get restaurants assigned to current user"""
+    """Get restaurants assigned to current user - with status checking"""
     try:
         current_user = frappe.session.user
+        
+        # Check if User is enabled in ERPNext
+        user_enabled = frappe.db.get_value("User", current_user, "enabled")
+        if not user_enabled:
+            return {
+                "success": True,
+                "restaurants": [],
+                "message": "User account is disabled"
+            }
         
         # Get employee record for current user
         employee = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
@@ -195,10 +206,19 @@ def get_restaurants():
                 "message": "No employee record found for current user"
             }
         
+        # Check if Employee is active in ERPNext
+        employee_status = frappe.db.get_value("Employee", employee, "status")
+        if employee_status != "Active":
+            return {
+                "success": True,
+                "restaurants": [],
+                "message": f"Employee status is {employee_status}"
+            }
+        
         # Get restaurants assigned to this employee
         assigned_restaurants = frappe.get_all("Restaurant Employee",
-            filters={"employee": employee, "is_active": 1},
-            fields=["parent"]
+            filters={"employee": employee},
+            fields=["parent", "is_active", "employee_status"]
         )
         
         if not assigned_restaurants:
@@ -208,11 +228,22 @@ def get_restaurants():
                 "message": "No restaurants assigned to this employee"
             }
         
-        restaurant_ids = [r.parent for r in assigned_restaurants]
+        # Filter only active assignments
+        active_restaurant_ids = [
+            r.parent for r in assigned_restaurants 
+            if r.is_active and r.employee_status == "Active"
+        ]
+        
+        if not active_restaurant_ids:
+            return {
+                "success": True,
+                "restaurants": [],
+                "message": "No active restaurant assignments found"
+            }
         
         # Get restaurant details
         restaurants = frappe.get_all("Restaurant",
-            filters={"name": ["in", restaurant_ids]},
+            filters={"name": ["in", active_restaurant_ids]},
             fields=[
                 "name", "restaurant_name", "address", "latitude", "longitude",
                 "location_radius", "restaurant_manager"
@@ -221,6 +252,11 @@ def get_restaurants():
         
         # Add additional data for each restaurant
         for restaurant in restaurants:
+            # Get employee details
+            employee_doc = frappe.get_doc("Employee", employee)
+            restaurant.employee_name = employee_doc.employee_name
+            restaurant.designation = employee_doc.designation
+            
             # Get last audit date
             last_audit = frappe.db.get_value("Audit Submission",
                 filters={"restaurant": restaurant.name},
@@ -260,6 +296,72 @@ def get_restaurants():
             "restaurants": []
         }
 
+# Add this method to check user can start audit
+@frappe.whitelist()
+def can_start_audit(restaurant_id):
+    """Check if user can start audit - simple version"""
+    try:
+        current_user = frappe.session.user
+        
+        # Check User enabled
+        user_enabled = frappe.db.get_value("User", current_user, "enabled")
+        if not user_enabled:
+            return {
+                "success": False,
+                "message": "Your user account is disabled"
+            }
+        
+        # Check Employee active
+        employee = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
+        if employee:
+            employee_status = frappe.db.get_value("Employee", employee, "status")
+            if employee_status != "Active":
+                return {
+                    "success": False,
+                    "message": f"Your employee status is {employee_status}"
+                }
+        
+        # Check restaurant assignment status
+        restaurant_assignment = frappe.db.get_value("Restaurant Employee", {
+            "parent": restaurant_id,
+            "employee": employee
+        }, ["is_active", "employee_status"], as_dict=True)
+        
+        if not restaurant_assignment:
+            return {
+                "success": False,
+                "message": "You are not assigned to this restaurant"
+            }
+        
+        if not restaurant_assignment.is_active or restaurant_assignment.employee_status != "Active":
+            return {
+                "success": False,
+                "message": f"Your assignment status is {restaurant_assignment.employee_status}"
+            }
+        
+        # Check week completion
+        week_status = check_restaurant_week_status(restaurant_id)
+        if not week_status["success"]:
+            return week_status
+        
+        if not week_status["can_access_audit"]:
+            return {
+                "success": False,
+                "message": week_status["message"],
+                "reason": "week_completed"
+            }
+        
+        return {
+            "success": True,
+            "message": "You can start the audit for this restaurant."
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error checking audit access: {str(e)}", "Audit Access Check")
+        return {
+            "success": False,
+            "message": f"Error checking audit access: {str(e)}"
+        }
 @frappe.whitelist()
 def get_daily_templates(restaurant=None):
     """Get daily audit templates for a restaurant or all templates"""
@@ -1270,4 +1372,121 @@ def can_start_daily_audit(template_name):
         return {
             "success": False,
             "message": "Error checking daily audit availability"
+        }
+
+# Add these methods to audit_api.py
+
+@frappe.whitelist()
+def check_restaurant_week_status(restaurant_id):
+    """Check if restaurant has completed audits for current week"""
+    try:
+        from frappe.utils import getdate, add_days
+        
+        current_user = frappe.session.user
+        today = getdate()
+        
+        # Calculate current week (Monday to Sunday)
+        days_since_monday = today.weekday()
+        current_week_start = add_days(today, -days_since_monday)
+        current_week_end = add_days(current_week_start, 6)
+        
+        # Check if ANY auditor has completed audit for this restaurant this week
+        completed_audits = frappe.get_all("Audit Submission",
+            filters={
+                "restaurant": restaurant_id,
+                "audit_date": ["between", [current_week_start, current_week_end]]
+            },
+            fields=["name", "auditor", "audit_date", "average_score"]
+        )
+        
+        # Check if current user has completed audit this week
+        user_completed_this_week = any(
+            audit.auditor == current_user for audit in completed_audits
+        )
+        
+        # Check completed scheduled visits for current week
+        completed_scheduled = frappe.get_all("Scheduled Audit Visit",
+            filters={
+                "restaurant": restaurant_id,
+                "auditor": current_user,
+                "visit_date": ["between", [current_week_start, current_week_end]],
+                "status": "Completed"
+            }
+        )
+        
+        user_has_completed_scheduled = len(completed_scheduled) > 0
+        
+        # Restaurant week status
+        restaurant_week_complete = len(completed_audits) > 0
+        user_week_complete = user_completed_this_week or user_has_completed_scheduled
+        
+        return {
+            "success": True,
+            "restaurant_week_complete": restaurant_week_complete,
+            "user_week_complete": user_week_complete,
+            "can_access_audit": not user_week_complete,  # Only allow if user hasn't completed
+            "completed_audits_count": len(completed_audits),
+            "week_start": current_week_start,
+            "week_end": current_week_end,
+            "message": get_week_status_message(restaurant_week_complete, user_week_complete),
+            "next_access_date": add_days(current_week_end, 1)  # Next Monday
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error checking restaurant week status: {str(e)}", "Restaurant Week Status")
+        return {
+            "success": False,
+            "message": f"Error checking week status: {str(e)}"
+        }
+
+def get_week_status_message(restaurant_complete, user_complete):
+    """Get appropriate message based on week status"""
+    if user_complete:
+        return "✅ You have completed your audit for this week. Restaurant will reopen next Monday."
+    elif restaurant_complete:
+        return "✅ This restaurant has been audited this week by another team member."
+    else:
+        return "📝 Restaurant is available for audit this week."
+
+@frappe.whitelist()
+def get_restaurants_with_week_status():
+    """Get restaurants with week completion status"""
+    try:
+        # Get basic restaurants list
+        restaurants_response = get_restaurants()
+        
+        if not restaurants_response["success"]:
+            return restaurants_response
+        
+        restaurants = restaurants_response["restaurants"]
+        
+        # Add week status to each restaurant
+        for restaurant in restaurants:
+            week_status = check_restaurant_week_status(restaurant["name"])
+            if week_status["success"]:
+                restaurant.update({
+                    "week_complete": week_status["user_week_complete"],
+                    "can_access": week_status["can_access_audit"],
+                    "week_message": week_status["message"],
+                    "next_access": week_status.get("next_access_date")
+                })
+            else:
+                restaurant.update({
+                    "week_complete": False,
+                    "can_access": True,
+                    "week_message": "Status unknown",
+                    "next_access": None
+                })
+        
+        return {
+            "success": True,
+            "restaurants": restaurants
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error getting restaurants with week status: {str(e)}", "Restaurants Week Status")
+        return {
+            "success": False,
+            "message": f"Error loading restaurants: {str(e)}",
+            "restaurants": []
         }

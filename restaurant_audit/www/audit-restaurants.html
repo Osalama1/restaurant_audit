@@ -1578,49 +1578,49 @@
             document.getElementById('pending-progress').textContent = 
                 userDashboard.pending_progress ? userDashboard.pending_progress.length : 0;
         }
+// Replace loadRestaurants function in audit-restaurants.html
 
-        async function loadRestaurants() {
-            try {
-                console.log('Loading restaurants...');
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_restaurants', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
-                });
+async function loadRestaurants() {
+    try {
+        console.log('Loading restaurants with week status...');
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_restaurants_with_week_status', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
 
-                console.log('Response status:', response.status);
-                const result = await response.json();
-                console.log('API Response:', result);
-                
-                if (result.message?.success) {
-                    allRestaurants = result.message.restaurants;
-                    console.log('Loaded restaurants:', allRestaurants.length);
-                    document.getElementById('total-restaurants').textContent = allRestaurants.length;
-                    
-                    // Check for pending progress
-                    await checkPendingProgress();
-                    
-                    filteredRestaurants = [...allRestaurants];
-                    
-                    document.getElementById('loading').style.display = 'none';
-                    
-                    if (allRestaurants.length === 0) {
-                        console.log('No restaurants found, showing empty state');
-                        document.getElementById('empty-state').style.display = 'block';
-                    } else {
-                        document.getElementById('restaurants-container').style.display = 'grid';
-                        renderRestaurants();
-                    }
-                } else {
-                    console.error('API returned error:', result.message);
-                    throw new Error(result.message?.message || 'Failed to load restaurants');
-                }
-            } catch (error) {
-                console.error('Error loading restaurants:', error);
-                showError(error.message || 'Failed to load restaurants. Please try again.');
+        console.log('Response status:', response.status);
+        const result = await response.json();
+        console.log('API Response:', result);
+        
+        if (result.message?.success) {
+            allRestaurants = result.message.restaurants;
+            console.log('Loaded restaurants:', allRestaurants.length);
+            document.getElementById('total-restaurants').textContent = allRestaurants.length;
+            
+            // Check for pending progress
+            await checkPendingProgress();
+            
+            filteredRestaurants = [...allRestaurants];
+            
+            document.getElementById('loading').style.display = 'none';
+            
+            if (allRestaurants.length === 0) {
+                console.log('No restaurants found, showing empty state');
+                document.getElementById('empty-state').style.display = 'block';
+            } else {
+                document.getElementById('restaurants-container').style.display = 'grid';
+                renderRestaurants();
             }
+        } else {
+            console.error('API returned error:', result.message);
+            throw new Error(result.message?.message || 'Failed to load restaurants');
         }
-
+    } catch (error) {
+        console.error('Error loading restaurants:', error);
+        showError(error.message || 'Failed to load restaurants. Please try again.');
+    }
+}
         async function checkPendingProgress() {
             for (let restaurant of allRestaurants) {
                 try {
@@ -1651,84 +1651,140 @@
                 container.appendChild(card);
             });
         }
+// Updated restaurant card creation with week status
+function createRestaurantCard(restaurant, index) {
+    const card = document.createElement('div');
+    
+    // Determine card class based on week status
+    let cardClass = 'restaurant-card';
+    if (restaurant.has_progress) {
+        cardClass += ' has-progress';
+    }
+    if (restaurant.week_complete) {
+        cardClass += ' week-completed';
+    }
+    
+    card.className = cardClass;
+    card.style.animationDelay = `${index * 0.1}s`;
+    card.dataset.restaurantId = restaurant.name;
+    card.dataset.status = restaurant.status || 'active';
 
-        function createRestaurantCard(restaurant, index) {
-            const card = document.createElement('div');
-            card.className = `restaurant-card ${restaurant.has_progress ? 'has-progress' : ''}`;
-            card.style.animationDelay = `${index * 0.1}s`;
-            card.dataset.restaurantId = restaurant.name;
-            card.dataset.status = restaurant.status || 'active';
-
-            const lastAuditText = restaurant.last_audit_days !== null ? 
-                `${restaurant.last_audit_days} days ago` : 'Never';
-            
-            const progressIndicator = restaurant.has_progress ? 
-                '<div class="progress-indicator">!</div>' : '';
-
-            card.innerHTML = `
-                ${progressIndicator}
-                <div class="restaurant-header">
-                    <div>
-                        <div class="restaurant-name">${restaurant.restaurant_name}</div>
-                    </div>
-                    <div style="display: flex; align-items: center; gap: 0.5rem;">
-                        <button class="schedule-visit-btn" onclick="event.stopPropagation(); openScheduleModal('${restaurant.name}', '${restaurant.restaurant_name}')" title="Schedule Visit">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                        </button>
-                        <div class="restaurant-status status-${restaurant.status || 'active'}">
-                            ${restaurant.status || 'active'}
-                        </div>
-                    </div>
+    const lastAuditText = restaurant.last_audit_date ? 
+        `${formatDateDiff(restaurant.last_audit_date)} days ago` : 'Never';
+    
+    const progressIndicator = restaurant.has_progress ? 
+        '<div class="progress-indicator">!</div>' : '';
+    
+    // Week status indicator
+    const weekStatusIndicator = restaurant.week_complete ? 
+        '<div class="week-status-indicator">✅ Week Complete</div>' : 
+        '<div class="week-status-indicator available">📝 Available</div>';
+    
+    // Determine if card should be clickable
+    const clickable = restaurant.can_access && !restaurant.week_complete;
+    const cardStyle = clickable ? '' : 'style="opacity: 0.6; cursor: not-allowed;"';
+    
+    card.innerHTML = `
+        ${progressIndicator}
+        ${weekStatusIndicator}
+        <div class="restaurant-header">
+            <div>
+                <div class="restaurant-name">${restaurant.restaurant_name}</div>
+                ${restaurant.week_complete ? 
+                    `<div class="week-message">${restaurant.week_message}</div>` : 
+                    ''
+                }
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                ${clickable ? 
+                    `<button class="schedule-visit-btn" onclick="event.stopPropagation(); openScheduleModal('${restaurant.name}', '${restaurant.restaurant_name}')" title="Schedule Visit">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="12" y1="5" x2="12" y2="19"/>
+                            <line x1="5" y1="12" x2="19" y2="12"/>
+                        </svg>
+                    </button>` : ''
+                }
+                <div class="restaurant-status status-${restaurant.status || 'active'}">
+                    ${restaurant.status || 'active'}
                 </div>
-                
-                <div class="restaurant-address">${restaurant.address || 'Address not specified'}</div>
-                <div class="restaurant-employee">
-    <strong>Auditor:</strong> ${restaurant.employee_name || 'Unassigned'} 
-    (${restaurant.designation || '—'})
-    <br>
-    <strong>Frequency:</strong> ${restaurant.audit_frequency || 'N/A'}
-    <br>
-    <strong>Next Audit:</strong> ${restaurant.next_audit_date || 'Not scheduled'}
-    <br>
-    <strong>Status:</strong> ${restaurant.audit_status || 'Pending'}
-</div>
-                <div class="restaurant-stats">
-                    <div class="stat-item">
-                        <div class="stat-item-value">${restaurant.total_audits || 0}</div>
-                        <div class="stat-item-label">Total Audits</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-item-value">${restaurant.my_audits || 0}</div>
-                        <div class="stat-item-label">My Audits</div>
-                    </div>
-                </div>
-                
-                <div class="restaurant-meta">
-                    <div class="location-info">
-                        <div class="location-dot"></div>
-                        <span>${restaurant.location_radius || 100}m radius</span>
-                    </div>
-                    <div>Last audit: ${lastAuditText}</div>
-                </div>
-            `;
-
-            card.addEventListener('click', () => selectRestaurant(restaurant));
-            return card;
+            </div>
+        </div>
+        
+        <div class="restaurant-address">${restaurant.address || 'Address not specified'}</div>
+        <div class="restaurant-employee">
+            <strong>Auditor:</strong> ${restaurant.employee_name || 'Unassigned'} 
+            (${restaurant.designation || '—'})
+        </div>
+        
+        <div class="restaurant-stats">
+            <div class="stat-item">
+                <div class="stat-item-value">${restaurant.total_audits || 0}</div>
+                <div class="stat-item-label">Total Audits</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-item-value">${restaurant.my_audits || 0}</div>
+                <div class="stat-item-label">My Audits</div>
+            </div>
+        </div>
+        
+        <div class="restaurant-meta">
+            <div class="location-info">
+                <div class="location-dot"></div>
+                <span>${restaurant.location_radius || 100}m radius</span>
+            </div>
+            <div>Last audit: ${lastAuditText}</div>
+        </div>
+        
+        ${restaurant.week_complete && restaurant.next_access ? 
+            `<div class="next-access-info">
+                📅 Next access: ${formatDate(restaurant.next_access)}
+            </div>` : ''
         }
-
-        function selectRestaurant(restaurant) {
-            selectedRestaurant = restaurant;
-            
-            // Check if there's saved progress
-            if (restaurant.has_progress) {
-                showProgressModal(restaurant);
+    `;
+    function showWeekCompletionMessage(restaurant) {
+    const nextAccessDate = restaurant.next_access ? 
+        new Date(restaurant.next_access).toLocaleDateString('en-US', { 
+            weekday: 'long', 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+        }) : 'Next Monday';
+    
+    alert(`${restaurant.week_message}\n\nNext access: ${nextAccessDate}`);
+}
+    // Only add click listener if restaurant is accessible
+    if (clickable) {
+        card.addEventListener('click', () => selectRestaurant(restaurant));
+    } else {
+        card.addEventListener('click', () => {
+            if (restaurant.week_complete) {
+                showWeekCompletionMessage(restaurant);
             } else {
-                startAudit(restaurant);
+                alert('This restaurant is not accessible. Please contact your administrator.');
             }
-        }
+        });
+    }
+    
+    return card;
+}
+// Updated selectRestaurant function with validation
+function selectRestaurant(restaurant) {
+    selectedRestaurant = restaurant;
+    
+    // Double-check access before proceeding
+    if (restaurant.week_complete || !restaurant.can_access) {
+        showWeekCompletionMessage(restaurant);
+        return;
+    }
+    
+    // Check if there's saved progress
+    if (restaurant.has_progress) {
+        showProgressModal(restaurant);
+    } else {
+        startAudit(restaurant);
+    }
+}
+
 
         function showProgressModal(restaurant) {
             const modal = document.getElementById('progress-modal');
@@ -2658,6 +2714,65 @@ async function confirmScheduleVisit() {
                 }
             }, 60000);
         });
+
+        // Helper function to format date difference
+function formatDateDiff(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    const diffTime = Math.abs(today - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+}
+
+// Add CSS for week status indicators
+const weekStatusStyles = `
+<style>
+.week-status-indicator {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.week-status-indicator.available {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.restaurant-card.week-completed {
+    border-left: 4px solid #10b981;
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+}
+
+.week-message {
+    font-size: 0.75rem;
+    color: #10b981;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.next-access-info {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: #fef3c7;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #92400e;
+    text-align: center;
+}
+</style>
+`;
+if (!document.getElementById('week-status-styles')) {
+    const styleElement = document.createElement('style');
+    styleElement.id = 'week-status-styles';
+    styleElement.textContent = weekStatusStyles.replace('<style>', '').replace('</style>', '');
+    document.head.appendChild(styleElement);
+}
     </script>
 </body>
 </html>

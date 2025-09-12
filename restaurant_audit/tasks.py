@@ -274,3 +274,226 @@ def generate_daily_missed_report(date):
         
     except Exception as e:
         frappe.log_error(f"Error generating daily missed report: {str(e)}", "Daily Missed Report")
+
+
+# Add these to tasks.py
+
+def daily_user_assignment_cleanup():
+    """
+    Daily job to clean up work for:
+    1. Users removed from restaurant assignments  
+    2. Disabled users in ERPNext
+    3. Inactive employees in ERPNext
+    """
+    try:
+        frappe.logger().info("Starting daily user assignment cleanup...")
+        
+        # Clean up disabled users
+        cleanup_disabled_users()
+        
+        # Clean up inactive employees  
+        cleanup_inactive_employees()
+        
+        # Clean up removed restaurant assignments
+        cleanup_removed_assignments()
+        
+        frappe.logger().info("Daily user assignment cleanup completed")
+        
+    except Exception as e:
+        frappe.log_error(f"Error in daily user assignment cleanup: {str(e)}", "User Assignment Cleanup")
+
+def cleanup_disabled_users():
+    """Clean up work for disabled users"""
+    try:
+        # Get all disabled users
+        disabled_users = frappe.get_all("User",
+            filters={"enabled": 0},
+            fields=["name", "email"]
+        )
+        
+        for user in disabled_users:
+            # Cancel their pending scheduled audits
+            cancel_user_scheduled_audits(user.name, "User Disabled")
+            
+            # Remove their notifications
+            clear_user_notifications(user.name)
+            
+        frappe.logger().info(f"Cleaned up work for {len(disabled_users)} disabled users")
+        
+    except Exception as e:
+        frappe.log_error(f"Error cleaning up disabled users: {str(e)}", "Cleanup Disabled Users")
+
+def cleanup_inactive_employees():
+    """Clean up work for inactive employees"""
+    try:
+        # Get all inactive employees
+        inactive_employees = frappe.get_all("Employee",
+            filters={"status": ["!=", "Active"]},
+            fields=["name", "user_id", "status"]
+        )
+        
+        for employee in inactive_employees:
+            if not employee.user_id:
+                continue
+                
+            # Cancel their pending scheduled audits
+            cancel_user_scheduled_audits(employee.user_id, f"Employee {employee.status}")
+            
+            # Remove their notifications
+            clear_user_notifications(employee.user_id)
+            
+            # Set their restaurant assignments as inactive
+            deactivate_employee_assignments(employee.name)
+            
+        frappe.logger().info(f"Cleaned up work for {len(inactive_employees)} inactive employees")
+        
+    except Exception as e:
+        frappe.log_error(f"Error cleaning up inactive employees: {str(e)}", "Cleanup Inactive Employees")
+
+def cleanup_removed_assignments():
+    """Clean up work for users removed from restaurant assignments"""
+    try:
+        # Get all restaurants
+        restaurants = frappe.get_all("Restaurant", fields=["name"])
+        
+        total_cleaned = 0
+        
+        for restaurant in restaurants:
+            # Get current active assignments
+            current_assignments = frappe.get_all("Restaurant Employee",
+                filters={
+                    "parent": restaurant.name,
+                    "is_active": 1,
+                    "employee_status": "Active"
+                },
+                fields=["employee"]
+            )
+            
+            current_employees = [a.employee for a in current_assignments]
+            current_users = []
+            
+            # Get user_ids for current employees
+            for emp in current_employees:
+                user_id = frappe.db.get_value("Employee", emp, "user_id")
+                if user_id:
+                    current_users.append(user_id)
+            
+            # Find scheduled audits for users NOT in current assignments
+            if current_users:
+                removed_user_audits = frappe.get_all("Scheduled Audit Visit",
+                    filters={
+                        "restaurant": restaurant.name,
+                        "auditor": ["not in", current_users],
+                        "status": ["in", ["Pending", "Overdue"]]
+                    },
+                    fields=["name", "auditor"]
+                )
+            else:
+                # No current users, cancel all pending audits for this restaurant
+                removed_user_audits = frappe.get_all("Scheduled Audit Visit",
+                    filters={
+                        "restaurant": restaurant.name,
+                        "status": ["in", ["Pending", "Overdue"]]
+                    },
+                    fields=["name", "auditor"]
+                )
+            
+            # Cancel audits for removed users
+            for audit in removed_user_audits:
+                try:
+                    audit_doc = frappe.get_doc("Scheduled Audit Visit", audit.name)
+                    audit_doc.status = "Cancelled"
+                    audit_doc.save(ignore_permissions=True)
+                    total_cleaned += 1
+                    
+                    frappe.logger().info(f"Cancelled audit {audit.name} for removed user {audit.auditor}")
+                    
+                except Exception as e:
+                    frappe.log_error(f"Error cancelling audit {audit.name}: {str(e)}", "Cancel Audit")
+        
+        frappe.logger().info(f"Cleaned up {total_cleaned} audits for removed assignments")
+        
+    except Exception as e:
+        frappe.log_error(f"Error cleaning up removed assignments: {str(e)}", "Cleanup Removed Assignments")
+
+def cancel_user_scheduled_audits(user_id, reason):
+    """Cancel all pending scheduled audits for a user"""
+    try:
+        pending_audits = frappe.get_all("Scheduled Audit Visit",
+            filters={
+                "auditor": user_id,
+                "status": ["in", ["Pending", "Overdue"]]
+            }
+        )
+        
+        cancelled_count = 0
+        for audit in pending_audits:
+            try:
+                audit_doc = frappe.get_doc("Scheduled Audit Visit", audit.name)
+                audit_doc.status = "Cancelled"
+                audit_doc.save(ignore_permissions=True)
+                cancelled_count += 1
+            except Exception as e:
+                frappe.log_error(f"Error cancelling audit {audit.name}: {str(e)}", "Cancel User Audit")
+        
+        if cancelled_count > 0:
+            frappe.logger().info(f"Cancelled {cancelled_count} audits for user {user_id} - Reason: {reason}")
+        
+    except Exception as e:
+        frappe.log_error(f"Error cancelling user scheduled audits: {str(e)}", "Cancel User Audits")
+
+def clear_user_notifications(user_id):
+    """Clear pending notifications for a user"""
+    try:
+        pending_notifications = frappe.get_all("Notification Log",
+            filters={
+                "for_user": user_id,
+                "read": 0
+            }
+        )
+        
+        cleared_count = 0
+        for notification in pending_notifications:
+            try:
+                frappe.delete_doc("Notification Log", notification.name, ignore_permissions=True)
+                cleared_count += 1
+            except Exception as e:
+                frappe.log_error(f"Error deleting notification {notification.name}: {str(e)}", "Clear Notification")
+        
+        if cleared_count > 0:
+            frappe.logger().info(f"Cleared {cleared_count} notifications for user {user_id}")
+        
+    except Exception as e:
+        frappe.log_error(f"Error clearing user notifications: {str(e)}", "Clear User Notifications")
+
+def deactivate_employee_assignments(employee_id):
+    """Deactivate restaurant assignments for an employee"""
+    try:
+        # Get all restaurant assignments for this employee
+        assignments = frappe.get_all("Restaurant Employee",
+            filters={"employee": employee_id, "is_active": 1},
+            fields=["name", "parent"]
+        )
+        
+        for assignment in assignments:
+            try:
+                # Get the restaurant document
+                restaurant_doc = frappe.get_doc("Restaurant", assignment.parent)
+                
+                # Find and deactivate the employee assignment
+                for emp in restaurant_doc.assigned_employees:
+                    if emp.employee == employee_id:
+                        emp.is_active = 0
+                        emp.employee_status = "Disabled"
+                        break
+                
+                restaurant_doc.save(ignore_permissions=True)
+                
+            except Exception as e:
+                frappe.log_error(f"Error deactivating assignment for employee {employee_id}: {str(e)}", "Deactivate Assignment")
+        
+        if assignments:
+            frappe.logger().info(f"Deactivated {len(assignments)} restaurant assignments for employee {employee_id}")
+        
+    except Exception as e:
+        frappe.log_error(f"Error deactivating employee assignments: {str(e)}", "Deactivate Employee Assignments")

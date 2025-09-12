@@ -217,12 +217,15 @@ scheduler_events = {
 # --------------------
 # Update your hooks.py scheduler_events section
 
+# Update your hooks.py scheduler_events section
+
 scheduler_events = {
     "daily": [
-        "restaurant_audit.tasks.daily_audit_status_update"  # Runs at 12:00 AM daily
+        "restaurant_audit.tasks.daily_audit_status_update",      # Update overdue audits at 12 AM
+        "restaurant_audit.tasks.daily_user_assignment_cleanup"   # Clean up disabled/removed users
     ],
     "weekly": [
-        "restaurant_audit.tasks.check_weekly_audits"
+        "restaurant_audit.tasks.check_weekly_audits"            # Weekly audit compliance check
     ]
 }
 # user_data_fields = [

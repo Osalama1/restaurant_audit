@@ -21,18 +21,19 @@ def schedule_audit_visit(restaurant, visit_date):
             }
         
         # Check if restaurant exists
-        if not frappe.db.exists("Restaurant", restaurant):
+        restaurant_exists = frappe.db.get_value("Restaurant", restaurant, "name")
+        if not restaurant_exists:
             return {
                 "success": False,
                 "message": "Restaurant not found"
             }
         
         # Check if visit already scheduled for this date
-        existing_visit = frappe.db.exists("Scheduled Audit Visit", {
+        existing_visit = frappe.db.get_value("Scheduled Audit Visit", {
             "restaurant": restaurant,
             "auditor": current_user,
             "visit_date": visit_date
-        })
+        }, "name")
         
         if existing_visit:
             return {
@@ -240,13 +241,11 @@ def get_restaurants():
             )
             
             # Check for pending progress
-            restaurant.has_progress = frappe.db.exists("Audit Progress",
-                filters={
-                    "restaurant": restaurant.name,
-                    "auditor": current_user,
-                    "is_completed": 0
-                }
-            )
+            restaurant.has_progress = frappe.db.get_value("Audit Progress", {
+                "restaurant": restaurant.name,
+                "auditor": current_user,
+                "is_completed": 0
+            }, "name") is not None
         
         return {
             "success": True,
@@ -356,4 +355,118 @@ def get_user_dashboard():
         return {
             "success": False,
             "message": f"Error loading dashboard: {str(e)}"
+        }
+
+@frappe.whitelist()
+def get_daily_audit_questions(template_name, restaurant=None):
+    """Get daily audit questions from Checklist Category with is_daily_audit = 1"""
+    try:
+        # Get the template
+        template = frappe.get_doc("Daily Audit Template", template_name)
+        
+        if not template.is_currently_open():
+            return {
+                "success": False,
+                "message": "Template is currently closed",
+                "questions": []
+            }
+        
+        # Get checklist categories with is_daily_audit = 1
+        filters = {"is_daily_audit": 1}
+        if restaurant and not template.applies_to_all_restaurants:
+            filters["restaurant"] = restaurant
+        
+        categories = frappe.get_all("Checklist Category",
+            filters=filters,
+            fields=["name", "category_name", "restaurant", "template", "overall_category_comment"]
+        )
+        
+        questions_data = []
+        for category in categories:
+            # Get questions for this category
+            category_doc = frappe.get_doc("Checklist Category", category.name)
+            
+            category_questions = []
+            for question_row in category_doc.questions:
+                question_doc = frappe.get_doc("Audit Question", question_row.question)
+                category_questions.append({
+                    "name": question_doc.name,
+                    "question_text": question_doc.question_text,
+                    "answer_type": question_doc.answer_type,
+                    "options": question_doc.options,
+                    "allow_image_upload": question_doc.allow_image_upload,
+                    "is_mandatory": question_doc.is_mandatory,
+                    "question_comment": question_doc.question_comment
+                })
+            
+            questions_data.append({
+                "category": category,
+                "questions": category_questions
+            })
+        
+        return {
+            "success": True,
+            "template": {
+                "name": template.name,
+                "template_name": template.template_name,
+                "description": template.description,
+                "estimated_duration": template.estimated_duration
+            },
+            "questions_data": questions_data,
+            "total_questions": sum(len(cat["questions"]) for cat in questions_data)
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error getting daily audit questions: {str(e)}", "Get Daily Audit Questions")
+        return {
+            "success": False,
+            "message": f"Error loading questions: {str(e)}",
+            "questions": []
+        }
+
+@frappe.whitelist()
+def start_daily_audit(template_name, restaurant):
+    """Start a daily audit session"""
+    try:
+        current_user = frappe.session.user
+        
+        # Get template and questions
+        questions_response = get_daily_audit_questions(template_name, restaurant)
+        
+        if not questions_response["success"]:
+            return questions_response
+        
+        # Create audit progress record
+        progress = frappe.get_doc({
+            "doctype": "Audit Progress",
+            "restaurant": restaurant,
+            "auditor": current_user,
+            "start_time": frappe.utils.now(),
+            "total_questions": questions_response["total_questions"],
+            "answered_questions": 0,
+            "completion_percentage": 0,
+            "is_completed": 0,
+            "answers_json": "{}",
+            "category_progress": "{}"
+        })
+        
+        progress.insert(ignore_permissions=True)
+        
+        # Update template last used date
+        template = frappe.get_doc("Daily Audit Template", template_name)
+        template.update_last_used()
+        
+        return {
+            "success": True,
+            "message": "Daily audit started successfully",
+            "progress_id": progress.name,
+            "questions_data": questions_response["questions_data"],
+            "template": questions_response["template"]
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error starting daily audit: {str(e)}", "Start Daily Audit")
+        return {
+            "success": False,
+            "message": f"Error starting audit: {str(e)}"
         }

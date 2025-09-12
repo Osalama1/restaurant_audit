@@ -1583,15 +1583,20 @@
 
         async function loadRestaurants() {
             try {
+                console.log('Loading restaurants...');
                 const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_restaurants', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include'
                 });
 
+                console.log('Response status:', response.status);
                 const result = await response.json();
+                console.log('API Response:', result);
+                
                 if (result.message?.success) {
                     allRestaurants = result.message.restaurants;
+                    console.log('Loaded restaurants:', allRestaurants.length);
                     document.getElementById('total-restaurants').textContent = allRestaurants.length;
                     
                     // Check for pending progress
@@ -1602,12 +1607,14 @@
                     document.getElementById('loading').style.display = 'none';
                     
                     if (allRestaurants.length === 0) {
+                        console.log('No restaurants found, showing empty state');
                         document.getElementById('empty-state').style.display = 'block';
                     } else {
                         document.getElementById('restaurants-container').style.display = 'grid';
                         renderRestaurants();
                     }
                 } else {
+                    console.error('API returned error:', result.message);
                     throw new Error(result.message?.message || 'Failed to load restaurants');
                 }
             } catch (error) {
@@ -1900,15 +1907,22 @@
 
         async function loadScheduledAudits() {
             try {
+                console.log('Loading scheduled audits...');
                 const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_scheduled_audits', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include'
                 });
 
+                console.log('Scheduled audits response status:', response.status);
                 const result = await response.json();
+                console.log('Scheduled audits API Response:', result);
+                
                 if (result.message?.success) {
+                    console.log('Scheduled audits loaded:', result.message.scheduled_audits.length);
                     renderScheduledAudits(result.message.scheduled_audits);
+                } else {
+                    console.error('Failed to load scheduled audits:', result.message);
                 }
             } catch (error) {
                 console.error('Error loading scheduled audits:', error);
@@ -1949,19 +1963,25 @@
 
         async function loadMyScheduledVisits() {
             try {
+                console.log('Loading my scheduled visits...');
                 const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_my_scheduled_visits', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     credentials: 'include'
                 });
 
+                console.log('My visits response status:', response.status);
                 const result = await response.json();
+                console.log('My visits API Response:', result);
+                
                 if (result.message?.success) {
+                    console.log('My visits loaded:', result.message.visits.length);
                     renderMyScheduledVisits(result.message.visits);
                     
                     // Update week period display
                     if (result.message.week_start && result.message.week_end) {
                         const weekLabel = `${formatDate(result.message.week_start)} - ${formatDate(result.message.week_end)}`;
+                        console.log('Week period:', weekLabel);
                         document.querySelector('.my-visits-section h3').innerHTML = `
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <path d="M9 11l3 3 8-8"/>
@@ -1970,6 +1990,8 @@
                             My Scheduled Visits for the Week (${weekLabel})
                         `;
                     }
+                } else {
+                    console.error('Failed to load my scheduled visits:', result.message);
                 }
             } catch (error) {
                 console.error('Error loading my scheduled visits:', error);
@@ -2045,7 +2067,8 @@
                         🕐 ${template.open_time} - ${template.close_time} (Cashier: ${template.cashier_opening_time})
                     </div>
                     <div class="template-actions">
-                        <button class="btn btn-primary" ${!template.is_currently_open ? 'disabled' : ''}>
+                        <button class="btn btn-primary" ${!template.is_currently_open ? 'disabled' : ''} 
+                                onclick="${template.is_currently_open ? `startDailyAudit('${template.name}')` : ''}"}>
                             ${template.is_currently_open ? 'Start Audit' : 'Closed'}
                         </button>
                     </div>
@@ -2062,6 +2085,43 @@
                 month: 'short',
                 day: 'numeric'
             });
+        }
+
+        async function startDailyAudit(templateName) {
+            try {
+                // For daily audit, we might not need a specific restaurant
+                // or we can let the user select one
+                const restaurant = null; // Will be handled by backend based on template settings
+                
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.start_daily_audit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        template_name: templateName,
+                        restaurant: restaurant
+                    }),
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                if (result.message?.success) {
+                    // Store audit data in sessionStorage for the audit form
+                    sessionStorage.setItem('dailyAuditData', JSON.stringify({
+                        template: result.message.template,
+                        questions_data: result.message.questions_data,
+                        progress_id: result.message.progress_id,
+                        is_daily_audit: true
+                    }));
+                    
+                    // Redirect to audit form
+                    window.location.href = `/audit-form?daily_audit=1&progress_id=${result.message.progress_id}`;
+                } else {
+                    alert(result.message?.message || 'Failed to start daily audit');
+                }
+            } catch (error) {
+                console.error('Error starting daily audit:', error);
+                alert('Error starting daily audit. Please try again.');
+            }
         }
 
         function updateTemplateStatus() {

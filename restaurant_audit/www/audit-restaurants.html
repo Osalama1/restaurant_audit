@@ -537,6 +537,376 @@
             transform: translateY(-1px);
         }
 
+        /* Tab Container Styles */
+        .tab-container {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: var(--neutral-100);
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--neutral-600);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            background: var(--white);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: var(--neutral-50);
+            color: var(--neutral-700);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Scheduled Audit Section */
+        .scheduled-audit-section {
+            background: var(--neutral-50);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .scheduled-audit-section h3 {
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .schedule-form {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--neutral-700);
+            font-size: 0.875rem;
+        }
+
+        .form-group select,
+        .form-group input {
+            padding: 0.75rem;
+            border: 2px solid var(--neutral-200);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .schedule-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .schedule-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .schedule-btn:disabled {
+            background: var(--neutral-400);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Scheduled Visits Grid */
+        .scheduled-visits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .scheduled-visit-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--neutral-200);
+        }
+
+        .scheduled-visit-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .visit-restaurant-name {
+            font-weight: 700;
+            color: var(--neutral-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .visit-date {
+            color: var(--neutral-600);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visit-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .visit-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .visit-status.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .visit-status.overdue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* My Scheduled Visits Table */
+        .my-visits-section {
+            background: var(--neutral-50);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .my-visits-section h3 {
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visits-table {
+            width: 100%;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+        }
+
+        .visits-table th,
+        .visits-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .visits-table th {
+            background: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .visits-table tbody tr:hover {
+            background: var(--neutral-50);
+        }
+
+        .visits-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Schedule Visit Button on Restaurant Cards */
+        .schedule-visit-btn {
+            background: var(--success-color);
+            color: var(--white);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .schedule-visit-btn:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+
+        /* Modal Styles */
+        .schedule-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .schedule-modal.active {
+            display: flex;
+        }
+
+        .schedule-modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .schedule-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .schedule-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--neutral-500);
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+        }
+
+        .schedule-modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .schedule-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-secondary {
+            background: var(--neutral-300);
+            color: var(--neutral-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neutral-400);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -578,6 +948,22 @@
             .user-info {
                 width: 100%;
                 justify-content: space-between;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+            }
+
+            .schedule-form {
+                flex-direction: column;
+            }
+
+            .form-group {
+                min-width: unset;
+            }
+
+            .scheduled-visits-grid {
+                grid-template-columns: 1fr;
             }
         }
 

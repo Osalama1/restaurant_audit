@@ -313,6 +313,7 @@ This project is licensed under the MIT License - see the [LICENSE](license.txt) 
 
 ## 🙏 Acknowledgments
 
+- **Developed by [OnTime Solutions](https://www.ontimesolutions.cloud/)** - Your trusted partner for cloud-powered ERP systems and business solutions
 - Built on the [Frappe Framework](https://frappeframework.com/)
 - Inspired by modern audit management systems
 - Community contributions and feedback
@@ -320,3 +321,17 @@ This project is licensed under the MIT License - see the [LICENSE](license.txt) 
 ---
 
 **Restaurant Audit System** - Ensuring quality and compliance across your restaurant network. 🍽️✨
+
+### About OnTime Solutions
+
+[OnTime Solutions](https://www.ontimesolutions.cloud/) specializes in empowering SMBs with affordable, user-friendly ERP systems and comprehensive IT services. We provide:
+
+- **Cloud-Powered ERP Systems** - Subscription-based solutions built on ERPNext
+- **Cybersecurity Services** - Complete protection for your operational technology
+- **IT Outsourcing** - Expert management of your IT infrastructure
+- **Network Security** - Comprehensive security solutions and risk assessments
+
+**Contact OnTime Solutions:**
+- 📧 Email: Info@solutions.erp-ontime.com
+- 📞 Phone: +20 106 461 0298
+- 🏢 Office: 5th Settlement, 1st District, Block 53 (inside Capital Mall) 2nd floor, Cairo, Egypt

@@ -1568,12 +1568,20 @@ console.log("🐞 result.message:", result.message);
             currentCategory = auditData.categories.find(c => c.id === categoryId);
             if (!currentCategory) return;
 
-            questionQueue = [...currentCategory.questions];
+            // Restore progress: filter out already answered questions
+            const answeredQuestionIds = Object.keys(auditData.answers);
+            questionQueue = currentCategory.questions.filter(question => 
+                !answeredQuestionIds.includes(question.id.toString()) && 
+                !answeredQuestionIds.includes(question.id)
+            );
             followUpQueue = [];
 
             // Setup modal
             document.getElementById('chat-title').textContent = currentCategory.name;
-            document.getElementById('chat-subtitle').textContent = `${currentCategory.questions.length} questions to complete`;
+            const answeredCount = currentCategory.questions.length - questionQueue.length;
+            const totalCount = currentCategory.questions.length;
+            document.getElementById('chat-subtitle').textContent = 
+                `${answeredCount}/${totalCount} questions completed (${questionQueue.length} remaining)`;
             document.getElementById('chat-messages').innerHTML = '';
 
             // Show modal
@@ -1581,11 +1589,24 @@ console.log("🐞 result.message:", result.message);
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('active'), 10);
 
-            // Start first question
-            processNextInQueue();
+            // Show progress restoration message if there are answered questions
+            if (answeredCount > 0) {
+                addMessage(`📋 Resuming from question ${answeredCount + 1} of ${totalCount} (${answeredCount} already completed)`, "bot");
+                setTimeout(() => {
+                    processNextInQueue();
+                }, 1500);
+            } else {
+                // Start first question immediately if no progress
+                processNextInQueue();
+            }
         }
 
         function closeChat() {
+            // Save current progress before closing
+            if (auditData.isAutoSaveEnabled) {
+                saveProgress();
+            }
+            
             const modal = document.getElementById('chat-modal');
             modal.classList.remove('active');
             
@@ -1597,11 +1618,6 @@ console.log("🐞 result.message:", result.message);
                 updateDashboard();
                 updateTimeline();
                 updateQuickStats();
-                
-                // Auto-save progress
-                if (auditData.isAutoSaveEnabled) {
-                    saveProgress();
-                }
             }, 300);
         }
 
@@ -1625,8 +1641,9 @@ console.log("🐞 result.message:", result.message);
         function updateChatProgress() {
             const totalQuestions = currentCategory.questions.length;
             const remainingQuestions = questionQueue.length;
-            const currentQuestionIndex = totalQuestions - remainingQuestions;
-            const progress = Math.round((currentQuestionIndex / totalQuestions) * 100);
+            const answeredQuestions = totalQuestions - remainingQuestions;
+            const currentQuestionIndex = answeredQuestions; // Current question is the next one to answer
+            const progress = Math.round((answeredQuestions / totalQuestions) * 100);
 
             document.getElementById('question-counter').textContent = `${currentQuestionIndex + 1} of ${totalQuestions}`;
             document.getElementById('chat-progress-fill').style.width = `${progress}%`;

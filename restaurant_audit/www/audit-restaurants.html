@@ -537,6 +537,593 @@
             transform: translateY(-1px);
         }
 
+        /* Tab Container Styles */
+        .tab-container {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-bottom: 2rem;
+            overflow: hidden;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .tab-buttons {
+            display: flex;
+            background: var(--neutral-100);
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--neutral-600);
+            transition: var(--transition);
+            position: relative;
+        }
+
+        .tab-button.active {
+            color: var(--primary-color);
+            background: var(--white);
+        }
+
+        .tab-button.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+        }
+
+        .tab-button:hover:not(.active) {
+            background: var(--neutral-50);
+            color: var(--neutral-700);
+        }
+
+        .tab-content {
+            display: none;
+            padding: 2rem;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Scheduled Audit Section */
+        .scheduled-audit-section {
+            background: var(--neutral-50);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .scheduled-audit-section h3 {
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .schedule-form {
+            display: flex;
+            gap: 1rem;
+            align-items: end;
+            flex-wrap: wrap;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .form-group label {
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--neutral-700);
+            font-size: 0.875rem;
+        }
+
+        .form-group select,
+        .form-group input {
+            padding: 0.75rem;
+            border: 2px solid var(--neutral-200);
+            border-radius: 8px;
+            font-size: 0.875rem;
+            transition: var(--transition);
+            background: var(--white);
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .schedule-btn {
+            background: var(--primary-color);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .schedule-btn:hover {
+            background: #5a6fd8;
+            transform: translateY(-1px);
+        }
+
+        .schedule-btn:disabled {
+            background: var(--neutral-400);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Scheduled Visits Grid */
+        .scheduled-visits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem;
+        }
+
+        .scheduled-visit-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: var(--shadow-sm);
+            transition: var(--transition);
+            border: 1px solid var(--neutral-200);
+        }
+
+        .scheduled-visit-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .visit-restaurant-name {
+            font-weight: 700;
+            color: var(--neutral-800);
+            margin-bottom: 0.5rem;
+        }
+
+        .visit-date {
+            color: var(--neutral-600);
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visit-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .visit-status.pending {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .visit-status.completed {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .visit-status.overdue {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* My Scheduled Visits Table */
+        .my-visits-section {
+            background: var(--neutral-50);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .my-visits-section h3 {
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .visits-table {
+            width: 100%;
+            background: var(--white);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--neutral-200);
+        }
+
+        .visits-table th,
+        .visits-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--neutral-200);
+        }
+
+        .visits-table th {
+            background: var(--primary-color);
+            color: var(--white);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .visits-table tbody tr:hover {
+            background: var(--neutral-50);
+        }
+
+        .visits-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Schedule Visit Button on Restaurant Cards */
+        .schedule-visit-btn {
+            background: var(--success-color);
+            color: var(--white);
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .schedule-visit-btn:hover {
+            background: #059669;
+            transform: scale(1.1);
+        }
+
+        /* Modal Styles */
+        .schedule-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .schedule-modal.active {
+            display: flex;
+        }
+
+        .schedule-modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: var(--shadow-xl);
+        }
+
+        .schedule-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .schedule-modal-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--neutral-500);
+            padding: 0.5rem;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .close-btn:hover {
+            background: var(--neutral-100);
+            color: var(--neutral-700);
+        }
+
+        .schedule-modal-body {
+            margin-bottom: 1.5rem;
+        }
+
+        .schedule-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background: #5a6fd8;
+        }
+
+        .btn-secondary {
+            background: var(--neutral-300);
+            color: var(--neutral-700);
+        }
+
+        .btn-secondary:hover {
+            background: var(--neutral-400);
+        }
+
+        /* Daily Audit Manager Styles */
+        .template-management-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .section-header h3 {
+            color: var(--neutral-800);
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .time-controls-section {
+            background: var(--neutral-50);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .time-controls-section h4 {
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .time-controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .schedule-info {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .info-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid var(--neutral-200);
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .info-card svg {
+            color: var(--primary-color);
+        }
+
+        .templates-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1rem;
+        }
+
+        .template-card {
+            background: var(--white);
+            border-radius: 8px;
+            padding: 1.5rem;
+            border: 2px solid var(--neutral-200);
+            transition: var(--transition);
+        }
+
+        .template-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+        }
+
+        .template-card.disabled {
+            opacity: 0.6;
+            border-color: var(--neutral-300);
+        }
+
+        .template-card.disabled::after {
+            content: 'CLOSED';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--error-color);
+            color: var(--white);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .template-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--neutral-800);
+        }
+
+        .template-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .template-status.active {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .template-status.closed {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .template-description {
+            color: var(--neutral-600);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .template-schedule {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.875rem;
+            color: var(--neutral-500);
+            margin-bottom: 1rem;
+        }
+
+        .template-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .template-actions .btn {
+            padding: 0.5rem 1rem;
+            font-size: 0.75rem;
+        }
+
+        .daily-stats-section {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--neutral-200);
+        }
+
+        .daily-stats-section h3 {
+            color: var(--neutral-800);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .daily-stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Template Modal */
+        .template-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .template-modal.active {
+            display: flex;
+        }
+
+        .template-modal-content {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+        }
+
         /* Responsive Design */
         @media (max-width: 768px) {
             .container {
@@ -578,6 +1165,22 @@
             .user-info {
                 width: 100%;
                 justify-content: space-between;
+            }
+
+            .tab-buttons {
+                flex-direction: column;
+            }
+
+            .schedule-form {
+                flex-direction: column;
+            }
+
+            .form-group {
+                min-width: unset;
+            }
+
+            .scheduled-visits-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -637,63 +1240,249 @@
     <div class="container">
         <!-- Page Header -->
         <div class="page-header fade-in">
-            <h1 class="page-title">Select Restaurant</h1>
-            <p class="page-subtitle">Choose a restaurant to begin the audit process. You can save progress and continue later.</p>
+            <h1 class="page-title">Restaurant Management</h1>
+            <p class="page-subtitle">Manage your restaurant audits, scheduled visits, and daily operations</p>
         </div>
 
-        <!-- Dashboard Stats -->
-        <div class="stats-grid fade-in" id="stats-grid">
-            <div class="stat-card">
-                <div class="stat-value" id="total-restaurants">0</div>
-                <div class="stat-label">Available Restaurants</div>
+        <!-- Tab Container -->
+        <div class="tab-container">
+            <div class="tab-buttons">
+                <button class="tab-button active" onclick="switchTab('regular-assigned')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                        <polyline points="9,22 9,12 15,12 15,22"/>
+                    </svg>
+                    Regular Assigned Restaurant
+                </button>
+                <button class="tab-button" onclick="switchTab('daily-audit')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
+                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                        <line x1="16" y1="2" x2="16" y2="6"/>
+                        <line x1="8" y1="2" x2="8" y2="6"/>
+                        <line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    Daily Audit (Manager)
+                </button>
             </div>
-            <div class="stat-card">
-                <div class="stat-value" id="total-audits">0</div>
-                <div class="stat-label">Total Audits</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="pending-progress">0</div>
-                <div class="stat-label">Pending Progress</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="avg-score">0</div>
-                <div class="stat-label">Average Score</div>
-            </div>
-        </div>
 
-        <!-- Controls -->
-        <div class="controls fade-in">
-            <div class="search-box">
-                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"/>
-                    <path d="M21 21l-4.35-4.35"/>
-                </svg>
-                <input type="text" class="search-input" id="search-input" placeholder="Search restaurants...">
+            <!-- Regular Assigned Restaurant Tab -->
+            <div id="regular-assigned-content" class="tab-content active">
+                <!-- Scheduled Audit Section -->
+                <div class="scheduled-audit-section">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                            <line x1="8" y1="14" x2="16" y2="14"/>
+                            <line x1="8" y1="18" x2="12" y2="18"/>
+                        </svg>
+                        Schedule Your Weekly Audits
+                    </h3>
+                    <div class="schedule-form">
+                        <div class="form-group">
+                            <label for="restaurant-select">Select Restaurant</label>
+                            <select id="restaurant-select">
+                                <option value="">Choose a restaurant...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="visit-date">Visit Date</label>
+                            <input type="date" id="visit-date" min="">
+                        </div>
+                        <button class="schedule-btn" onclick="scheduleAudit()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Schedule Audit
+                        </button>
+                    </div>
+
+                    <!-- Scheduled Visits Display -->
+                    <div id="scheduled-visits-container">
+                        <div class="scheduled-visits-grid" id="scheduled-visits-grid">
+                            <!-- Scheduled visits will be loaded here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Controls -->
+                <div class="controls fade-in">
+                    <div class="search-box">
+                        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"/>
+                            <path d="M21 21l-4.35-4.35"/>
+                        </svg>
+                        <input type="text" class="search-input" id="search-input" placeholder="Search restaurants...">
+                    </div>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" onclick="filterRestaurants('all')">All</button>
+                        <button class="filter-btn" onclick="filterRestaurants('active')">Active</button>
+                        <button class="filter-btn" onclick="filterRestaurants('pending')">Pending</button>
+                    </div>
+                </div>
+
+                <!-- Loading State -->
+                <div id="loading" class="loading">
+                    <div class="spinner"></div>
+                    Loading restaurants...
+                </div>
+
+                <!-- Error State -->
+                <div id="error" class="error" style="display: none;"></div>
+
+                <!-- Restaurants Grid -->
+                <div id="restaurants-container" class="restaurants-grid" style="display: none;"></div>
+
+                <!-- Empty State -->
+                <div id="empty-state" class="empty-state" style="display: none;">
+                    <div class="empty-state-icon">🏪</div>
+                    <h3>No Restaurants Available</h3>
+                    <p>You don't have any restaurants assigned to your account. Please contact your administrator.</p>
+                </div>
+
+                <!-- My Scheduled Visits Table -->
+                <div class="my-visits-section">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3 8-8"/>
+                            <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"/>
+                        </svg>
+                        My Scheduled Visits for the Week
+                    </h3>
+                    <table class="visits-table" id="my-scheduled-visits-table">
+                        <thead>
+                            <tr>
+                                <th>Restaurant</th>
+                                <th>Next Audit Date</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="my-visits-tbody">
+                            <!-- Scheduled visits will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Dashboard Stats -->
+                <div class="stats-grid fade-in" id="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-restaurants">0</div>
+                        <div class="stat-label">Available Restaurants</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="total-audits">0</div>
+                        <div class="stat-label">Total Audits</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="pending-progress">0</div>
+                        <div class="stat-label">Pending Progress</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="avg-score">0</div>
+                        <div class="stat-label">Average Score</div>
+                    </div>
+                </div>
             </div>
-            <div class="filter-buttons">
-                <button class="filter-btn active" onclick="filterRestaurants('all')">All</button>
-                <button class="filter-btn" onclick="filterRestaurants('active')">Active</button>
-                <button class="filter-btn" onclick="filterRestaurants('pending')">Pending</button>
+
+            <!-- Daily Audit (Manager) Tab -->
+            <div id="daily-audit-content" class="tab-content">
+                <!-- Template Management Section -->
+                <div class="template-management-section">
+                    <div class="section-header">
+                        <h3>
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                                <polyline points="14,2 14,8 20,8"/>
+                                <line x1="16" y1="13" x2="8" y2="13"/>
+                                <line x1="16" y1="17" x2="8" y2="17"/>
+                                <polyline points="10,9 9,9 8,9"/>
+                            </svg>
+                            Daily Audit Templates
+                        </h3>
+                        <button class="btn btn-primary" onclick="openTemplateModal()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add Template
+                        </button>
+                    </div>
+
+                    <!-- Template Time Controls -->
+                    <div class="time-controls-section">
+                        <h4>Template Scheduling</h4>
+                        <div class="time-controls-grid">
+                            <div class="form-group">
+                                <label for="template-open-time">Template Open Time</label>
+                                <input type="time" id="template-open-time" value="06:00">
+                            </div>
+                            <div class="form-group">
+                                <label for="template-close-time">Template Close Time (Before Cashier Opening)</label>
+                                <input type="time" id="template-close-time" value="08:30">
+                            </div>
+                            <div class="form-group">
+                                <label for="cashier-opening-time">Cashier Opening Time</label>
+                                <input type="time" id="cashier-opening-time" value="09:00">
+                            </div>
+                            <button class="btn btn-secondary" onclick="updateTemplateSchedule()">Update Schedule</button>
+                        </div>
+                        <div class="schedule-info">
+                            <div class="info-card">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <polyline points="12,6 12,12 16,14"/>
+                                </svg>
+                                <span id="current-template-status">Templates are currently: <strong>Open</strong></span>
+                            </div>
+                            <div class="info-card">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <path d="M12 6v6l4 2"/>
+                                </svg>
+                                <span id="next-status-change">Next change: <strong id="next-change-time">--:--</strong></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Templates List -->
+                    <div class="templates-list" id="templates-list">
+                        <!-- Templates will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Daily Audit Stats -->
+                <div class="daily-stats-section">
+                    <h3>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="18" y1="20" x2="18" y2="10"/>
+                            <line x1="12" y1="20" x2="12" y2="4"/>
+                            <line x1="6" y1="20" x2="6" y2="14"/>
+                        </svg>
+                        Today's Audit Statistics
+                    </h3>
+                    <div class="daily-stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="today-completed-audits">0</div>
+                            <div class="stat-label">Completed Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="today-pending-audits">0</div>
+                            <div class="stat-label">Pending Today</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="templates-active">0</div>
+                            <div class="stat-label">Active Templates</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avg-completion-time">0</div>
+                            <div class="stat-label">Avg Completion (min)</div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-
-        <!-- Loading State -->
-        <div id="loading" class="loading">
-            <div class="spinner"></div>
-            Loading restaurants...
-        </div>
-
-        <!-- Error State -->
-        <div id="error" class="error" style="display: none;"></div>
-
-        <!-- Restaurants Grid -->
-        <div id="restaurants-container" class="restaurants-grid" style="display: none;"></div>
-
-        <!-- Empty State -->
-        <div id="empty-state" class="empty-state" style="display: none;">
-            <div class="empty-state-icon">🏪</div>
-            <h3>No Restaurants Available</h3>
-            <p>You don't have any restaurants assigned to your account. Please contact your administrator.</p>
         </div>
     </div>
 
@@ -707,6 +1496,70 @@
             <div class="modal-actions">
                 <button class="modal-btn secondary" onclick="startNewAudit()">Start New Audit</button>
                 <button class="modal-btn primary" onclick="continueAudit()">Continue Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedule Visit Modal -->
+    <div class="schedule-modal" id="schedule-visit-modal">
+        <div class="schedule-modal-content">
+            <div class="schedule-modal-header">
+                <h3 class="schedule-modal-title">Schedule Visit</h3>
+                <button class="close-btn" onclick="closeScheduleModal()">&times;</button>
+            </div>
+            <div class="schedule-modal-body">
+                <div class="form-group">
+                    <label for="modal-restaurant-name">Restaurant</label>
+                    <input type="text" id="modal-restaurant-name" readonly style="background: var(--neutral-50);">
+                </div>
+                <div class="form-group">
+                    <label for="modal-visit-date">Visit Date</label>
+                    <input type="date" id="modal-visit-date" min="">
+                </div>
+            </div>
+            <div class="schedule-modal-footer">
+                <button class="btn btn-secondary" onclick="closeScheduleModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="confirmScheduleVisit()">Schedule Visit</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Modal -->
+    <div class="template-modal" id="template-modal">
+        <div class="template-modal-content">
+            <div class="schedule-modal-header">
+                <h3 class="schedule-modal-title">Add Daily Audit Template</h3>
+                <button class="close-btn" onclick="closeTemplateModal()">&times;</button>
+            </div>
+            <div class="schedule-modal-body">
+                <div class="form-group">
+                    <label for="template-name">Template Name</label>
+                    <input type="text" id="template-name" placeholder="Enter template name...">
+                </div>
+                <div class="form-group">
+                    <label for="template-description">Description</label>
+                    <textarea id="template-description" rows="3" placeholder="Enter template description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="template-restaurant">Assign to Restaurant (Optional)</label>
+                    <select id="template-restaurant">
+                        <option value="">All Restaurants</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="template-questions">Number of Questions</label>
+                    <input type="number" id="template-questions" min="1" max="50" value="10">
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="template-auto-schedule"> 
+                        Auto-schedule based on time controls
+                    </label>
+                </div>
+            </div>
+            <div class="schedule-modal-footer">
+                <button class="btn btn-secondary" onclick="closeTemplateModal()">Cancel</button>
+                <button class="btn btn-primary" onclick="createTemplate()">Create Template</button>
             </div>
         </div>
     </div>
@@ -862,8 +1715,16 @@
                     <div>
                         <div class="restaurant-name">${restaurant.restaurant_name}</div>
                     </div>
-                    <div class="restaurant-status status-${restaurant.status || 'active'}">
-                        ${restaurant.status || 'active'}
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                        <button class="schedule-visit-btn" onclick="event.stopPropagation(); openScheduleModal('${restaurant.name}', '${restaurant.restaurant_name}')" title="Schedule Visit">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                        </button>
+                        <div class="restaurant-status status-${restaurant.status || 'active'}">
+                            ${restaurant.status || 'active'}
+                        </div>
                     </div>
                 </div>
                 
@@ -1045,6 +1906,155 @@
             if (e.key === 'Escape') {
                 document.getElementById('progress-modal').classList.remove('active');
             }
+        });
+
+        // New functionality variables
+        let selectedRestaurantForScheduling = null;
+        let templateSchedule = { openTime: '06:00', closeTime: '08:30', cashierOpenTime: '09:00' };
+
+        // Tab switching functionality
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+            document.getElementById(tabName + '-content').classList.add('active');
+            event.target.classList.add('active');
+            if (tabName === 'daily-audit') loadDailyAuditData();
+        }
+
+        // Scheduling functions
+        function openScheduleModal(restaurantId, restaurantName) {
+            selectedRestaurantForScheduling = restaurantId;
+            document.getElementById('modal-restaurant-name').value = restaurantName;
+            document.getElementById('schedule-visit-modal').classList.add('active');
+        }
+
+        function closeScheduleModal() {
+            document.getElementById('schedule-visit-modal').classList.remove('active');
+        }
+
+        // Template functions
+        function openTemplateModal() {
+            document.getElementById('template-modal').classList.add('active');
+        }
+
+        function closeTemplateModal() {
+            document.getElementById('template-modal').classList.remove('active');
+        }
+
+        function isTemplateOpen() {
+            const now = new Date();
+            const currentTime = now.getHours() * 60 + now.getMinutes();
+            const openTime = parseInt(templateSchedule.openTime.split(':')[0]) * 60 + parseInt(templateSchedule.openTime.split(':')[1]);
+            const closeTime = parseInt(templateSchedule.closeTime.split(':')[0]) * 60 + parseInt(templateSchedule.closeTime.split(':')[1]);
+            return currentTime >= openTime && currentTime <= closeTime;
+        }
+
+        function loadDailyAuditData() {
+            updateTemplateStatus();
+            renderSampleTemplates();
+        }
+
+        function updateTemplateStatus() {
+            const isOpen = isTemplateOpen();
+            document.getElementById('current-template-status').innerHTML = 
+                `Templates are currently: <strong style="color: ${isOpen ? 'var(--success-color)' : 'var(--error-color)'};">${isOpen ? 'Open' : 'Closed'}</strong>`;
+        }
+
+        function renderSampleTemplates() {
+            const container = document.getElementById('templates-list');
+            const isOpen = isTemplateOpen();
+            container.innerHTML = `
+                <div class="template-card ${isOpen ? '' : 'disabled'}" style="position: relative;">
+                    <div class="template-header">
+                        <div class="template-name">Morning Opening Checklist</div>
+                        <div class="template-status ${isOpen ? 'active' : 'closed'}">${isOpen ? 'Active' : 'Closed'}</div>
+                    </div>
+                    <div class="template-description">Pre-opening checklist to ensure restaurant readiness before cashier opening</div>
+                    <div class="template-schedule">📍 All Restaurants | 📝 15 questions</div>
+                    <div class="template-schedule">🕐 Daily ${templateSchedule.openTime} - ${templateSchedule.closeTime}</div>
+                    <div class="template-actions">
+                        <button class="btn btn-primary" ${isOpen ? '' : 'disabled'}>${isOpen ? 'Start Audit' : 'Closed'}</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Additional functions for scheduling and template management
+        async function scheduleAudit() {
+            const restaurantId = document.getElementById('restaurant-select').value;
+            const visitDate = document.getElementById('visit-date').value;
+            if (!restaurantId || !visitDate) {
+                alert('Please select both restaurant and visit date.');
+                return;
+            }
+            // Simulate successful scheduling
+            alert('Audit visit scheduled successfully!');
+            document.getElementById('restaurant-select').value = '';
+            document.getElementById('visit-date').value = '';
+        }
+
+        async function confirmScheduleVisit() {
+            const visitDate = document.getElementById('modal-visit-date').value;
+            if (!visitDate) {
+                alert('Please select a visit date.');
+                return;
+            }
+            alert('Audit visit scheduled successfully!');
+            closeScheduleModal();
+        }
+
+        function updateTemplateSchedule() {
+            const openTime = document.getElementById('template-open-time').value;
+            const closeTime = document.getElementById('template-close-time').value;
+            const cashierOpenTime = document.getElementById('cashier-opening-time').value;
+            
+            if (!openTime || !closeTime || !cashierOpenTime) {
+                alert('Please fill in all time fields.');
+                return;
+            }
+            
+            templateSchedule = { openTime, closeTime, cashierOpenTime };
+            updateTemplateStatus();
+            renderSampleTemplates();
+            alert('Template schedule updated successfully!');
+        }
+
+        async function createTemplate() {
+            const name = document.getElementById('template-name').value;
+            const description = document.getElementById('template-description').value;
+            
+            if (!name || !description) {
+                alert('Please fill in template name and description.');
+                return;
+            }
+            
+            alert('Template created successfully!');
+            closeTemplateModal();
+            renderSampleTemplates();
+        }
+
+        // Initialize date inputs and load restaurant options
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('visit-date').min = today;
+            document.getElementById('modal-visit-date').min = today;
+            
+            // Load restaurant options after restaurants are loaded
+            setTimeout(() => {
+                if (allRestaurants.length > 0) {
+                    const select = document.getElementById('restaurant-select');
+                    select.innerHTML = '<option value="">Choose a restaurant...</option>';
+                    allRestaurants.forEach(restaurant => {
+                        const option = document.createElement('option');
+                        option.value = restaurant.name;
+                        option.textContent = restaurant.restaurant_name;
+                        select.appendChild(option);
+                    });
+                }
+            }, 2000);
+            
+            // Update template status every minute
+            setInterval(updateTemplateStatus, 60000);
         });
     </script>
 </body>

@@ -1,0 +1,1780 @@
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    --primary-color: #667eea;
+    --secondary-color: #764ba2;
+    --success-color: #10b981;
+    --warning-color: #f59e0b;
+    --error-color: #ef4444;
+    --neutral-100: #f8fafc;
+    --neutral-200: #e2e8f0;
+    --neutral-300: #cbd5e1;
+    --neutral-400: #94a3b8;
+    --neutral-500: #64748b;
+    --neutral-600: #475569;
+    --neutral-700: #334155;
+    --neutral-800: #1e293b;
+    --neutral-900: #0f172a;
+    --white: #ffffff;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1);
+    --border-radius: 12px;
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--neutral-100);
+    color: var(--neutral-800);
+    line-height: 1.6;
+}
+
+/* Header */
+.header {
+    background: var(--white);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--neutral-200);
+    padding: 1rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
+}
+
+.header-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    background: var(--primary-gradient);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.875rem;
+}
+
+.logout-btn {
+    background: var(--error-color);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
+/* Main Container */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Page Header */
+.page-header {
+    text-align: center;
+    margin-bottom: 3rem;
+}
+
+.page-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 1rem;
+}
+
+.page-subtitle {
+    font-size: 1.125rem;
+    color: var(--neutral-500);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Dashboard Stats */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 3rem;
+}
+
+.stat-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: var(--shadow-md);
+    border: 1px solid var(--neutral-200);
+    transition: var(--transition);
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--neutral-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+}
+
+/* Filter and Search */
+.controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.75rem 1rem 0.75rem 3rem;
+    border: 2px solid var(--neutral-200);
+    border-radius: 10px;
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--neutral-400);
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-btn {
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--neutral-200);
+    background: var(--white);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+    color: var(--neutral-600);
+}
+
+.filter-btn.active {
+    background: var(--primary-color);
+    color: var(--white);
+    border-color: var(--primary-color);
+}
+
+.filter-btn:hover:not(.active) {
+    border-color: var(--primary-color);
+    background: var(--neutral-50);
+}
+
+/* Restaurant Grid */
+.restaurants-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.restaurant-card {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    border: 2px solid var(--neutral-200);
+    cursor: pointer;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.restaurant-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--neutral-200);
+    transition: var(--transition);
+}
+
+.restaurant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--primary-color);
+}
+
+.restaurant-card:hover::before {
+    background: var(--primary-gradient);
+}
+
+.restaurant-card.has-progress {
+    border-color: var(--warning-color);
+}
+
+.restaurant-card.has-progress::before {
+    background: var(--warning-color);
+}
+
+.restaurant-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.restaurant-name {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--neutral-800);
+    margin-bottom: 0.25rem;
+}
+
+.restaurant-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.restaurant-address {
+    color: var(--neutral-500);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.restaurant-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 0.75rem;
+    background: var(--neutral-50);
+    border-radius: 8px;
+}
+
+.stat-item-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.stat-item-label {
+    font-size: 0.75rem;
+    color: var(--neutral-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.restaurant-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: var(--neutral-400);
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--neutral-200);
+}
+
+.location-info {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.location-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--success-color);
+}
+
+.progress-indicator {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    background: var(--warning-color);
+    color: var(--white);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Loading and Error States */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4rem;
+    color: var(--neutral-500);
+}
+
+.spinner {
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--neutral-200);
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-right: 1rem;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.error {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: var(--error-color);
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    text-align: center;
+    margin: 2rem 0;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: var(--neutral-500);
+}
+
+.empty-state-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+    opacity: 0.3;
+}
+
+.empty-state h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--neutral-600);
+    margin-bottom: 0.5rem;
+}
+
+/* Pending Progress Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: var(--shadow-xl);
+}
+
+.modal-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--neutral-800);
+    margin-bottom: 0.5rem;
+}
+
+.modal-subtitle {
+    color: var(--neutral-500);
+    font-size: 0.875rem;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.modal-btn {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.modal-btn.primary {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.modal-btn.secondary {
+    background: var(--neutral-200);
+    color: var(--neutral-600);
+}
+
+.modal-btn:hover {
+    transform: translateY(-1px);
+}
+
+/* Tab Container Styles */
+.tab-container {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    border: 1px solid var(--neutral-200);
+}
+
+.tab-buttons {
+    display: flex;
+    background: var(--neutral-100);
+    border-bottom: 1px solid var(--neutral-200);
+}
+
+.tab-button {
+    flex: 1;
+    padding: 1rem 2rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--neutral-600);
+    transition: var(--transition);
+    position: relative;
+}
+
+.tab-button.active {
+    color: var(--primary-color);
+    background: var(--white);
+}
+
+.tab-button.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-gradient);
+}
+
+.tab-button:hover:not(.active) {
+    background: var(--neutral-50);
+    color: var(--neutral-700);
+}
+
+.tab-content {
+    display: none;
+    padding: 2rem;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Scheduled Audit Section */
+.scheduled-audit-section {
+    background: var(--neutral-50);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--neutral-200);
+}
+
+.scheduled-audit-section h3 {
+    color: var(--neutral-800);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.schedule-form {
+    display: flex;
+    gap: 1rem;
+    align-items: end;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--neutral-700);
+    font-size: 0.875rem;
+}
+
+.form-group select,
+.form-group input {
+    padding: 0.75rem;
+    border: 2px solid var(--neutral-200);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    transition: var(--transition);
+    background: var(--white);
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.schedule-btn {
+    background: var(--primary-color);
+    color: var(--white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.schedule-btn:hover {
+    background: #5a6fd8;
+    transform: translateY(-1px);
+}
+
+.schedule-btn:disabled {
+    background: var(--neutral-400);
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Scheduled Visits Grid */
+.scheduled-visits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1rem;
+}
+
+.scheduled-visit-card {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 1rem;
+    box-shadow: var(--shadow-sm);
+    transition: var(--transition);
+    border: 1px solid var(--neutral-200);
+}
+
+.scheduled-visit-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+.visit-restaurant-name {
+    font-weight: 700;
+    color: var(--neutral-800);
+    margin-bottom: 0.5rem;
+}
+
+.visit-date {
+    color: var(--neutral-600);
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.visit-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.visit-status.pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.visit-status.completed {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.visit-status.overdue {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+/* My Scheduled Visits Table */
+.my-visits-section {
+    background: var(--neutral-50);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--neutral-200);
+}
+
+.my-visits-section h3 {
+    color: var(--neutral-800);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.visits-table {
+    width: 100%;
+    background: var(--white);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--neutral-200);
+}
+
+.visits-table th,
+.visits-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--neutral-200);
+}
+
+.visits-table th {
+    background: var(--primary-color);
+    color: var(--white);
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.visits-table tbody tr:hover {
+    background: var(--neutral-50);
+}
+
+.visits-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Schedule Visit Button on Restaurant Cards */
+.schedule-visit-btn {
+    background: var(--success-color);
+    color: var(--white);
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    transition: var(--transition);
+    flex-shrink: 0;
+}
+
+.schedule-visit-btn:hover {
+    background: #059669;
+    transform: scale(1.1);
+}
+
+/* Modal Styles */
+.schedule-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.schedule-modal.active {
+    display: flex;
+}
+
+.schedule-modal-content {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 500px;
+    width: 90%;
+    box-shadow: var(--shadow-xl);
+}
+
+.schedule-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.schedule-modal-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--neutral-800);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--neutral-500);
+    padding: 0.5rem;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.close-btn:hover {
+    background: var(--neutral-100);
+    color: var(--neutral-700);
+}
+
+.schedule-modal-body {
+    margin-bottom: 1.5rem;
+}
+
+.schedule-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: var(--white);
+}
+
+.btn-primary:hover {
+    background: #5a6fd8;
+}
+
+.btn-secondary {
+    background: var(--neutral-300);
+    color: var(--neutral-700);
+}
+
+.btn-secondary:hover {
+    background: var(--neutral-400);
+}
+
+/* Daily Audit Manager Styles */
+.template-management-section {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--neutral-200);
+}
+
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.section-header h3 {
+    color: var(--neutral-800);
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.time-controls-section {
+    background: var(--neutral-50);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--neutral-200);
+}
+
+.time-controls-section h4 {
+    color: var(--neutral-800);
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.time-controls-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.schedule-info {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.info-card {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border: 1px solid var(--neutral-200);
+    flex: 1;
+    min-width: 250px;
+}
+
+.info-card svg {
+    color: var(--primary-color);
+}
+
+.templates-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+}
+
+.template-card {
+    background: var(--white);
+    border-radius: 8px;
+    padding: 1.5rem;
+    border: 2px solid var(--neutral-200);
+    transition: var(--transition);
+}
+
+.template-card:hover {
+    border-color: var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+.template-card.disabled {
+    opacity: 0.6;
+    border-color: var(--neutral-300);
+}
+
+.template-card.disabled::after {
+    content: 'CLOSED';
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--error-color);
+    color: var(--white);
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.template-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.template-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--neutral-800);
+}
+
+.template-status {
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.template-status.active {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.template-status.closed {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.template-description {
+    color: var(--neutral-600);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+       
+    line-height: 1.4;
+}
+
+.template-schedule {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--neutral-500);
+    margin-bottom: 1rem;
+}
+
+.template-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.template-actions .btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.75rem;
+}
+
+.daily-stats-section {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--neutral-200);
+}
+
+.daily-stats-section h3 {
+    color: var(--neutral-800);
+    margin-bottom: 1rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.daily-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+/* Template Modal */
+.template-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.template-modal.active {
+    display: flex;
+}
+
+.template-modal-content {
+    background: var(--white);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .page-title {
+        font-size: 2rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .restaurants-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .search-box {
+        max-width: none;
+    }
+
+    .filter-buttons {
+        justify-content: center;
+    }
+
+    .header-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .user-info {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .tab-buttons {
+        flex-direction: column;
+    }
+
+    .schedule-form {
+        flex-direction: column;
+    }
+
+    .form-group {
+        min-width: unset;
+    }
+
+    .scheduled-visits-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.fade-in {
+    animation: fadeIn 0.6s ease-out;
+}
+
+.restaurant-card {
+    animation: fadeIn 0.6s ease-out;
+}
+.restaurant-employee {
+    font-size: 0.85rem;
+    color: var(--neutral-600);
+    margin: 0.5rem 0 1rem 0;
+    line-height: 1.4;
+    padding: 0.5rem 0.75rem;
+    background: var(--neutral-50);
+    border-left: 3px solid var(--primary-color);
+    border-radius: 6px;
+}
+
+.restaurant-employee strong {
+    color: var(--neutral-800);
+    font-weight: 600;
+}
+
+
+.restaurant-card:nth-child(1) { animation-delay: 0.1s; }
+.restaurant-card:nth-child(2) { animation-delay: 0.2s; }
+.restaurant-card:nth-child(3) { animation-delay: 0.3s; }
+.restaurant-card:nth-child(4) { animation-delay: 0.4s; }
+.restaurant-card:nth-child(5) { animation-delay: 0.5s; }
+.restaurant-card:nth-child(6) { animation-delay: 0.6s; }
+    </style>
+<style>
+.week-header {
+    grid-column: 1 / -1;
+    padding: 1rem;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 8px;
+    margin: 1rem 0 0.5rem 0;
+    text-align: center;
+}
+
+.week-header h4 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.scheduled-visit-card.current-week {
+    border-left: 4px solid var(--warning-color);
+    background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+}
+
+.scheduled-visit-card.next-week {
+    border-left: 4px solid var(--primary-color);
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+}
+
+.week-indicator {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.urgency-indicator {
+    margin-top: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    background: var(--warning-color);
+    color: white;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+}
+
+.week-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.week-badge.current {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.week-badge.next {
+    background: #e0f2fe;
+    color: #0369a1;
+}
+
+.summary-stats {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.summary-stats .stat {
+    padding: 0.25rem 0.5rem;
+    background: var(--neutral-100);
+    border-radius: 6px;
+    font-size: 0.875rem;
+}
+
+.summary-stats .stat.warning {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+#my-scheduled-visits-table th:last-child,
+#my-scheduled-visits-table td:last-child {
+    text-align: center;
+}
+</style>
+    styleElement.textContent = weeklyStyles.replace('<style>', '').replace('</style>', '');
+    document.head.appendChild(styleElement);
+}
+
+// Update the visits table header to include week column
+document.addEventListener('DOMContentLoaded', function() {
+    const visitsTableHeader = document.querySelector('#my-scheduled-visits-table thead tr');
+    if (visitsTableHeader && !visitsTableHeader.querySelector('.week-column')) {
+const weekHeader = document.createElement('th');
+weekHeader.className = 'week-column';
+weekHeader.textContent = 'Week';
+visitsTableHeader.appendChild(weekHeader);
+    }
+});
+function renderScheduledAudits(audits) {
+    const grid = document.getElementById('scheduled-visits-grid');
+    grid.innerHTML = '';
+
+    if (audits.length === 0) {
+        grid.innerHTML = '<p style="text-align: center; color: var(--neutral-500); grid-column: 1 / -1;">No scheduled audits found.</p>';
+        return;
+    }
+
+    audits.forEach(audit => {
+        const card = document.createElement('div');
+        card.className = 'scheduled-visit-card';
+        card.innerHTML = `
+            <div class="visit-restaurant-name">${audit.restaurant_name}</div>
+            <div class="visit-date">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                    <line x1="16" y1="2" x2="16" y2="6"/>
+                    <line x1="8" y1="2" x2="8" y2="6"/>
+                    <line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                ${formatDate(audit.visit_date)}
+            </div>
+            <div class="visit-status ${audit.status.toLowerCase()}">${audit.status}</div>
+            <div style="font-size: 0.75rem; color: var(--neutral-500); margin-top: 0.5rem;">
+                Week: ${formatDate(audit.week_start_date)} - ${formatDate(audit.week_end_date)}
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Removed duplicate loadMyScheduledVisits function - using the first one that calls get_my_weekly_visits
+
+function renderMyScheduledVisits(visits) {
+    const tbody = document.getElementById('my-visits-tbody');
+    tbody.innerHTML = '';
+
+    if (visits.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--neutral-500);">No scheduled visits for this week.</td></tr>';
+        return;
+    }
+
+    visits.forEach(visit => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${visit.restaurant_name}</td>
+            <td>${formatDate(visit.visit_date)}</td>
+            <td><span class="visit-status ${visit.status.toLowerCase()}">${visit.status}</span></td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+async function loadDailyTemplatesFromBackend() {
+    try {
+        const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_daily_templates', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include'
+        });
+
+        const result = await response.json();
+        if (result.message?.success) {
+            renderDailyTemplatesFromBackend(result.message.templates);
+        } else {
+            // Fallback to sample templates if no backend templates
+            renderSampleTemplates();
+        }
+    } catch (error) {
+        console.error('Error loading daily templates:', error);
+        renderSampleTemplates();
+    }
+}
+
+function renderDailyTemplatesFromBackend(templates) {
+    const container = document.getElementById('templates-list');
+    container.innerHTML = '';
+
+    if (templates.length === 0) {
+        container.innerHTML = '<p style="text-align: center; color: var(--neutral-500);">No templates found. Create templates from ERPNext backend.</p>';
+        return;
+    }
+
+    templates.forEach(template => {
+        const card = document.createElement('div');
+        card.className = `template-card ${!template.is_currently_open ? 'disabled' : ''}`;
+        card.style.position = 'relative';
+
+        card.innerHTML = `
+            <div class="template-header">
+                <div class="template-name">${template.template_name}</div>
+                <div class="template-status ${template.current_status.toLowerCase()}">${template.current_status}</div>
+            </div>
+            <div class="template-description">${template.description || 'No description available'}</div>
+            <div class="template-schedule">
+                📍 ${template.applies_to_all_restaurants ? 'All Restaurants' : (template.restaurant_name || 'Specific Restaurant')}
+                | 📝 ${template.questions_count} questions
+            </div>
+            <div class="template-schedule" style="margin-bottom: 1rem;">
+                🕐 ${template.open_time} - ${template.close_time} (Cashier: ${template.cashier_opening_time})
+            </div>
+            <div class="template-actions">
+                <button class="btn btn-primary" ${!template.is_currently_open ? 'disabled' : ''} 
+                        onclick="${template.is_currently_open ? `startDailyAudit('${template.name}')` : ''}"}>
+                    ${template.is_currently_open ? 'Start Audit' : 'Closed'}
+                </button>
+            </div>
+        `;
+        container.appendChild(card);
+    });
+}
+
+function formatDate(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric'
+    });
+}
+// Replace the startDailyAudit function in your audit-restaurants.html
+
+// Updated start daily audit with restrictions
+async function startDailyAudit(templateName) {
+    try {
+// First check if daily audit can be started
+const canStartResponse = await fetch('/api/method/restaurant_audit.api.audit_api.can_start_daily_audit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        template_name: templateName
+    }),
+    credentials: 'include'
+});
+
+const canStartResult = await canStartResponse.json();
+if (!canStartResult.message?.success) {
+    alert(canStartResult.message?.message || 'Cannot start daily audit');
+    return;
+}
+
+console.log("🚀 Starting daily audit for template:", templateName);
+
+const response = await fetch('/api/method/restaurant_audit.api.audit_api.start_daily_audit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        template_name: templateName
+    }),
+    credentials: 'include'
+});
+
+const result = await response.json();
+console.log("📊 Daily audit API response:", result);
+
+if (result.message?.success) {
+    // Store audit data in sessionStorage for the audit form
+    sessionStorage.setItem('dailyAuditData', JSON.stringify({
+        template: result.message.template,
+        questions_data: result.message.questions_data,
+        progress_id: result.message.progress_id,
+        restaurant: result.message.restaurant,
+        is_daily_audit: true
+    }));
+    
+    console.log("💾 Stored daily audit data:", {
+        restaurant: result.message.restaurant,
+        progress_id: result.message.progress_id,
+        questions_count: result.message.questions_data?.length || 0
+    });
+    
+    // Redirect to audit form
+    window.location.href = `/audit-form?daily_audit=1&progress_id=${result.message.progress_id}`;
+} else {
+    alert(result.message?.message || 'Failed to start daily audit');
+}
+    } catch (error) {
+console.error('Error starting daily audit:', error);
+alert('Error starting daily audit. Please try again.');
+    }
+}
+
+// New functions to load data with status updates
+async function loadScheduledAuditsWithStatusUpdate() {
+    try {
+// First trigger status update
+await fetch('/api/method/restaurant_audit.api.audit_api.process_last_week_status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
+});
+
+// Then load the updated data
+await loadScheduledAudits();
+    } catch (error) {
+console.error('Error loading scheduled audits with status update:', error);
+// Fallback to regular loading
+await loadScheduledAudits();
+    }
+}
+
+async function loadMyScheduledVisitsWithStatusUpdate() {
+    try {
+// First trigger status update  
+await fetch('/api/method/restaurant_audit.api.audit_api.process_last_week_status', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include'
+});
+
+// Then load the updated data
+await loadMyScheduledVisits();
+    } catch (error) {
+console.error('Error loading my visits with status update:', error);
+// Fallback to regular loading
+await loadMyScheduledVisits();
+    }
+}
+
+function updateTemplateStatus() {
+    const isOpen = isTemplateOpen();
+    document.getElementById('current-template-status').innerHTML = 
+        `Templates are currently: <strong style="color: ${isOpen ? 'var(--success-color)' : 'var(--error-color)'};">${isOpen ? 'Open' : 'Closed'}</strong>`;
+}
+
+function renderSampleTemplates() {
+    const container = document.getElementById('templates-list');
+    const isOpen = isTemplateOpen();
+    container.innerHTML = `
+        <div class="template-card ${isOpen ? '' : 'disabled'}" style="position: relative;">
+            <div class="template-header">
+                <div class="template-name">Morning Opening Checklist</div>
+                <div class="template-status ${isOpen ? 'active' : 'closed'}">${isOpen ? 'Active' : 'Closed'}</div>
+            </div>
+            <div class="template-description">Pre-opening checklist to ensure restaurant readiness before cashier opening</div>
+            <div class="template-schedule">📍 All Restaurants | 📝 15 questions</div>
+            <div class="template-schedule">🕐 Daily ${templateSchedule.openTime} - ${templateSchedule.closeTime}</div>
+            <div class="template-actions">
+                <button class="btn btn-primary" ${isOpen ? '' : 'disabled'}>${isOpen ? 'Start Audit' : 'Closed'}</button>
+            </div>
+        </div>
+    `;
+}
+
+// Additional functions for scheduling and template management
+// Updated schedule audit with validation
+async function scheduleAudit() {
+    const restaurantId = document.getElementById('restaurant-select').value;
+    const visitDate = document.getElementById('visit-date').value;
+    
+    if (!restaurantId || !visitDate) {
+alert('Please select both restaurant and visit date.');
+return;
+    }
+    
+    // Client-side date validation
+    const today = new Date();
+    const selectedDate = new Date(visitDate);
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 21);
+    
+    if (selectedDate < today.setHours(0,0,0,0)) {
+alert('Cannot schedule audit for past dates.');
+return;
+    }
+    
+    if (selectedDate > maxDate) {
+alert('Cannot schedule audit more than 3 weeks in advance.');
+return;
+    }
+    
+    try {
+const response = await fetch('/api/method/restaurant_audit.api.audit_api.schedule_audit_visit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        restaurant: restaurantId,
+        visit_date: visitDate
+    }),
+    credentials: 'include'
+});
+
+const result = await response.json();
+if (result.message?.success) {
+    alert('Audit visit scheduled successfully!');
+    document.getElementById('restaurant-select').value = '';
+    document.getElementById('visit-date').value = '';
+    
+    // Reload data
+    await loadScheduledAuditsWithStatusUpdate();
+    await loadMyScheduledVisitsWithStatusUpdate();
+} else {
+    alert(result.message?.message || 'Failed to schedule audit visit');
+}
+    } catch (error) {
+console.error('Error scheduling audit:', error);
+alert('Error scheduling audit. Please try again.');
+    }
+}
+async function confirmScheduleVisit() {
+    const visitDate = document.getElementById('modal-visit-date').value;
+    if (!visitDate) {
+alert('Please select a visit date.');
+return;
+    }
+    
+    // Client-side validation
+    const today = new Date();
+    const selectedDate = new Date(visitDate);
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 21);
+    
+    if (selectedDate < today.setHours(0,0,0,0)) {
+alert('Cannot schedule audit for past dates.');
+return;
+    }
+    
+    if (selectedDate > maxDate) {
+alert('Cannot schedule audit more than 3 weeks in advance.');
+return;
+    }
+    
+    try {
+const response = await fetch('/api/method/restaurant_audit.api.audit_api.schedule_audit_visit', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        restaurant: selectedRestaurantForScheduling,
+        visit_date: visitDate
+    }),
+    credentials: 'include'
+});
+
+const result = await response.json();
+if (result.message?.success) {
+    alert('Audit visit scheduled successfully!');
+    closeScheduleModal();
+    
+    // Reload data
+    await loadScheduledAuditsWithStatusUpdate();
+    await loadMyScheduledVisitsWithStatusUpdate();
+} else {
+    alert(result.message?.message || 'Failed to schedule audit visit');
+}
+    } catch (error) {
+console.error('Error scheduling audit:', error);
+alert('Error scheduling audit. Please try again.');
+    }
+}
+
+// Initialize date inputs and load restaurant options
+document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date()
+    const todayStr = today.toISOString().split('T')[0];
+    
+    // Calculate 3 weeks from today
+    const maxDate = new Date();
+    maxDate.setDate(today.getDate() + 21);
+    const maxDateStr = maxDate.toISOString().split('T')[0];
+    
+    // Set date restrictions
+    const visitDateInput = document.getElementById('visit-date');
+    const modalVisitDateInput = document.getElementById('modal-visit-date');
+    
+    if (visitDateInput) {
+visitDateInput.min = todayStr;
+visitDateInput.max = maxDateStr;
+    }
+    
+    if (modalVisitDateInput) {
+modalVisitDateInput.min = todayStr;
+modalVisitDateInput.max = maxDateStr;
+    }
+
+
+    
+    
+    // Load restaurant options after restaurants are loaded
+    setTimeout(() => {
+        if (allRestaurants.length > 0) {
+            const select = document.getElementById('restaurant-select');
+            select.innerHTML = '<option value="">Choose a restaurant...</option>';
+            allRestaurants.forEach(restaurant => {
+                const option = document.createElement('option');
+                option.value = restaurant.name;
+                option.textContent = restaurant.restaurant_name;
+                select.appendChild(option);
+            });
+
+            // Load scheduled visits data
+            loadScheduledAudits();
+            loadMyScheduledVisits();
+        }
+    }, 2000);
+    
+    // Update template status every minute for daily audit tab
+    setInterval(() => {
+        if (document.getElementById('daily-audit-content').classList.contains('active')) {
+            loadDailyTemplatesFromBackend();
+        }
+    }, 60000);
+});
+
+// Helper function to format date difference
+function formatDateDiff(dateString) {
+    const date = new Date(dateString);
+    const today = new Date();
+    const diffTime = Math.abs(today - date);
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays;
+}
+
+// Add CSS for week status indicators
+const weekStatusStyles = `
+<style>
+.week-status-indicator {
+    position: absolute;
+    top: 0.5rem;
+    left: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.week-status-indicator.available {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.restaurant-card.week-completed {
+    border-left: 4px solid #10b981;
+    background: linear-gradient(135deg, #ecfdf5 0%, #f0fdf4 100%);
+}
+
+.week-message {
+    font-size: 0.75rem;
+    color: #10b981;
+    font-weight: 500;
+    margin-top: 0.25rem;
+}
+
+.next-access-info {
+    margin-top: 1rem;
+    padding: 0.5rem;
+    background: #fef3c7;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    color: #92400e;
+    text-align: center;
+}
+</style>
+    styleElement.textContent = weekStatusStyles.replace('<style>', '').replace('</style>', '');
+    document.head.appendChild(styleElement);
+}
+    </script>
+</body>

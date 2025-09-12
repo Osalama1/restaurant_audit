@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurant Selection - Audit System</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/restaurant_audit/css/audit-restaurants.css">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">RestaurantAudit</div>
+            </div>
+            <div class="user-info">
+                <div class="user-avatar" id="user-avatar">U</div>
+                <span id="user-name">Loading...</span>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header fade-in">
+            <h1 class="page-title">Select Restaurant</h1>
+            <p class="page-subtitle">Choose a restaurant to begin the audit process. You can save progress and continue later.</p>
+        </div>
+
+        <!-- Dashboard Stats -->
+        <div class="stats-grid fade-in" id="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="total-restaurants">0</div>
+                <div class="stat-label">Available Restaurants</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="total-audits">0</div>
+                <div class="stat-label">Total Audits</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="pending-progress">0</div>
+                <div class="stat-label">Pending Progress</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avg-score">0</div>
+                <div class="stat-label">Average Score</div>
+            </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="controls fade-in">
+            <div class="search-box">
+                <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"/>
+                    <path d="M21 21l-4.35-4.35"/>
+                </svg>
+                <input type="text" class="search-input" id="search-input" placeholder="Search restaurants...">
+            </div>
+            <div class="filter-buttons">
+                <button class="filter-btn active" onclick="filterRestaurants('all')">All</button>
+                <button class="filter-btn" onclick="filterRestaurants('active')">Active</button>
+                <button class="filter-btn" onclick="filterRestaurants('pending')">Pending</button>
+            </div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            Loading restaurants...
+        </div>
+
+        <!-- Error State -->
+        <div id="error" class="error" style="display: none;"></div>
+
+        <!-- Restaurants Grid -->
+        <div id="restaurants-container" class="restaurants-grid" style="display: none;"></div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <div class="empty-state-icon">🏪</div>
+            <h3>No Restaurants Available</h3>
+            <p>You don't have any restaurants assigned to your account. Please contact your administrator.</p>
+        </div>
+    </div>
+
+    <!-- Progress Modal -->
+    <div class="modal" id="progress-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Continue Previous Audit?</div>
+                <div class="modal-subtitle" id="progress-details">You have saved progress for this restaurant.</div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn secondary" onclick="startNewAudit()">Start New Audit</button>
+                <button class="modal-btn primary" onclick="continueAudit()">Continue Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/assets/restaurant_audit/js/audit-restaurants.js"></script>
+</body>
+</html>

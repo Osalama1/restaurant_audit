@@ -100,18 +100,27 @@ def get_my_scheduled_visits():
     try:
         current_user = frappe.session.user
         
-        # Get current week start and end
-        today = getdate()
-        days_since_monday = today.weekday()
-        week_start = add_days(today, -days_since_monday)
-        week_end = add_days(week_start, 6)
+        # Get current user's employee record to determine week start
+        employee_id = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
+        if not employee_id:
+            # Fallback to Monday if no employee record
+            today = getdate()
+            days_since_monday = today.weekday()
+            week_start = add_days(today, -days_since_monday)
+            week_end = add_days(week_start, 6)
+        else:
+            # Use employee's flexible week start
+            today = getdate()
+            week_start = get_week_start_for_employee_inline(employee_id, today)
+            week_end = get_week_end_for_employee_inline(employee_id, week_start)
         
-        # Get scheduled visits for current week
+        # Get scheduled visits for current week (exclude cancelled)
         visits = frappe.get_all("Scheduled Audit Visit",
             filters={
                 "auditor": current_user,
                 "week_start_date": week_start,
-                "week_end_date": week_end
+                "week_end_date": week_end,
+                "status": ["!=", "Cancelled"]  # Exclude cancelled visits
             },
             fields=[
                 "name", "restaurant_name", "visit_date", "status"
@@ -915,18 +924,57 @@ def get_weekly_scheduled_audits():
         current_user = frappe.session.user
         today = getdate()
         
-        # Calculate weeks
-        days_since_monday = today.weekday()
-        current_week_start = add_days(today, -days_since_monday)
-        current_week_end = add_days(current_week_start, 6)
-        next_week_start = add_days(current_week_start, 7)
+        # Get current user's employee record to determine week start
+        employee_id = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
+        if not employee_id:
+            # Fallback to Monday if no employee record
+            days_since_monday = today.weekday()
+            current_week_start = add_days(today, -days_since_monday)
+            current_week_end = add_days(current_week_start, 6)
+        else:
+            # Use employee's flexible week start
+            current_week_start = get_week_start_for_employee_inline(employee_id, today)
+            current_week_end = get_week_end_for_employee_inline(employee_id, current_week_start)
+        
+        # Calculate next week
+        next_week_start = add_days(current_week_end, 1)
         next_week_end = add_days(next_week_start, 6)
         
-        # Get scheduled audits for current and next week only
+        # Get currently assigned restaurants for this user
+        active_assignments = frappe.get_all("Restaurant Employee",
+            filters={
+                "employee": employee_id,
+                "is_active": 1,
+                "employee_status": "Active"
+            },
+            fields=["parent"]
+        )
+        
+        active_restaurant_ids = [a.parent for a in active_assignments]
+        
+        if not active_restaurant_ids:
+            # User has no assigned restaurants
+            return {
+                "success": True,
+                "current_week": {
+                    "start": current_week_start,
+                    "end": current_week_end,
+                    "scheduled_audits": []
+                },
+                "next_week": {
+                    "start": next_week_start,
+                    "end": next_week_end,
+                    "scheduled_audits": []
+                }
+            }
+        
+        # Get scheduled audits for current and next week only (exclude cancelled and unassigned restaurants)
         scheduled_audits = frappe.get_all("Scheduled Audit Visit",
             filters={
                 "auditor": current_user,
-                "visit_date": ["between", [current_week_start, next_week_end]]
+                "restaurant": ["in", active_restaurant_ids],  # Only assigned restaurants
+                "visit_date": ["between", [current_week_start, next_week_end]],
+                "status": ["!=", "Cancelled"]  # Exclude cancelled visits
             },
             fields=[
                 "name", "restaurant", "restaurant_name", "visit_date", 
@@ -976,18 +1024,57 @@ def get_my_weekly_visits():
         current_user = frappe.session.user
         today = getdate()
         
-        # Calculate weeks
-        days_since_monday = today.weekday()
-        current_week_start = add_days(today, -days_since_monday)
-        current_week_end = add_days(current_week_start, 6)
-        next_week_start = add_days(current_week_start, 7)
+        # Get current user's employee record to determine week start
+        employee_id = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
+        if not employee_id:
+            # Fallback to Monday if no employee record
+            days_since_monday = today.weekday()
+            current_week_start = add_days(today, -days_since_monday)
+            current_week_end = add_days(current_week_start, 6)
+        else:
+            # Use employee's flexible week start
+            current_week_start = get_week_start_for_employee_inline(employee_id, today)
+            current_week_end = get_week_end_for_employee_inline(employee_id, current_week_start)
+        
+        # Calculate next week
+        next_week_start = add_days(current_week_end, 1)
         next_week_end = add_days(next_week_start, 6)
         
-        # Get visits for current and next week only
+        # Get currently assigned restaurants for this user
+        active_assignments = frappe.get_all("Restaurant Employee",
+            filters={
+                "employee": employee_id,
+                "is_active": 1,
+                "employee_status": "Active"
+            },
+            fields=["parent"]
+        )
+        
+        active_restaurant_ids = [a.parent for a in active_assignments]
+        
+        if not active_restaurant_ids:
+            # User has no assigned restaurants
+            return {
+                "success": True,
+                "current_week": {
+                    "start": current_week_start,
+                    "end": current_week_end,
+                    "visits": []
+                },
+                "next_week": {
+                    "start": next_week_start,
+                    "end": next_week_end,
+                    "visits": []
+                }
+            }
+        
+        # Get visits for current and next week only (exclude cancelled and unassigned restaurants)
         visits = frappe.get_all("Scheduled Audit Visit",
             filters={
                 "auditor": current_user,
-                "visit_date": ["between", [current_week_start, next_week_end]]
+                "restaurant": ["in", active_restaurant_ids],  # Only assigned restaurants
+                "visit_date": ["between", [current_week_start, next_week_end]],
+                "status": ["!=", "Cancelled"]  # Exclude cancelled visits
             },
             fields=[
                 "name", "restaurant_name", "visit_date", "status"
@@ -1376,6 +1463,42 @@ def can_start_daily_audit(template_name):
 
 # Add these methods to audit_api.py
 
+def get_week_start_for_employee_inline(employee_id, reference_date=None):
+    """Inline version of get_week_start_for_employee to avoid import issues"""
+    from frappe.utils import getdate, add_days
+    
+    if not reference_date:
+        reference_date = getdate()
+    
+    # Get employee's start_week_day from Restaurant Employee table
+    employee_week_start = frappe.db.get_value("Restaurant Employee", 
+        {"employee": employee_id, "is_active": 1}, 
+        "start_week_day"
+    )
+    
+    if not employee_week_start:
+        # Default to Monday if not set
+        employee_week_start = "Monday"
+    
+    # Map day names to weekday numbers (Monday=0, Sunday=6)
+    day_mapping = {
+        "Monday": 0, "Tuesday": 1, "Wednesday": 2, "Thursday": 3,
+        "Friday": 4, "Saturday": 5, "Sunday": 6
+    }
+    
+    target_weekday = day_mapping.get(employee_week_start, 0)
+    current_weekday = reference_date.weekday()
+    
+    # Calculate days to subtract to get to the start of the week
+    days_to_subtract = (current_weekday - target_weekday) % 7
+    
+    return add_days(reference_date, -days_to_subtract)
+
+def get_week_end_for_employee_inline(employee_id, week_start):
+    """Inline version of get_week_end_for_employee to avoid import issues"""
+    from frappe.utils import add_days
+    return add_days(week_start, 6)
+
 @frappe.whitelist()
 def check_restaurant_week_status(restaurant_id):
     """Check if restaurant has completed audits for current week"""
@@ -1385,10 +1508,17 @@ def check_restaurant_week_status(restaurant_id):
         current_user = frappe.session.user
         today = getdate()
         
-        # Calculate current week (Monday to Sunday)
-        days_since_monday = today.weekday()
-        current_week_start = add_days(today, -days_since_monday)
-        current_week_end = add_days(current_week_start, 6)
+        # Get current user's employee record to determine week start
+        employee_id = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
+        if not employee_id:
+            # Fallback to Monday if no employee record
+            days_since_monday = today.weekday()
+            current_week_start = add_days(today, -days_since_monday)
+            current_week_end = add_days(current_week_start, 6)
+        else:
+            # Use employee's flexible week start
+            current_week_start = get_week_start_for_employee_inline(employee_id, today)
+            current_week_end = get_week_end_for_employee_inline(employee_id, current_week_start)
         
         # Check if ANY auditor has completed audit for this restaurant this week
         completed_audits = frappe.get_all("Audit Submission",
@@ -1420,6 +1550,10 @@ def check_restaurant_week_status(restaurant_id):
         restaurant_week_complete = len(completed_audits) > 0
         user_week_complete = user_completed_this_week or user_has_completed_scheduled
         
+        # Get next week start day for the message
+        next_week_start = add_days(current_week_end, 1)
+        next_week_start_name = next_week_start.strftime('%A')
+        
         return {
             "success": True,
             "restaurant_week_complete": restaurant_week_complete,
@@ -1428,8 +1562,8 @@ def check_restaurant_week_status(restaurant_id):
             "completed_audits_count": len(completed_audits),
             "week_start": current_week_start,
             "week_end": current_week_end,
-            "message": get_week_status_message(restaurant_week_complete, user_week_complete),
-            "next_access_date": add_days(current_week_end, 1)  # Next Monday
+            "message": get_week_status_message(restaurant_week_complete, user_week_complete, next_week_start_name),
+            "next_access_date": next_week_start
         }
         
     except Exception as e:
@@ -1439,10 +1573,10 @@ def check_restaurant_week_status(restaurant_id):
             "message": f"Error checking week status: {str(e)}"
         }
 
-def get_week_status_message(restaurant_complete, user_complete):
+def get_week_status_message(restaurant_complete, user_complete, next_week_start_name="Monday"):
     """Get appropriate message based on week status"""
     if user_complete:
-        return "✅ You have completed your audit for this week. Restaurant will reopen next Monday."
+        return f"✅ You have completed your audit for this week. Restaurant will reopen next {next_week_start_name}."
     elif restaurant_complete:
         return "✅ This restaurant has been audited this week by another team member."
     else:
@@ -1452,6 +1586,8 @@ def get_week_status_message(restaurant_complete, user_complete):
 def get_restaurants_with_week_status():
     """Get restaurants with week completion status"""
     try:
+        current_user = frappe.session.user
+        
         # Get basic restaurants list
         restaurants_response = get_restaurants()
         
@@ -1459,6 +1595,9 @@ def get_restaurants_with_week_status():
             return restaurants_response
         
         restaurants = restaurants_response["restaurants"]
+        
+        # Debug: Log the restaurants being processed (commented out to reduce noise)
+        # frappe.log_error(f"User {current_user} is assigned to {len(restaurants)} restaurants: {[r['name'] for r in restaurants]}", "Restaurant Assignment Debug")
         
         # Add week status to each restaurant
         for restaurant in restaurants:
@@ -1533,4 +1672,117 @@ def check_employee_removals():
             "success": False,
             "message": f"Error checking employee removals: {str(e)}",
             "removed_employees": []
+        }
+
+@frappe.whitelist()
+def verify_user_assignments():
+    """Verify and clean up user restaurant assignments"""
+    try:
+        current_user = frappe.session.user
+        
+        # Get employee record
+        employee = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
+        if not employee:
+            return {
+                "success": True,
+                "message": "No employee record found",
+                "assigned_restaurants": []
+            }
+        
+        # Get all restaurant assignments for this employee
+        assignments = frappe.get_all("Restaurant Employee",
+            filters={"employee": employee},
+            fields=["parent", "is_active", "employee_status", "modified"]
+        )
+        
+        # Filter only active assignments
+        active_assignments = [
+            a for a in assignments 
+            if a.is_active and a.employee_status == "Active"
+        ]
+        
+        # Get restaurant details for active assignments
+        active_restaurant_ids = [a.parent for a in active_assignments]
+        restaurants = frappe.get_all("Restaurant",
+            filters={"name": ["in", active_restaurant_ids]},
+            fields=["name", "restaurant_name"]
+        )
+        
+        return {
+            "success": True,
+            "employee": employee,
+            "total_assignments": len(assignments),
+            "active_assignments": len(active_assignments),
+            "assigned_restaurants": [r.restaurant_name for r in restaurants],
+            "assignments": assignments
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error verifying user assignments: {str(e)}", "User Assignment Verification")
+        return {
+            "success": False,
+            "message": f"Error verifying assignments: {str(e)}"
+        }
+
+@frappe.whitelist()
+def cleanup_old_scheduled_visits():
+    """Clean up old scheduled visits for restaurants the user is no longer assigned to"""
+    try:
+        current_user = frappe.session.user
+        
+        # Get employee record
+        employee = frappe.db.get_value("Employee", {"user_id": current_user}, "name")
+        if not employee:
+            return {
+                "success": True,
+                "message": "No employee record found",
+                "cleaned_visits": 0
+            }
+        
+        # Get currently assigned restaurants
+        active_assignments = frappe.get_all("Restaurant Employee",
+            filters={
+                "employee": employee,
+                "is_active": 1,
+                "employee_status": "Active"
+            },
+            fields=["parent"]
+        )
+        
+        active_restaurant_ids = [a.parent for a in active_assignments]
+        
+        # Find scheduled visits for restaurants NOT in active assignments
+        old_visits = frappe.get_all("Scheduled Audit Visit",
+            filters={
+                "auditor": current_user,
+                "restaurant": ["not in", active_restaurant_ids],
+                "status": ["in", ["Pending", "Overdue"]]
+            },
+            fields=["name", "restaurant", "visit_date"]
+        )
+        
+        # Cancel these visits
+        cleaned_count = 0
+        for visit in old_visits:
+            try:
+                visit_doc = frappe.get_doc("Scheduled Audit Visit", visit.name)
+                visit_doc.status = "Cancelled"
+                visit_doc.add_comment("Comment", f"Automatically cancelled - employee no longer assigned to this restaurant")
+                visit_doc.save(ignore_permissions=True)
+                cleaned_count += 1
+            except Exception as e:
+                frappe.log_error(f"Error cancelling visit {visit.name}: {str(e)}", "Cleanup Old Visits")
+        
+        return {
+            "success": True,
+            "message": f"Cleaned up {cleaned_count} old scheduled visits",
+            "cleaned_visits": cleaned_count,
+            "old_visits": old_visits
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error cleaning up old visits: {str(e)}", "Cleanup Old Visits")
+        return {
+            "success": False,
+            "message": f"Error cleaning up old visits: {str(e)}"
         }

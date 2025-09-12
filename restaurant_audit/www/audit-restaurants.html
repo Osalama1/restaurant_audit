@@ -1749,7 +1749,7 @@ function createRestaurantCard(restaurant, index) {
             year: 'numeric', 
             month: 'long', 
             day: 'numeric' 
-        }) : 'Next Monday';
+        }) : 'Next week';
     
     alert(`${restaurant.week_message}\n\nNext access: ${nextAccessDate}`);
 }
@@ -1967,6 +1967,97 @@ function selectRestaurant(restaurant) {
                 });
         }
 
+        // Add periodic check for employee removals (every 30 seconds)
+        setInterval(() => {
+            checkForEmployeeRemovals();
+        }, 30000);
+
+        // Call on page load
+        checkForEmployeeRemovals();
+
+        // Debug function to check user assignments
+        async function debugUserAssignments() {
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.verify_user_assignments', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                console.log('User Assignment Debug:', result);
+                
+                if (result.message && result.message.success) {
+                    alert(`Debug Info:\nEmployee: ${result.message.employee}\nTotal Assignments: ${result.message.total_assignments}\nActive Assignments: ${result.message.active_assignments}\nRestaurants: ${result.message.assigned_restaurants.join(', ')}`);
+                } else {
+                    console.error('Debug failed:', result.message);
+                }
+            } catch (error) {
+                console.error('Error in debug:', error);
+            }
+        }
+
+        // Add debug button (temporary)
+        window.debugAssignments = debugUserAssignments;
+
+        // Cleanup function for old scheduled visits
+        async function cleanupOldVisits() {
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.cleanup_old_scheduled_visits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+                
+                const result = await response.json();
+                console.log('Cleanup Result:', result);
+                
+                if (result.message && result.message.success) {
+                    // Only show message if there were actually visits cleaned up
+                    if (result.message.cleaned_visits > 0) {
+                        alert(`Cleanup completed!\nCleaned up ${result.message.cleaned_visits} old scheduled visits.`);
+                        // Refresh the page to show updated data
+                        window.location.reload();
+                    } else {
+                        console.log('No old visits to clean up');
+                    }
+                } else {
+                    console.error('Cleanup failed:', result.message);
+                }
+            } catch (error) {
+                console.error('Error in cleanup:', error);
+            }
+        }
+
+        // Add cleanup button (temporary) - only call manually
+        window.cleanupOldVisits = cleanupOldVisits;
+
+        // Run cleanup silently in background without popup
+        cleanupOldVisits();
+
+        // Add function to refresh week periods when day changes
+        function checkAndRefreshWeekPeriods() {
+            const today = new Date();
+            const lastRefresh = localStorage.getItem('lastWeekRefresh');
+            const lastRefreshDate = lastRefresh ? new Date(lastRefresh) : null;
+            
+            // Check if it's a new day since last refresh
+            if (!lastRefreshDate || today.toDateString() !== lastRefreshDate.toDateString()) {
+                console.log('New day detected, refreshing week periods...');
+                localStorage.setItem('lastWeekRefresh', today.toISOString());
+                
+                // Reload all data to refresh week periods
+                loadRestaurants();
+                loadMyScheduledVisits();
+            }
+        }
+
+        // Check for day change every hour
+        setInterval(checkAndRefreshWeekPeriods, 60 * 60 * 1000); // 1 hour
+        
+        // Check on page load
+        checkAndRefreshWeekPeriods();
+
         // New functionality variables
         let selectedRestaurantForScheduling = null;
         let templateSchedule = { openTime: '06:00', closeTime: '08:30', cashierOpenTime: '09:00' };
@@ -2053,6 +2144,19 @@ async function loadMyScheduledVisits() {
             
             // Update weekly summary display
             updateWeeklySummary(result.message);
+            
+            // Update week period display for the table
+            if (result.message.current_week && result.message.current_week.start && result.message.current_week.end) {
+                const weekLabel = `${formatDate(result.message.current_week.start)} - ${formatDate(result.message.current_week.end)}`;
+                console.log('Week period:', weekLabel);
+                document.querySelector('.my-visits-section h3').innerHTML = `
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 11l3 3 8-8"/>
+                        <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"/>
+                    </svg>
+                    My Scheduled Visits for the Week (${weekLabel})
+                `;
+            }
         } else {
             console.error('Failed to load my weekly visits:', result.message);
         }
@@ -2354,42 +2458,7 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        async function loadMyScheduledVisits() {
-            try {
-                console.log('Loading my scheduled visits...');
-                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_my_scheduled_visits', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
-                });
-
-                console.log('My visits response status:', response.status);
-                const result = await response.json();
-                console.log('My visits API Response:', result);
-                
-                if (result.message?.success) {
-                    console.log('My visits loaded:', result.message.visits.length);
-                    renderMyScheduledVisits(result.message.visits);
-                    
-                    // Update week period display
-                    if (result.message.week_start && result.message.week_end) {
-                        const weekLabel = `${formatDate(result.message.week_start)} - ${formatDate(result.message.week_end)}`;
-                        console.log('Week period:', weekLabel);
-                        document.querySelector('.my-visits-section h3').innerHTML = `
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M9 11l3 3 8-8"/>
-                                <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"/>
-                            </svg>
-                            My Scheduled Visits for the Week (${weekLabel})
-                        `;
-                    }
-                } else {
-                    console.error('Failed to load my scheduled visits:', result.message);
-                }
-            } catch (error) {
-                console.error('Error loading my scheduled visits:', error);
-            }
-        }
+        // Removed duplicate loadMyScheduledVisits function - using the first one that calls get_my_weekly_visits
 
         function renderMyScheduledVisits(visits) {
             const tbody = document.getElementById('my-visits-tbody');

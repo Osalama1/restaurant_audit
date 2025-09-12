@@ -1,0 +1,234 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "naming_series:",
+ "creation": "2025-01-21 12:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "template_name",
+  "description",
+  "restaurant",
+  "restaurant_name",
+  "column_break_5",
+  "is_active",
+  "auto_schedule",
+  "applies_to_all_restaurants",
+  "section_break_9",
+  "open_time",
+  "close_time",
+  "cashier_opening_time",
+  "column_break_13",
+  "days_of_week",
+  "timezone",
+  "section_break_16",
+  "questions_count",
+  "estimated_duration",
+  "priority",
+  "column_break_20",
+  "created_by",
+  "last_modified_by",
+  "last_used_date"
+ ],
+ "fields": [
+  {
+   "default": "DAT-.YYYY.-.MM.-.#####",
+   "fieldname": "naming_series",
+   "fieldtype": "Select",
+   "label": "Naming Series",
+   "options": "DAT-.YYYY.-.MM.-.#####",
+   "reqd": 1
+  },
+  {
+   "fieldname": "template_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Template Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "description",
+   "fieldtype": "Text",
+   "label": "Description"
+  },
+  {
+   "fieldname": "restaurant",
+   "fieldtype": "Link",
+   "label": "Restaurant",
+   "options": "Restaurant"
+  },
+  {
+   "fetch_from": "restaurant.restaurant_name",
+   "fieldname": "restaurant_name",
+   "fieldtype": "Data",
+   "label": "Restaurant Name",
+   "read_only": 1
+  },
+  {
+   "fieldname": "column_break_5",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": 1,
+   "fieldname": "is_active",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Is Active"
+  },
+  {
+   "default": 1,
+   "fieldname": "auto_schedule",
+   "fieldtype": "Check",
+   "label": "Auto Schedule Based on Time"
+  },
+  {
+   "default": 0,
+   "fieldname": "applies_to_all_restaurants",
+   "fieldtype": "Check",
+   "label": "Applies to All Restaurants"
+  },
+  {
+   "collapsible": 0,
+   "fieldname": "section_break_9",
+   "fieldtype": "Section Break",
+   "label": "Time Settings"
+  },
+  {
+   "default": "06:00:00",
+   "fieldname": "open_time",
+   "fieldtype": "Time",
+   "in_list_view": 1,
+   "label": "Template Open Time",
+   "reqd": 1
+  },
+  {
+   "default": "08:30:00",
+   "fieldname": "close_time",
+   "fieldtype": "Time",
+   "in_list_view": 1,
+   "label": "Template Close Time",
+   "reqd": 1
+  },
+  {
+   "default": "09:00:00",
+   "fieldname": "cashier_opening_time",
+   "fieldtype": "Time",
+   "label": "Cashier Opening Time",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_13",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday",
+   "fieldname": "days_of_week",
+   "fieldtype": "Select",
+   "label": "Days of Week",
+   "options": "Monday\nTuesday\nWednesday\nThursday\nFriday\nSaturday\nSunday\nWeekdays Only\nWeekends Only\nDaily"
+  },
+  {
+   "default": "Asia/Riyadh",
+   "fieldname": "timezone",
+   "fieldtype": "Select",
+   "label": "Timezone",
+   "options": "Asia/Riyadh\nAsia/Dubai\nEurope/London\nAmerica/New_York\nAsia/Tokyo"
+  },
+  {
+   "fieldname": "section_break_16",
+   "fieldtype": "Section Break",
+   "label": "Template Details"
+  },
+  {
+   "default": 10,
+   "fieldname": "questions_count",
+   "fieldtype": "Int",
+   "label": "Number of Questions",
+   "non_negative": 1
+  },
+  {
+   "default": 15,
+   "fieldname": "estimated_duration",
+   "fieldtype": "Int",
+   "label": "Estimated Duration (minutes)",
+   "non_negative": 1
+  },
+  {
+   "default": "Medium",
+   "fieldname": "priority",
+   "fieldtype": "Select",
+   "label": "Priority",
+   "options": "Low\nMedium\nHigh\nCritical"
+  },
+  {
+   "fieldname": "column_break_20",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "user",
+   "fieldname": "created_by",
+   "fieldtype": "Link",
+   "label": "Created By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_modified_by",
+   "fieldtype": "Link",
+   "label": "Last Modified By",
+   "options": "User",
+   "read_only": 1
+  },
+  {
+   "fieldname": "last_used_date",
+   "fieldtype": "Datetime",
+   "label": "Last Used Date",
+   "read_only": 1
+  }
+ ],
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-01-21 12:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Restaurant Audit",
+ "name": "Daily Audit Template",
+ "naming_rule": "By \"Naming Series\" field",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Restaurant Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "Restaurant Auditor"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "title_field": "template_name"
+}

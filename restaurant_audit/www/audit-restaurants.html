@@ -1402,48 +1402,38 @@
                             </svg>
                             Daily Audit Templates
                         </h3>
-                        <button class="btn btn-primary" onclick="openTemplateModal()">
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <line x1="12" y1="5" x2="12" y2="19"/>
-                                <line x1="5" y1="12" x2="19" y2="12"/>
-                            </svg>
-                            Add Template
-                        </button>
+                        <div style="font-size: 0.875rem; color: var(--neutral-600);">
+                            Templates are managed from ERPNext backend
+                        </div>
                     </div>
 
-                    <!-- Template Time Controls -->
+                    <!-- Template Status Info -->
                     <div class="time-controls-section">
-                        <h4>Template Scheduling</h4>
-                        <div class="time-controls-grid">
-                            <div class="form-group">
-                                <label for="template-open-time">Template Open Time</label>
-                                <input type="time" id="template-open-time" value="06:00">
-                            </div>
-                            <div class="form-group">
-                                <label for="template-close-time">Template Close Time (Before Cashier Opening)</label>
-                                <input type="time" id="template-close-time" value="08:30">
-                            </div>
-                            <div class="form-group">
-                                <label for="cashier-opening-time">Cashier Opening Time</label>
-                                <input type="time" id="cashier-opening-time" value="09:00">
-                            </div>
-                            <button class="btn btn-secondary" onclick="updateTemplateSchedule()">Update Schedule</button>
-                        </div>
+                        <h4>Current Template Status</h4>
                         <div class="schedule-info">
                             <div class="info-card">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
                                     <polyline points="12,6 12,12 16,14"/>
                                 </svg>
-                                <span id="current-template-status">Templates are currently: <strong>Open</strong></span>
+                                <span id="current-template-status">Loading template status...</span>
                             </div>
                             <div class="info-card">
                                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <circle cx="12" cy="12" r="10"/>
                                     <path d="M12 6v6l4 2"/>
                                 </svg>
-                                <span id="next-status-change">Next change: <strong id="next-change-time">--:--</strong></span>
+                                <span>Templates are controlled by backend settings</span>
                             </div>
+                        </div>
+                        <div style="background: var(--neutral-100); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                            <h5 style="margin-bottom: 0.5rem; color: var(--neutral-700);">How to manage templates:</h5>
+                            <ul style="margin: 0; padding-left: 1.5rem; color: var(--neutral-600); font-size: 0.875rem;">
+                                <li>Go to ERPNext backend → Restaurant Audit → Daily Audit Template</li>
+                                <li>Create new templates with time settings</li>
+                                <li>Templates automatically close before cashier opening time</li>
+                                <li>Assign templates to specific restaurants or all restaurants</li>
+                            </ul>
                         </div>
                     </div>
 
@@ -1524,45 +1514,6 @@
         </div>
     </div>
 
-    <!-- Template Modal -->
-    <div class="template-modal" id="template-modal">
-        <div class="template-modal-content">
-            <div class="schedule-modal-header">
-                <h3 class="schedule-modal-title">Add Daily Audit Template</h3>
-                <button class="close-btn" onclick="closeTemplateModal()">&times;</button>
-            </div>
-            <div class="schedule-modal-body">
-                <div class="form-group">
-                    <label for="template-name">Template Name</label>
-                    <input type="text" id="template-name" placeholder="Enter template name...">
-                </div>
-                <div class="form-group">
-                    <label for="template-description">Description</label>
-                    <textarea id="template-description" rows="3" placeholder="Enter template description..."></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="template-restaurant">Assign to Restaurant (Optional)</label>
-                    <select id="template-restaurant">
-                        <option value="">All Restaurants</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label for="template-questions">Number of Questions</label>
-                    <input type="number" id="template-questions" min="1" max="50" value="10">
-                </div>
-                <div class="form-group">
-                    <label>
-                        <input type="checkbox" id="template-auto-schedule"> 
-                        Auto-schedule based on time controls
-                    </label>
-                </div>
-            </div>
-            <div class="schedule-modal-footer">
-                <button class="btn btn-secondary" onclick="closeTemplateModal()">Cancel</button>
-                <button class="btn btn-primary" onclick="createTemplate()">Create Template</button>
-            </div>
-        </div>
-    </div>
 
     <script>
         let allRestaurants = [];
@@ -1932,14 +1883,7 @@
             document.getElementById('schedule-visit-modal').classList.remove('active');
         }
 
-        // Template functions
-        function openTemplateModal() {
-            document.getElementById('template-modal').classList.add('active');
-        }
-
-        function closeTemplateModal() {
-            document.getElementById('template-modal').classList.remove('active');
-        }
+        // Template functions - now read-only from backend
 
         function isTemplateOpen() {
             const now = new Date();
@@ -1949,9 +1893,175 @@
             return currentTime >= openTime && currentTime <= closeTime;
         }
 
-        function loadDailyAuditData() {
+        async function loadDailyAuditData() {
             updateTemplateStatus();
-            renderSampleTemplates();
+            await loadDailyTemplatesFromBackend();
+        }
+
+        async function loadScheduledAudits() {
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_scheduled_audits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                if (result.message?.success) {
+                    renderScheduledAudits(result.message.scheduled_audits);
+                }
+            } catch (error) {
+                console.error('Error loading scheduled audits:', error);
+            }
+        }
+
+        function renderScheduledAudits(audits) {
+            const grid = document.getElementById('scheduled-visits-grid');
+            grid.innerHTML = '';
+
+            if (audits.length === 0) {
+                grid.innerHTML = '<p style="text-align: center; color: var(--neutral-500); grid-column: 1 / -1;">No scheduled audits found.</p>';
+                return;
+            }
+
+            audits.forEach(audit => {
+                const card = document.createElement('div');
+                card.className = 'scheduled-visit-card';
+                card.innerHTML = `
+                    <div class="visit-restaurant-name">${audit.restaurant_name}</div>
+                    <div class="visit-date">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        ${formatDate(audit.visit_date)}
+                    </div>
+                    <div class="visit-status ${audit.status.toLowerCase()}">${audit.status}</div>
+                    <div style="font-size: 0.75rem; color: var(--neutral-500); margin-top: 0.5rem;">
+                        Week: ${formatDate(audit.week_start_date)} - ${formatDate(audit.week_end_date)}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        async function loadMyScheduledVisits() {
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_my_scheduled_visits', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                if (result.message?.success) {
+                    renderMyScheduledVisits(result.message.visits);
+                    
+                    // Update week period display
+                    if (result.message.week_start && result.message.week_end) {
+                        const weekLabel = `${formatDate(result.message.week_start)} - ${formatDate(result.message.week_end)}`;
+                        document.querySelector('.my-visits-section h3').innerHTML = `
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3 8-8"/>
+                                <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"/>
+                            </svg>
+                            My Scheduled Visits for the Week (${weekLabel})
+                        `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading my scheduled visits:', error);
+            }
+        }
+
+        function renderMyScheduledVisits(visits) {
+            const tbody = document.getElementById('my-visits-tbody');
+            tbody.innerHTML = '';
+
+            if (visits.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: var(--neutral-500);">No scheduled visits for this week.</td></tr>';
+                return;
+            }
+
+            visits.forEach(visit => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${visit.restaurant_name}</td>
+                    <td>${formatDate(visit.visit_date)}</td>
+                    <td><span class="visit-status ${visit.status.toLowerCase()}">${visit.status}</span></td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        async function loadDailyTemplatesFromBackend() {
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.get_daily_templates', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                if (result.message?.success) {
+                    renderDailyTemplatesFromBackend(result.message.templates);
+                } else {
+                    // Fallback to sample templates if no backend templates
+                    renderSampleTemplates();
+                }
+            } catch (error) {
+                console.error('Error loading daily templates:', error);
+                renderSampleTemplates();
+            }
+        }
+
+        function renderDailyTemplatesFromBackend(templates) {
+            const container = document.getElementById('templates-list');
+            container.innerHTML = '';
+
+            if (templates.length === 0) {
+                container.innerHTML = '<p style="text-align: center; color: var(--neutral-500);">No templates found. Create templates from ERPNext backend.</p>';
+                return;
+            }
+
+            templates.forEach(template => {
+                const card = document.createElement('div');
+                card.className = `template-card ${!template.is_currently_open ? 'disabled' : ''}`;
+                card.style.position = 'relative';
+
+                card.innerHTML = `
+                    <div class="template-header">
+                        <div class="template-name">${template.template_name}</div>
+                        <div class="template-status ${template.current_status.toLowerCase()}">${template.current_status}</div>
+                    </div>
+                    <div class="template-description">${template.description || 'No description available'}</div>
+                    <div class="template-schedule">
+                        📍 ${template.applies_to_all_restaurants ? 'All Restaurants' : (template.restaurant_name || 'Specific Restaurant')}
+                        | 📝 ${template.questions_count} questions
+                    </div>
+                    <div class="template-schedule" style="margin-bottom: 1rem;">
+                        🕐 ${template.open_time} - ${template.close_time} (Cashier: ${template.cashier_opening_time})
+                    </div>
+                    <div class="template-actions">
+                        <button class="btn btn-primary" ${!template.is_currently_open ? 'disabled' : ''}>
+                            ${template.is_currently_open ? 'Start Audit' : 'Closed'}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
         }
 
         function updateTemplateStatus() {
@@ -1987,10 +2097,34 @@
                 alert('Please select both restaurant and visit date.');
                 return;
             }
-            // Simulate successful scheduling
-            alert('Audit visit scheduled successfully!');
-            document.getElementById('restaurant-select').value = '';
-            document.getElementById('visit-date').value = '';
+            
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.schedule_audit_visit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        restaurant: restaurantId,
+                        visit_date: visitDate
+                    }),
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                if (result.message?.success) {
+                    alert('Audit visit scheduled successfully!');
+                    document.getElementById('restaurant-select').value = '';
+                    document.getElementById('visit-date').value = '';
+                    
+                    // Reload data
+                    await loadScheduledAudits();
+                    await loadMyScheduledVisits();
+                } else {
+                    alert(result.message?.message || 'Failed to schedule audit visit');
+                }
+            } catch (error) {
+                console.error('Error scheduling audit:', error);
+                alert('Error scheduling audit. Please try again.');
+            }
         }
 
         async function confirmScheduleVisit() {
@@ -1999,39 +2133,35 @@
                 alert('Please select a visit date.');
                 return;
             }
-            alert('Audit visit scheduled successfully!');
-            closeScheduleModal();
+            
+            try {
+                const response = await fetch('/api/method/restaurant_audit.api.audit_api.schedule_audit_visit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        restaurant: selectedRestaurantForScheduling,
+                        visit_date: visitDate
+                    }),
+                    credentials: 'include'
+                });
+
+                const result = await response.json();
+                if (result.message?.success) {
+                    alert('Audit visit scheduled successfully!');
+                    closeScheduleModal();
+                    
+                    // Reload data
+                    await loadScheduledAudits();
+                    await loadMyScheduledVisits();
+                } else {
+                    alert(result.message?.message || 'Failed to schedule audit visit');
+                }
+            } catch (error) {
+                console.error('Error scheduling audit:', error);
+                alert('Error scheduling audit. Please try again.');
+            }
         }
 
-        function updateTemplateSchedule() {
-            const openTime = document.getElementById('template-open-time').value;
-            const closeTime = document.getElementById('template-close-time').value;
-            const cashierOpenTime = document.getElementById('cashier-opening-time').value;
-            
-            if (!openTime || !closeTime || !cashierOpenTime) {
-                alert('Please fill in all time fields.');
-                return;
-            }
-            
-            templateSchedule = { openTime, closeTime, cashierOpenTime };
-            updateTemplateStatus();
-            renderSampleTemplates();
-            alert('Template schedule updated successfully!');
-        }
-
-        async function createTemplate() {
-            const name = document.getElementById('template-name').value;
-            const description = document.getElementById('template-description').value;
-            
-            if (!name || !description) {
-                alert('Please fill in template name and description.');
-                return;
-            }
-            
-            alert('Template created successfully!');
-            closeTemplateModal();
-            renderSampleTemplates();
-        }
 
         // Initialize date inputs and load restaurant options
         document.addEventListener('DOMContentLoaded', function() {
@@ -2050,11 +2180,19 @@
                         option.textContent = restaurant.restaurant_name;
                         select.appendChild(option);
                     });
+
+                    // Load scheduled visits data
+                    loadScheduledAudits();
+                    loadMyScheduledVisits();
                 }
             }, 2000);
             
-            // Update template status every minute
-            setInterval(updateTemplateStatus, 60000);
+            // Update template status every minute for daily audit tab
+            setInterval(() => {
+                if (document.getElementById('daily-audit-content').classList.contains('active')) {
+                    loadDailyTemplatesFromBackend();
+                }
+            }, 60000);
         });
     </script>
 </body>

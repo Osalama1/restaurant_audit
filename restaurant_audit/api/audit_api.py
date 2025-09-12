@@ -1490,3 +1490,47 @@ def get_restaurants_with_week_status():
             "message": f"Error loading restaurants: {str(e)}",
             "restaurants": []
         }
+
+@frappe.whitelist()
+def check_employee_removals():
+    """Check for recently removed employees and return cleanup information"""
+    try:
+        # This is a placeholder function - in a real implementation,
+        # you might want to track employee removals in a separate table
+        # or use a different mechanism to detect removals
+        
+        # For now, we'll return an empty list
+        # In a production system, you might:
+        # 1. Check a "recent_removals" table
+        # 2. Use webhooks or real-time notifications
+        # 3. Check for employees with "Removed" status
+        
+        removed_employees = []
+        
+        # Check for employees with "Removed" status in the last hour
+        recent_removals = frappe.get_all("Restaurant Employee",
+            filters={
+                "employee_status": "Removed",
+                "modified": [">=", frappe.utils.add_to_date(nowdate(), hours=-1)]
+            },
+            fields=["employee", "parent as restaurant_id"]
+        )
+        
+        for removal in recent_removals:
+            removed_employees.append({
+                "employee_id": removal.employee,
+                "restaurant_id": removal.restaurant_id
+            })
+        
+        return {
+            "success": True,
+            "removed_employees": removed_employees
+        }
+        
+    except Exception as e:
+        frappe.log_error(f"Error checking employee removals: {str(e)}", "Employee Removal Check")
+        return {
+            "success": False,
+            "message": f"Error checking employee removals: {str(e)}",
+            "removed_employees": []
+        }

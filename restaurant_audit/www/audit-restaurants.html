@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurant Selection - Audit System</title>
+    <!-- RTL CSS will be loaded dynamically -->
     <style>
         :root {
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -61,6 +62,41 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+        }
+
+        /* Language Switcher */
+        .language-switcher {
+            display: flex;
+            gap: 0.5rem;
+            margin-left: 1rem;
+            align-items: center;
+        }
+        
+        .lang-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--neutral-300);
+            background: var(--white);
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .lang-btn:hover {
+            background: var(--neutral-100);
+        }
+        
+        .lang-btn.active {
+            background: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+        }
+
+        /* RTL Language Switcher */
+        [dir="rtl"] .language-switcher {
+            margin-left: 0;
+            margin-right: 1rem;
         }
 
         .header-left {
@@ -1230,10 +1266,11 @@
             <div class="header-left">
                 <div class="logo">RestaurantAudit</div>
             </div>
+            <div id="language-switcher"></div>
             <div class="user-info">
                 <div class="user-avatar" id="user-avatar">U</div>
-                <span id="user-name">Loading...</span>
-                <button class="logout-btn" onclick="logout()">Logout</button>
+                <span id="user-name" data-translate="Loading...">Loading...</span>
+                <button class="logout-btn" onclick="logout()" data-translate="Logout">Logout</button>
             </div>
         </div>
     </div>
@@ -1241,8 +1278,8 @@
     <div class="container">
         <!-- Page Header -->
         <div class="page-header fade-in">
-            <h1 class="page-title">Restaurant Management</h1>
-            <p class="page-subtitle">Manage your restaurant audits, scheduled visits, and daily operations</p>
+            <h1 class="page-title" data-translate="Restaurant Management">Restaurant Management</h1>
+            <p class="page-subtitle" data-translate="Manage your restaurant audits, scheduled visits, and daily operations">Manage your restaurant audits, scheduled visits, and daily operations</p>
         </div>
 
         <!-- Tab Container -->
@@ -1253,7 +1290,7 @@
                         <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
                         <polyline points="9,22 9,12 15,12 15,22"/>
                     </svg>
-                    Regular Assigned Restaurant
+                    <span data-translate="Regular Assigned Restaurant">Regular Assigned Restaurant</span>
                 </button>
                 <button class="tab-button" onclick="switchTab('daily-audit')">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 0.5rem;">
@@ -1262,7 +1299,7 @@
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    Daily Audit (Manager)
+                    <span data-translate="Daily Audit (Manager)">Daily Audit (Manager)</span>
                 </button>
             </div>
 
@@ -1284,7 +1321,7 @@
                 <!-- Loading State -->
                 <div id="loading" class="loading">
                     <div class="spinner"></div>
-                    Loading restaurants...
+                    <span data-translate="Loading restaurants...">Loading restaurants...</span>
                 </div>
 
                 <!-- Error State -->
@@ -1304,17 +1341,17 @@
                             <line x1="8" y1="14" x2="16" y2="14"/>
                             <line x1="8" y1="18" x2="12" y2="18"/>
                         </svg>
-                        Schedule Your Weekly Audits
+                        <span data-translate="Schedule Your Weekly Audits">Schedule Your Weekly Audits</span>
                     </h3>
                     <div class="schedule-form">
                         <div class="form-group">
-                            <label for="restaurant-select">Select Restaurant</label>
+                            <label for="restaurant-select" data-translate="Select Restaurant">Select Restaurant</label>
                             <select id="restaurant-select">
-                                <option value="">Choose a restaurant...</option>
+                                <option value="" data-translate="Choose a restaurant...">Choose a restaurant...</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="visit-date">Visit Date</label>
+                            <label for="visit-date" data-translate="Visit Date">Visit Date</label>
                             <input type="date" id="visit-date" min="">
                         </div>
                         <button class="schedule-btn" onclick="scheduleAudit()">
@@ -1322,7 +1359,7 @@
                                 <line x1="12" y1="5" x2="12" y2="19"/>
                                 <line x1="5" y1="12" x2="19" y2="12"/>
                             </svg>
-                            Schedule Audit
+                            <span data-translate="Schedule Audit">Schedule Audit</span>
                         </button>
                     </div>
 
@@ -1338,8 +1375,8 @@
                 <!-- Empty State -->
                 <div id="empty-state" class="empty-state" style="display: none;">
                     <div class="empty-state-icon">🏪</div>
-                    <h3>No Restaurants Available</h3>
-                    <p>You don't have any restaurants assigned to your account. Please contact your administrator.</p>
+                    <h3 data-translate="No Restaurants Available">No Restaurants Available</h3>
+                    <p data-translate="You don't have any restaurants assigned to your account. Please contact your administrator.">You don't have any restaurants assigned to your account. Please contact your administrator.</p>
                 </div>
 
                 <!-- My Scheduled Visits Table -->
@@ -1349,14 +1386,14 @@
                             <path d="M9 11l3 3 8-8"/>
                             <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c1.51 0 2.93.37 4.18 1.03"/>
                         </svg>
-                        My Scheduled Visits for the Week
+                        <span data-translate="My Scheduled Visits for the Week">My Scheduled Visits for the Week</span>
                     </h3>
                     <table class="visits-table" id="my-scheduled-visits-table">
                         <thead>
                             <tr>
-                                <th>Restaurant</th>
-                                <th>Next Audit Date</th>
-                                <th>Status</th>
+                                <th data-translate="Restaurant">Restaurant</th>
+                                <th data-translate="Next Audit Date">Next Audit Date</th>
+                                <th data-translate="Status">Status</th>
                             </tr>
                         </thead>
                         <tbody id="my-visits-tbody">
@@ -1369,19 +1406,19 @@
                 <div class="stats-grid fade-in" id="stats-grid">
                     <div class="stat-card">
                         <div class="stat-value" id="total-restaurants">0</div>
-                        <div class="stat-label">Available Restaurants</div>
+                        <div class="stat-label" data-translate="Available Restaurants">Available Restaurants</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="total-audits">0</div>
-                        <div class="stat-label">Total Audits</div>
+                        <div class="stat-label" data-translate="Total Audits">Total Audits</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="pending-progress">0</div>
-                        <div class="stat-label">Pending Progress</div>
+                        <div class="stat-label" data-translate="Pending Progress">Pending Progress</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-value" id="avg-score">0</div>
-                        <div class="stat-label">Average Score</div>
+                        <div class="stat-label" data-translate="Average Score">Average Score</div>
                     </div>
                 </div>
             </div>
@@ -1651,6 +1688,11 @@ async function loadRestaurants() {
                 const card = createRestaurantCard(restaurant, index);
                 container.appendChild(card);
             });
+
+            // Re-translate dynamically created content
+            if (window.LanguageSwitcher) {
+                window.LanguageSwitcher.retranslateDynamicContent();
+            }
         }
 // Updated restaurant card creation with week status
 function createRestaurantCard(restaurant, index) {
@@ -1676,10 +1718,10 @@ function createRestaurantCard(restaurant, index) {
     const progressIndicator = restaurant.has_progress ? 
         '<div class="progress-indicator">!</div>' : '';
     
-    // Week status indicator
+    // Week status indicator with translation
     const weekStatusIndicator = restaurant.week_complete ? 
-        '<div class="week-status-indicator">✅ Week Complete</div>' : 
-        '<div class="week-status-indicator available">📝 Available</div>';
+        '<div class="week-status-indicator" data-translate="Week Complete">✅ Week Complete</div>' : 
+        '<div class="week-status-indicator available" data-translate="Available">📝 Available</div>';
     
     // Determine if card should be clickable
     const clickable = restaurant.can_access && !restaurant.week_complete;
@@ -1713,18 +1755,18 @@ function createRestaurantCard(restaurant, index) {
         
         <div class="restaurant-address">${restaurant.address || 'Address not specified'}</div>
         <div class="restaurant-employee">
-            <strong>Auditor:</strong> ${restaurant.employee_name || 'Unassigned'} 
+            <strong data-translate="Auditor">Auditor:</strong> ${restaurant.employee_name || 'Unassigned'} 
             (${restaurant.designation || '—'})
         </div>
         
         <div class="restaurant-stats">
             <div class="stat-item">
                 <div class="stat-item-value">${restaurant.total_audits || 0}</div>
-                <div class="stat-item-label">Total Audits</div>
+                <div class="stat-item-label" data-translate="Total Audits">Total Audits</div>
             </div>
             <div class="stat-item">
                 <div class="stat-item-value">${restaurant.my_audits || 0}</div>
-                <div class="stat-item-label">My Audits</div>
+                <div class="stat-item-label" data-translate="My Audits">My Audits</div>
             </div>
         </div>
         
@@ -2200,6 +2242,11 @@ function renderWeeklyScheduledAudits(currentWeek, nextWeek) {
     if (currentWeek.scheduled_audits.length === 0 && nextWeek.scheduled_audits.length === 0) {
         grid.innerHTML = '<p style="text-align: center; color: var(--neutral-500); grid-column: 1 / -1;">No scheduled audits for current and next week.</p>';
     }
+
+    // Re-translate dynamically created content
+    if (window.LanguageSwitcher) {
+        window.LanguageSwitcher.retranslateDynamicContent();
+    }
 }
 
 function createScheduledAuditCard(audit, weekType) {
@@ -2210,7 +2257,7 @@ function createScheduledAuditCard(audit, weekType) {
     const weekIndicator = weekType === 'current' ? '📅' : '⏳';
     
     card.innerHTML = `
-        <div class="week-indicator">${weekIndicator} ${weekType.toUpperCase()}</div>
+        <div class="week-indicator">${weekIndicator} <span data-translate="${weekType.toUpperCase()}">${weekType.toUpperCase()}</span></div>
         <div class="visit-restaurant-name">${audit.restaurant_name}</div>
         <div class="visit-date">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2221,8 +2268,8 @@ function createScheduledAuditCard(audit, weekType) {
             </svg>
             ${formatDate(audit.visit_date)}
         </div>
-        <div class="visit-status ${audit.status.toLowerCase()}">${audit.status}</div>
-        ${weekType === 'current' ? `<div class="urgency-indicator">⚠️ This Week</div>` : ''}
+        <div class="visit-status ${audit.status.toLowerCase()}" data-translate="${audit.status}">${audit.status}</div>
+        ${weekType === 'current' ? `<div class="urgency-indicator" data-translate="This Week">⚠️ This Week</div>` : ''}
     `;
     return card;
 }
@@ -2889,6 +2936,474 @@ if (!document.getElementById('week-status-styles')) {
     styleElement.textContent = weekStatusStyles.replace('<style>', '').replace('</style>', '');
     document.head.appendChild(styleElement);
 }
+    </script>
+    
+    <!-- Language Switcher -->
+    <script>
+        // Language Switcher Module
+        const LanguageSwitcher = {
+            // Current language
+            currentLang: localStorage.getItem('app_language') || 'en',
+            
+            // Translations object
+            translations: {},
+            
+            // Initialize language system
+            init: async function() {
+                // Load translations
+                await this.loadTranslations();
+                
+                // Apply saved language
+                this.applyLanguage(this.currentLang);
+                
+                // Add language switcher to UI
+                this.addLanguageSwitcher();
+                
+                // Setup event listeners
+                this.setupEventListeners();
+            },
+            
+            // Load translation files
+            loadTranslations: async function() {
+                try {
+                    // Load Arabic translations
+                    const arResponse = await fetch('/api/method/restaurant_audit.api.translation_api.get_translations?lang=ar');
+                    const arData = await arResponse.json();
+                    if (arData.success) {
+                        this.translations.ar = arData.message;
+                    } else {
+                        throw new Error(arData.message);
+                    }
+                    
+                    // Load English translations (optional, can use defaults)
+                    const enResponse = await fetch('/api/method/restaurant_audit.api.translation_api.get_translations?lang=en');
+                    const enData = await enResponse.json();
+                    if (enData.success) {
+                        this.translations.en = enData.message || {};
+                    } else {
+                        this.translations.en = {};
+                    }
+                } catch (error) {
+                    console.error('Error loading translations:', error);
+                    // Fallback to basic translations
+                    this.translations.ar = this.getBasicArabicTranslations();
+                    this.translations.en = {};
+                }
+            },
+            
+            // Apply language to the page
+            applyLanguage: function(lang) {
+                this.currentLang = lang;
+                localStorage.setItem('app_language', lang);
+                
+                // Set HTML attributes
+                document.documentElement.lang = lang;
+                document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+                
+                // Load RTL styles if Arabic
+                if (lang === 'ar') {
+                    this.loadRTLStyles();
+                    this.loadArabicFont();
+                } else {
+                    this.removeRTLStyles();
+                }
+                
+                // Translate all elements
+                this.translatePage();
+                
+                // Update date/time formats
+                this.updateDateTimeFormats();
+                
+                // Fire custom event
+                document.dispatchEvent(new CustomEvent('languageChanged', { detail: { language: lang } }));
+            },
+            
+            // Load RTL stylesheet
+            loadRTLStyles: function() {
+                if (!document.getElementById('rtl-styles')) {
+                    const style = document.createElement('style');
+                    style.id = 'rtl-styles';
+                    style.textContent = `
+                        /* RTL Base Styles */
+                        [dir="rtl"] {
+                            direction: rtl;
+                            text-align: right;
+                        }
+
+                        /* Font family for Arabic */
+                        [dir="rtl"] body {
+                            font-family: 'Tajawal', 'Segoe UI', Tahoma, Arial, sans-serif;
+                        }
+
+                        /* Flip margins and paddings */
+                        [dir="rtl"] .header-left {
+                            margin-right: 0;
+                            margin-left: auto;
+                        }
+
+                        [dir="rtl"] .header-content {
+                            flex-direction: row-reverse;
+                        }
+
+                        [dir="rtl"] .user-info {
+                            flex-direction: row-reverse;
+                        }
+
+                        /* RTL Language Switcher positioning */
+                        [dir="rtl"] .language-switcher {
+                            margin-left: 0;
+                            margin-right: 1rem;
+                            order: 1;
+                        }
+
+                        [dir="rtl"] .header-left {
+                            order: 2;
+                        }
+
+                        [dir="rtl"] .user-info {
+                            order: 0;
+                        }
+
+                        [dir="rtl"] .back-btn {
+                            flex-direction: row-reverse;
+                        }
+
+                        [dir="rtl"] .back-btn svg {
+                            transform: rotate(180deg);
+                            margin-left: 0.5rem;
+                            margin-right: 0;
+                        }
+
+                        /* Grid layouts */
+                        [dir="rtl"] .main-layout {
+                            direction: rtl;
+                        }
+
+                        [dir="rtl"] .category-grid {
+                            direction: rtl;
+                        }
+
+                        [dir="rtl"] .restaurants-grid {
+                            direction: rtl;
+                        }
+
+                        /* Cards and containers */
+                        [dir="rtl"] .restaurant-card {
+                            text-align: right;
+                        }
+
+                        [dir="rtl"] .restaurant-card::before {
+                            right: 0;
+                            left: auto;
+                        }
+
+                        [dir="rtl"] .progress-indicator {
+                            left: 1rem;
+                            right: auto;
+                        }
+
+                        /* Forms */
+                        [dir="rtl"] .form-group label {
+                            text-align: right;
+                        }
+
+                        [dir="rtl"] .search-input {
+                            padding-right: 3rem;
+                            padding-left: 1rem;
+                        }
+
+                        [dir="rtl"] .search-icon {
+                            right: 1rem;
+                            left: auto;
+                        }
+
+                        /* Buttons */
+                        [dir="rtl"] .filter-buttons {
+                            flex-direction: row-reverse;
+                        }
+
+                        [dir="rtl"] .modal-actions {
+                            flex-direction: row-reverse;
+                        }
+
+                        /* Tables */
+                        [dir="rtl"] table {
+                            direction: rtl;
+                        }
+
+                        [dir="rtl"] th,
+                        [dir="rtl"] td {
+                            text-align: right;
+                        }
+
+                        /* Status badges */
+                        [dir="rtl"] .status-icon {
+                            margin-left: 0.5rem;
+                            margin-right: 0;
+                        }
+
+                        /* Tooltips */
+                        [dir="rtl"] .tooltip {
+                            text-align: right;
+                        }
+
+                        [dir="rtl"] .tooltip::after {
+                            right: 50%;
+                            left: auto;
+                            transform: translateX(50%);
+                        }
+
+                        /* Progress bars */
+                        [dir="rtl"] .progress-bar {
+                            direction: ltr; /* Keep progress bars LTR */
+                        }
+
+                        /* Notification positioning */
+                        [dir="rtl"] .notification {
+                            right: auto;
+                            left: 20px;
+                        }
+
+                        /* Dropdown menus */
+                        [dir="rtl"] .dropdown-menu {
+                            right: auto;
+                            left: 0;
+                            text-align: right;
+                        }
+
+                        /* Icon adjustments */
+                        [dir="rtl"] .icon-left {
+                            margin-left: 0.5rem;
+                            margin-right: 0;
+                        }
+
+                        [dir="rtl"] .icon-right {
+                            margin-right: 0.5rem;
+                            margin-left: 0;
+                        }
+
+                        /* Fix floating elements */
+                        [dir="rtl"] .float-left {
+                            float: right;
+                        }
+
+                        [dir="rtl"] .float-right {
+                            float: left;
+                        }
+
+                        /* Border radius adjustments */
+                        [dir="rtl"] .rounded-left {
+                            border-top-left-radius: 0;
+                            border-bottom-left-radius: 0;
+                            border-top-right-radius: var(--border-radius);
+                            border-bottom-right-radius: var(--border-radius);
+                        }
+
+                        [dir="rtl"] .rounded-right {
+                            border-top-right-radius: 0;
+                            border-bottom-right-radius: 0;
+                            border-top-left-radius: var(--border-radius);
+                            border-bottom-left-radius: var(--border-radius);
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            },
+            
+            // Load Arabic font
+            loadArabicFont: function() {
+                if (!document.getElementById('arabic-font')) {
+                    const link = document.createElement('link');
+                    link.id = 'arabic-font';
+                    link.rel = 'stylesheet';
+                    link.href = 'https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap';
+                    document.head.appendChild(link);
+                }
+            },
+            
+            // Remove RTL styles
+            removeRTLStyles: function() {
+                const rtlStyles = document.getElementById('rtl-styles');
+                if (rtlStyles) {
+                    rtlStyles.remove();
+                }
+            },
+            
+            // Add language switcher to UI
+            addLanguageSwitcher: function() {
+                // Check if switcher already exists
+                if (document.getElementById('language-switcher').innerHTML) return;
+                
+                const switcher = document.getElementById('language-switcher');
+                switcher.innerHTML = `
+                    <button class="lang-btn ${this.currentLang === 'en' ? 'active' : ''}" data-lang="en">
+                        English
+                    </button>
+                    <button class="lang-btn ${this.currentLang === 'ar' ? 'active' : ''}" data-lang="ar">
+                        العربية
+                    </button>
+                `;
+            },
+            
+            // Setup event listeners
+            setupEventListeners: function() {
+                // Language switcher buttons
+                document.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('lang-btn')) {
+                        const lang = e.target.dataset.lang;
+                        this.applyLanguage(lang);
+                        
+                        // Update active state
+                        document.querySelectorAll('.lang-btn').forEach(btn => {
+                            btn.classList.toggle('active', btn.dataset.lang === lang);
+                        });
+                    }
+                });
+            },
+            
+            // Translate the page
+            translatePage: function() {
+                console.log('Translating page to:', this.currentLang);
+                console.log('Found elements with data-translate:', document.querySelectorAll('[data-translate]').length);
+                
+                // Translate elements with data-translate attribute
+                document.querySelectorAll('[data-translate]').forEach(element => {
+                    const key = element.dataset.translate;
+                    const translation = this.translate(key);
+                    console.log('Translating:', key, '->', translation);
+                    if (translation) {
+                        if (element.placeholder !== undefined) {
+                            element.placeholder = translation;
+                        } else {
+                            element.textContent = translation;
+                        }
+                    }
+                });
+            },
+
+            // Re-translate dynamically created content
+            retranslateDynamicContent: function() {
+                // Re-translate restaurant cards
+                document.querySelectorAll('.restaurant-card [data-translate]').forEach(element => {
+                    const key = element.dataset.translate;
+                    const translation = this.translate(key);
+                    if (translation) {
+                        element.textContent = translation;
+                    }
+                });
+
+                // Re-translate scheduled audit cards
+                document.querySelectorAll('.scheduled-visit-card [data-translate]').forEach(element => {
+                    const key = element.dataset.translate;
+                    const translation = this.translate(key);
+                    if (translation) {
+                        element.textContent = translation;
+                    }
+                });
+            },
+            
+            // Get translation for a key
+            translate: function(key) {
+                if (this.currentLang === 'en') {
+                    return key; // Return key as is for English
+                }
+                return this.translations[this.currentLang]?.[key] || key;
+            },
+            
+            // Update date/time formats based on language
+            updateDateTimeFormats: function() {
+                const locale = this.currentLang === 'ar' ? 'ar-SA' : 'en-US';
+                
+                // Update all date displays
+                document.querySelectorAll('[data-date]').forEach(element => {
+                    const dateStr = element.dataset.date;
+                    if (dateStr) {
+                        const date = new Date(dateStr);
+                        element.textContent = date.toLocaleDateString(locale);
+                    }
+                });
+                
+                // Update all time displays
+                document.querySelectorAll('[data-time]').forEach(element => {
+                    const timeStr = element.dataset.time;
+                    if (timeStr) {
+                        const time = new Date(timeStr);
+                        element.textContent = time.toLocaleTimeString(locale);
+                    }
+                });
+            },
+            
+            // Get basic Arabic translations (fallback)
+            getBasicArabicTranslations: function() {
+                return {
+                    'Loading': 'جاري التحميل',
+                    'Submit': 'إرسال',
+                    'Cancel': 'إلغاء',
+                    'Save': 'حفظ',
+                    'Back': 'رجوع',
+                    'Logout': 'تسجيل الخروج',
+                    'Restaurant': 'مطعم',
+                    'Audit': 'تدقيق',
+                    'Yes': 'نعم',
+                    'No': 'لا',
+                    'Completed': 'مكتمل',
+                    'Pending': 'قيد الانتظار',
+                    'Active': 'نشط',
+                    'Search': 'بحث',
+                    'Filter': 'تصفية',
+                    'Dashboard': 'لوحة التحكم',
+                    'Settings': 'الإعدادات',
+                    'Error': 'خطأ',
+                    'Success': 'نجاح',
+                    'Warning': 'تحذير',
+                    'Restaurant Management': 'إدارة المطاعم',
+                    'Manage your restaurant audits, scheduled visits, and daily operations': 'إدارة تدقيقات المطاعم والزيارات المجدولة والعمليات اليومية',
+                    'Regular Assigned Restaurant': 'المطعم المعين العادي',
+                    'Daily Audit (Manager)': 'التدقيق اليومي (مدير)',
+                    'Schedule Your Weekly Audits': 'جدولة تدقيقاتك الأسبوعية',
+                    'Select Restaurant': 'اختر المطعم',
+                    'Choose a restaurant...': 'اختر مطعم...',
+                    'Visit Date': 'تاريخ الزيارة',
+                    'Schedule Audit': 'جدولة التدقيق',
+                    'Search restaurants...': 'البحث في المطاعم...',
+                    'Loading restaurants...': 'جاري تحميل المطاعم...',
+                    'No Restaurants Available': 'لا توجد مطاعم متاحة',
+                    'You don\'t have any restaurants assigned to your account. Please contact your administrator.': 'ليس لديك أي مطاعم مخصصة لحسابك. يرجى الاتصال بمدير النظام',
+                    'My Scheduled Visits for the Week': 'زياراتي المجدولة لهذا الأسبوع',
+                    'Next Audit Date': 'تاريخ التدقيق التالي',
+                    'Available Restaurants': 'المطاعم المتاحة',
+                    'Total Audits': 'إجمالي التدقيقات',
+                    'Pending Progress': 'التقدم المعلق',
+                    'Average Score': 'متوسط النقاط',
+                    'Restaurant': 'مطعم',
+                    'Status': 'الحالة',
+                    'Pending': 'قيد الانتظار',
+                    'Completed': 'مكتمل',
+                    'Active': 'نشط',
+                    'Inactive': 'غير نشط',
+                    'Overdue': 'متأخر',
+                    'Cancelled': 'ملغى',
+                    'In Progress': 'قيد التنفيذ',
+                    'Week Complete': 'الأسبوع مكتمل',
+                    'Available': 'متاح',
+                    'Auditor': 'مدقق',
+                    'My Audits': 'تدقيقاتي',
+                    'CURRENT': 'الحالي',
+                    'NEXT': 'التالي',
+                    'This Week': 'هذا الأسبوع',
+                    'Address not specified': 'العنوان غير محدد',
+                    'Unassigned': 'غير مخصص'
+                };
+            }
+        };
+
+        // Initialize when DOM is ready
+        document.addEventListener('DOMContentLoaded', function() {
+            LanguageSwitcher.init();
+        });
+
+        // Export for use in other modules
+        window.LanguageSwitcher = LanguageSwitcher;
     </script>
 </body>
 </html>

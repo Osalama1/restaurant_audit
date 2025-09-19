@@ -1,0 +1,221 @@
+/* RTL Base Styles */
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Font family for Arabic */
+[dir="rtl"] body {
+    font-family: 'Tajawal', 'Segoe UI', Tahoma, Arial, sans-serif;
+}
+
+/* Flip margins and paddings */
+[dir="rtl"] .header-left {
+    margin-right: 0;
+    margin-left: auto;
+}
+
+[dir="rtl"] .header-content {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .user-info {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .back-btn {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .back-btn svg {
+    transform: rotate(180deg);
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+/* Grid layouts */
+[dir="rtl"] .main-layout {
+    direction: rtl;
+}
+
+[dir="rtl"] .category-grid {
+    direction: rtl;
+}
+
+[dir="rtl"] .restaurants-grid {
+    direction: rtl;
+}
+
+/* Cards and containers */
+[dir="rtl"] .restaurant-card {
+    text-align: right;
+}
+
+[dir="rtl"] .restaurant-card::before {
+    right: 0;
+    left: auto;
+}
+
+[dir="rtl"] .progress-indicator {
+    left: 1rem;
+    right: auto;
+}
+
+/* Forms */
+[dir="rtl"] .form-group label {
+    text-align: right;
+}
+
+[dir="rtl"] .search-input {
+    padding-right: 3rem;
+    padding-left: 1rem;
+}
+
+[dir="rtl"] .search-icon {
+    right: 1rem;
+    left: auto;
+}
+
+/* Buttons */
+[dir="rtl"] .filter-buttons {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-actions {
+    flex-direction: row-reverse;
+}
+
+/* Chat modal */
+[dir="rtl"] .chat-container {
+    direction: rtl;
+}
+
+[dir="rtl"] .user-message {
+    align-self: flex-start;
+    border-bottom-right-radius: 18px;
+    border-bottom-left-radius: 6px;
+}
+
+[dir="rtl"] .bot-message {
+    align-self: flex-end;
+    border-bottom-left-radius: 18px;
+    border-bottom-right-radius: 6px;
+}
+
+[dir="rtl"] .chat-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .close-chat {
+    margin-left: 0;
+    margin-right: auto;
+}
+
+/* Timeline */
+[dir="rtl"] .timeline-item {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .timeline-item::after {
+    right: 1rem;
+    left: auto;
+}
+
+/* Tables */
+[dir="rtl"] table {
+    direction: rtl;
+}
+
+[dir="rtl"] th,
+[dir="rtl"] td {
+    text-align: right;
+}
+
+/* Status badges */
+[dir="rtl"] .status-icon {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+/* Animations - flip for RTL */
+[dir="rtl"] @keyframes slideInRight {
+    from {
+        transform: translateX(-100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+[dir="rtl"] @keyframes slideInLeft {
+    from {
+        transform: translateX(100%);
+    }
+    to {
+        transform: translateX(0);
+    }
+}
+
+/* Tooltips */
+[dir="rtl"] .tooltip {
+    text-align: right;
+}
+
+[dir="rtl"] .tooltip::after {
+    right: 50%;
+    left: auto;
+    transform: translateX(50%);
+}
+
+/* Progress bars */
+[dir="rtl"] .progress-bar {
+    direction: ltr; /* Keep progress bars LTR */
+}
+
+/* Notification positioning */
+[dir="rtl"] .notification {
+    right: auto;
+    left: 20px;
+}
+
+/* Dropdown menus */
+[dir="rtl"] .dropdown-menu {
+    right: auto;
+    left: 0;
+    text-align: right;
+}
+
+/* Icon adjustments */
+[dir="rtl"] .icon-left {
+    margin-left: 0.5rem;
+    margin-right: 0;
+}
+
+[dir="rtl"] .icon-right {
+    margin-right: 0.5rem;
+    margin-left: 0;
+}
+
+/* Fix floating elements */
+[dir="rtl"] .float-left {
+    float: right;
+}
+
+[dir="rtl"] .float-right {
+    float: left;
+}
+
+/* Border radius adjustments */
+[dir="rtl"] .rounded-left {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: var(--border-radius);
+    border-bottom-right-radius: var(--border-radius);
+}
+
+[dir="rtl"] .rounded-right {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-top-left-radius: var(--border-radius);
+    border-bottom-left-radius: var(--border-radius);
+}

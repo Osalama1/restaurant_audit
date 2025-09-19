@@ -1,0 +1,162 @@
+# DocType translations
+Restaurant,مطعم
+Restaurant Audit,تدقيق المطعم
+Audit Submission,تقديم التدقيق
+Scheduled Audit Visit,زيارة تدقيق مجدولة
+Daily Audit Template,قالب التدقيق اليومي
+Checklist Category,فئة قائمة التحقق
+Checklist Template,قالب قائمة التحقق
+Audit Progress,تقدم التدقيق
+Location Check Log,سجل فحص الموقع
+
+# Field Labels
+Restaurant Name,اسم المطعم
+Address,العنوان
+Latitude,خط العرض
+Longitude,خط الطول
+Location Radius,نطاق الموقع
+Restaurant Manager,مدير المطعم
+Auditor,المدقق
+Employee,الموظف
+Visit Date,تاريخ الزيارة
+Status,الحالة
+Audit Date,تاريخ التدقيق
+Average Score,متوسط النقاط
+Total Score,مجموع النقاط
+Overall Comment,التعليق العام
+Question,سؤال
+Answer,إجابة
+Category,الفئة
+
+# Status Values
+Pending,قيد الانتظار
+Completed,مكتمل
+In Progress,قيد التنفيذ
+Overdue,متأخر
+Cancelled,ملغى
+Active,نشط
+Inactive,غير نشط
+
+# Button Labels
+Submit,إرسال
+Save,حفظ
+Cancel,إلغاء
+Start Audit,بدء التدقيق
+Continue,متابعة
+Back,رجوع
+Logout,تسجيل الخروج
+Schedule Visit,جدولة زيارة
+Search,بحث
+Filter,تصفية
+
+# Messages
+Loading,جاري التحميل
+No data found,لا توجد بيانات
+Success,نجاح
+Error,خطأ
+Warning,تحذير
+Audit submitted successfully,تم تقديم التدقيق بنجاح
+Location verified,تم التحقق من الموقع
+Please select a restaurant,الرجاء اختيار مطعم
+Are you sure?,هل أنت متأكد؟
+
+# Page Titles
+Restaurant Management,إدارة المطاعم
+Daily Audit Manager,مدير التدقيق اليومي
+Audit Form,نموذج التدقيق
+Login,تسجيل الدخول
+Dashboard,لوحة التحكم
+
+# Navigation
+Home,الرئيسية
+Restaurants,المطاعم
+Audits,التدقيقات
+Reports,التقارير
+Settings,الإعدادات
+
+# Time Related
+Today,اليوم
+Yesterday,أمس
+This Week,هذا الأسبوع
+Last Week,الأسبوع الماضي
+This Month,هذا الشهر
+Last Month,الشهر الماضي
+Date,التاريخ
+Time,الوقت
+Duration,المدة
+
+# Audit Specific
+Hygiene,النظافة
+Food Safety,سلامة الغذاء
+Service Quality,جودة الخدمة
+Compliance,الامتثال
+Overall Rating,التقييم العام
+Critical Issues,مشاكل حرجة
+Observations,ملاحظات
+Recommendations,توصيات
+Follow Up Required,يتطلب متابعة
+Image Attachment,مرفق صورة
+
+# Days of Week
+Monday,الإثنين
+Tuesday,الثلاثاء
+Wednesday,الأربعاء
+Thursday,الخميس
+Friday,الجمعة
+Saturday,السبت
+Sunday,الأحد
+
+# Months
+January,يناير
+February,فبراير
+March,مارس
+April,أبريل
+May,مايو
+June,يونيو
+July,يوليو
+August,أغسطس
+September,سبتمبر
+October,أكتوبر
+November,نوفمبر
+December,ديسمبر
+
+# Numbers (for rating)
+One Star,نجمة واحدة
+Two Stars,نجمتان
+Three Stars,ثلاث نجوم
+Four Stars,أربع نجوم
+Five Stars,خمس نجوم
+
+# Question Types
+Yes/No,نعم/لا
+Rating,تقييم
+Text,نص
+Multiple Choice,اختيار متعدد
+Checkbox,مربع اختيار
+
+# Validation Messages
+This field is required,هذا الحقل مطلوب
+Invalid email address,عنوان البريد الإلكتروني غير صالح
+Password must be at least 8 characters,يجب أن تكون كلمة المرور 8 أحرف على الأقل
+Please enter a valid date,الرجاء إدخال تاريخ صحيح
+Location check failed,فشل فحص الموقع
+
+# Additional UI Elements
+Manage your restaurant audits, scheduled visits, and daily operations,إدارة تدقيقات المطاعم والزيارات المجدولة والعمليات اليومية
+Regular Assigned Restaurant,المطعم المعين العادي
+Daily Audit (Manager),التدقيق اليومي (مدير)
+Schedule Your Weekly Audits,جدولة تدقيقاتك الأسبوعية
+Select Restaurant,اختر المطعم
+Choose a restaurant...,اختر مطعم...
+Visit Date,تاريخ الزيارة
+Schedule Audit,جدولة التدقيق
+Search restaurants...,البحث في المطاعم...
+Loading restaurants...,جاري تحميل المطاعم...
+No Restaurants Available,لا توجد مطاعم متاحة
+You don't have any restaurants assigned to your account. Please contact your administrator.,ليس لديك أي مطاعم مخصصة لحسابك. يرجى الاتصال بمدير النظام
+My Scheduled Visits for the Week,زياراتي المجدولة لهذا الأسبوع
+Next Audit Date,تاريخ التدقيق التالي
+Available Restaurants,المطاعم المتاحة
+Total Audits,إجمالي التدقيقات
+Pending Progress,التقدم المعلق
+Average Score,متوسط النقاط

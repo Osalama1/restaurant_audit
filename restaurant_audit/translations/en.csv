@@ -1,0 +1,142 @@
+# DocType translations
+Restaurant,Restaurant
+Restaurant Audit,Restaurant Audit
+Audit Submission,Audit Submission
+Scheduled Audit Visit,Scheduled Audit Visit
+Daily Audit Template,Daily Audit Template
+Checklist Category,Checklist Category
+Checklist Template,Checklist Template
+Audit Progress,Audit Progress
+Location Check Log,Location Check Log
+
+# Field Labels
+Restaurant Name,Restaurant Name
+Address,Address
+Latitude,Latitude
+Longitude,Longitude
+Location Radius,Location Radius
+Restaurant Manager,Restaurant Manager
+Auditor,Auditor
+Employee,Employee
+Visit Date,Visit Date
+Status,Status
+Audit Date,Audit Date
+Average Score,Average Score
+Total Score,Total Score
+Overall Comment,Overall Comment
+Question,Question
+Answer,Answer
+Category,Category
+
+# Status Values
+Pending,Pending
+Completed,Completed
+In Progress,In Progress
+Overdue,Overdue
+Cancelled,Cancelled
+Active,Active
+Inactive,Inactive
+
+# Button Labels
+Submit,Submit
+Save,Save
+Cancel,Cancel
+Start Audit,Start Audit
+Continue,Continue
+Back,Back
+Logout,Logout
+Schedule Visit,Schedule Visit
+Search,Search
+Filter,Filter
+
+# Messages
+Loading,Loading
+No data found,No data found
+Success,Success
+Error,Error
+Warning,Warning
+Audit submitted successfully,Audit submitted successfully
+Location verified,Location verified
+Please select a restaurant,Please select a restaurant
+Are you sure?,Are you sure?
+
+# Page Titles
+Restaurant Management,Restaurant Management
+Daily Audit Manager,Daily Audit Manager
+Audit Form,Audit Form
+Login,Login
+Dashboard,Dashboard
+
+# Navigation
+Home,Home
+Restaurants,Restaurants
+Audits,Audits
+Reports,Reports
+Settings,Settings
+
+# Time Related
+Today,Today
+Yesterday,Yesterday
+This Week,This Week
+Last Week,Last Week
+This Month,This Month
+Last Month,Last Month
+Date,Date
+Time,Time
+Duration,Duration
+
+# Audit Specific
+Hygiene,Hygiene
+Food Safety,Food Safety
+Service Quality,Service Quality
+Compliance,Compliance
+Overall Rating,Overall Rating
+Critical Issues,Critical Issues
+Observations,Observations
+Recommendations,Recommendations
+Follow Up Required,Follow Up Required
+Image Attachment,Image Attachment
+
+# Days of Week
+Monday,Monday
+Tuesday,Tuesday
+Wednesday,Wednesday
+Thursday,Thursday
+Friday,Friday
+Saturday,Saturday
+Sunday,Sunday
+
+# Months
+January,January
+February,February
+March,March
+April,April
+May,May
+June,June
+July,July
+August,August
+September,September
+October,October
+November,November
+December,December
+
+# Numbers (for rating)
+One Star,One Star
+Two Stars,Two Stars
+Three Stars,Three Stars
+Four Stars,Four Stars
+Five Stars,Five Stars
+
+# Question Types
+Yes/No,Yes/No
+Rating,Rating
+Text,Text
+Multiple Choice,Multiple Choice
+Checkbox,Checkbox
+
+# Validation Messages
+This field is required,This field is required
+Invalid email address,Invalid email address
+Password must be at least 8 characters,Password must be at least 8 characters
+Please enter a valid date,Please enter a valid date
+Location check failed,Location check failed

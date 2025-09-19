@@ -33,6 +33,16 @@ scheduler_events = {
         "restaurant_audit.tasks.check_weekly_audits"
     ]
 }
+# Add to app_include_js
+app_include_js = [
+    "/assets/restaurant_audit/js/dashboard.js",
+    "/assets/restaurant_audit/js/language-switcher.js"
+]
+
+# Add to app_include_css
+# app_include_css = [
+#     "/assets/restaurant_audit/css/rtl.css"
+# ]
 # include js, css files in header of desk.html
 # app_include_css = "/assets/restaurant_audit/css/restaurant_audit.css"
 #app_include_js = "/assets/restaurant_audit/js/dashboard.js"
